@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="catalog-page">
+    <div class="container">
+        <nav class="breadcrumbs">
+            <a href="{% url 'pages:home' %}">Главная</a>
+            <span> / </span>
+            <a href="{% url 'catalog:category_list' %}">Каталог</a>
+            <span> / </span>
+            <span>{{ category.name }}</span>
+        </nav>
+
+        <h1>{{ category.name }}</h1>
+
+        {% if category.description %}
+            <p>{{ category.description }}</p>
+        {% endif %}
+
+        <form method="get" class="catalog-search">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск по товарам">
+            <button type="submit">Найти</button>
+        </form>
+
+        <div class="catalog-grid">
+            {% for product in products %}
+                {% include "catalog/includes/product_card.html" with product=product %}
+            {% empty %}
+                <p>Товары не найдены.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

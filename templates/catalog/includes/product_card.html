@@ -1,0 +1,38 @@
+<article class="product-card">
+    <a href="{{ product.get_absolute_url }}" class="product-card__link">
+        <div class="product-card__image-wrap">
+            {% with main_image=product.get_main_image %}
+                {% if main_image and main_image.image %}
+                    <img src="{{ main_image.image.url }}"
+                         alt="{{ main_image.alt_text|default:product.name }}"
+                         class="product-card__image">
+                {% else %}
+                    <div class="product-card__placeholder">Нет изображения</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="product-card__content">
+            <h3 class="product-card__title">{{ product.name }}</h3>
+
+            {% if product.description %}
+                <p class="product-card__description">
+                    {{ product.description|truncatechars:100 }}
+                </p>
+            {% endif %}
+
+            <p class="product-card__price">
+                {% if product.price %}
+                    от {{ product.price }} ₽
+                {% else %}
+                    Цена по запросу
+                {% endif %}
+            </p>
+        </div>
+    </a>
+
+    <div class="product-card__actions">
+        {% include "shop/includes/add_to_cart_form.html" with product=product show_quantity=False %}
+        {% include "shop/includes/favorite_toggle_form.html" with product=product favorite_product_ids=favorite_product_ids %}
+    </div>
+</article>

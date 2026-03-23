@@ -1,0 +1,174 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div id="content-main">
+    <h1>Аналитический dashboard</h1>
+
+    <p>
+        Период:
+        {% for option in allowed_days %}
+            {% if option == days %}
+                <strong>{{ option }} дн.</strong>
+            {% else %}
+                <a href="?days={{ option }}">{{ option }} дн.</a>
+            {% endif %}
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+    </p>
+
+    <h2>Общая сводка</h2>
+    <table class="adminlist">
+        <tbody>
+            <tr><th>Просмотры страниц</th><td>{{ overview.page_hits }}</td></tr>
+            <tr><th>Уникальные посетители</th><td>{{ overview.unique_visitors }}</td></tr>
+            <tr><th>Уникальные профили</th><td>{{ overview.unique_profiles }}</td></tr>
+            <tr><th>Средняя длительность страницы, мс</th><td>{{ overview.avg_page_duration_ms }}</td></tr>
+            <tr><th>Просмотры товаров</th><td>{{ overview.product_views }}</td></tr>
+            <tr><th>Добавления в корзину</th><td>{{ overview.cart_adds }}</td></tr>
+            <tr><th>Добавления в избранное</th><td>{{ overview.favorite_adds }}</td></tr>
+            <tr><th>Заявки</th><td>{{ overview.leads_total }}</td></tr>
+            <tr><th>High-priority заявки</th><td>{{ overview.high_priority_leads }}</td></tr>
+            <tr><th>Конверсия просмотр товара → корзина</th><td>{{ product_to_cart_rate }}%</td></tr>
+            <tr><th>Конверсия корзина → заявка из корзины</th><td>{{ cart_to_lead_rate }}%</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Заявки по источникам</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Источник</th>
+                <th>Количество</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in lead_sources %}
+                <tr>
+                    <td>{{ row.label }}</td>
+                    <td>{{ row.count }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="2">Нет данных</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Заявки по статусам</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Статус</th>
+                <th>Количество</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in lead_statuses %}
+                <tr>
+                    <td>{{ row.label }}</td>
+                    <td>{{ row.count }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="2">Нет данных</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Топ страниц</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Путь</th>
+                <th>Маршрут</th>
+                <th>Хиты</th>
+                <th>Уникальные посетители</th>
+                <th>Средняя длительность, мс</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in top_pages %}
+                <tr>
+                    <td>{{ row.path }}</td>
+                    <td>{{ row.route_name }}</td>
+                    <td>{{ row.hits }}</td>
+                    <td>{{ row.unique_visitors }}</td>
+                    <td>{{ row.avg_duration_ms|floatformat:0 }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">Нет данных</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Топ товаров</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Категория</th>
+                <th>Просмотры</th>
+                <th>В корзину</th>
+                <th>В избранное</th>
+                <th>Заявок</th>
+                <th>Кол-во в заявках</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in top_products %}
+                <tr>
+                    <td>{{ row.product_name }}</td>
+                    <td>{{ row.category_name }}</td>
+                    <td>{{ row.product_views }}</td>
+                    <td>{{ row.cart_adds }}</td>
+                    <td>{{ row.favorite_adds }}</td>
+                    <td>{{ row.lead_count }}</td>
+                    <td>{{ row.lead_quantity }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7">Нет данных</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Горячие заявки</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Клиент</th>
+                <th>Источник</th>
+                <th>Скор</th>
+                <th>Приоритет</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lead in hot_leads %}
+                <tr>
+                    <td><a href="{% url 'admin:leads_lead_change' lead.id %}">{{ lead.id }}</a></td>
+                    <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ lead.fullname }}</td>
+                    <td>{{ lead.get_source_display }}</td>
+                    <td>{% if lead.score %}{{ lead.score.score }}{% else %}-{% endif %}</td>
+                    <td>{% if lead.score %}{{ lead.score.get_priority_display }}{% else %}-{% endif %}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">Нет данных</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Агрегаты</h2>
+    <table class="adminlist">
+        <tbody>
+            <tr>
+                <th>Последняя дата PageDailyMetric</th>
+                <td>{% if latest_page_metric %}{{ latest_page_metric.date }}{% else %}нет{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Последняя дата ProductDailyMetric</th>
+                <td>{% if latest_product_metric %}{{ latest_product_metric.date }}{% else %}нет{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

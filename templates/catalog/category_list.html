@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="catalog-page">
+    <div class="container">
+        <h1>Каталог</h1>
+
+        <form method="get" class="catalog-search">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск по категориям">
+            <button type="submit">Найти</button>
+        </form>
+
+        <div class="catalog-grid">
+            {% for category in categories %}
+                {% include "catalog/includes/category_card.html" with category=category %}
+            {% empty %}
+                <p>Категории не найдены.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Избранное{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+    <link rel="stylesheet" href="{% static 'shop/css/favorites.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>Избранное</h1>
+
+        {% if products %}
+            <div class="catalog-grid">
+                {% for product in products %}
+                    {% include "catalog/includes/product_card.html" with product=product favorite_product_ids=favorite_product_ids %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>В избранном пока ничего нет.</p>
+            <p><a href="{% url 'catalog:category_list' %}">Перейти в каталог</a></p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

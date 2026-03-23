@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'shop/css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'leads/css/lead_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>Корзина</h1>
+
+        {% if cart_data.items %}
+            <div class="cart-layout">
+                <div class="cart-items">
+                    {% for line in cart_data.items %}
+                        <article class="cart-item">
+                            <div class="cart-item__image">
+                                {% with main_image=line.product.get_main_image %}
+                                    {% if main_image and main_image.image %}
+                                        <img src="{{ main_image.image.url }}" alt="{{ main_image.alt_text|default:line.product.name }}">
+                                    {% else %}
+                                        <div class="cart-item__placeholder">Нет фото</div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+
+                            <div class="cart-item__content">
+                                <h3>
+                                    <a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a>
+                                </h3>
+
+                                <p>{{ line.product.category.name }}</p>
+
+                                <p>
+                                    {% if line.product.price %}
+                                        Цена: {{ line.product.price }} ₽
+                                    {% else %}
+                                        Цена по запросу
+                                    {% endif %}
+                                </p>
+
+                                <form method="post" action="{% url 'shop:cart_update' line.product.id %}" class="cart-item__update-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <label>
+                                        Количество:
+                                        <input type="number" name="quantity" min="0" value="{{ line.quantity }}">
+                                    </label>
+                                    <button type="submit">Обновить</button>
+                                </form>
+
+                                <form method="post" action="{% url 'shop:cart_remove' line.product.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit">Удалить</button>
+                                </form>
+
+                                <div class="cart-item__actions">
+                                    {% include "shop/includes/favorite_toggle_form.html" with product=line.product favorite_product_ids=favorite_product_ids %}
+                                </div>
+                            </div>
+
+                            <div class="cart-item__total">
+                                {% if line.line_total %}
+                                    {{ line.line_total }} ₽
+                                {% else %}
+                                    По запросу
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <aside class="cart-summary">
+                    <h2>Итог</h2>
+                    <p>Товаров: {{ cart_data.total_quantity }}</p>
+                    <p>Сумма: {{ cart_data.subtotal }} ₽</p>
+
+                    {% if cart_data.has_unpriced_items %}
+                        <p class="cart-summary__note">
+                            В корзине есть товары с ценой по запросу.
+                        </p>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'shop:cart_clear' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit">Очистить корзину</button>
+                    </form>
+
+                    <p>
+                        <a href="{% url 'catalog:category_list' %}">Продолжить выбор товаров</a>
+                    </p>
+
+                    <div class="cart-summary__lead-block">
+                        <h3>Отправить заявку по корзине</h3>
+                        {% include "leads/includes/cart_lead_form.html" with lead_form=lead_form %}
+                    </div>
+
+                </aside>
+            </div>
+        {% else %}
+            <p>Корзина пуста.</p>
+            <p><a href="{% url 'catalog:category_list' %}">Перейти в каталог</a></p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,8 @@
+<form method="post" action="{% url 'leads:create_contact' %}" class="lead-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+    {% include "leads/includes/lead_form_fields.html" with form=lead_form %}
+
+    <button type="submit">Отправить заявку</button>
+</form>

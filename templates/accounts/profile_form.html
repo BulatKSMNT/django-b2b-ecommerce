@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>{{ page_title }}</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">{{ submit_text }}</button>
+        </form>
+
+        <p>
+            <a href="{% url 'accounts:profile_list' %}">Назад к профилям</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

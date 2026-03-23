@@ -1,0 +1,21 @@
+<article class="catalog-card">
+    <a href="{{ category.get_absolute_url }}" class="catalog-card__link">
+        <div class="catalog-card__image-wrap">
+            {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" class="catalog-card__image">
+            {% else %}
+                <div class="catalog-card__placeholder">Нет изображения</div>
+            {% endif %}
+        </div>
+
+        <div class="catalog-card__content">
+            <h3 class="catalog-card__title">{{ category.name }}</h3>
+
+            {% if category.description %}
+                <p class="catalog-card__description">
+                    {{ category.description|truncatechars:120 }}
+                </p>
+            {% endif %}
+        </div>
+    </a>
+</article>

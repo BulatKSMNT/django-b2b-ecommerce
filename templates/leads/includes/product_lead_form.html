@@ -1,0 +1,13 @@
+<form method="post" action="{% url 'leads:create_product' product.id %}" class="lead-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+    <div class="lead-form__row">
+        <label for="lead-product-quantity">Количество</label>
+        <input id="lead-product-quantity" type="number" name="quantity" value="1" min="1">
+    </div>
+
+    {% include "leads/includes/lead_form_fields.html" with form=lead_form %}
+
+    <button type="submit">Отправить заявку по товару</button>
+</form>

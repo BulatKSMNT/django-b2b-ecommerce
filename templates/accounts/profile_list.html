@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Профили{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>Профили</h1>
+
+        <p>
+            <a href="{% url 'accounts:profile_create' %}">Создать новый профиль</a>
+        </p>
+
+        {% if profiles %}
+            <table border="1" cellpadding="10" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Основной</th>
+                        <th>Активный сейчас</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in profiles %}
+                        <tr>
+                            <td>{{ profile.id }}</td>
+                            <td>{{ profile.name }}</td>
+                            <td>{{ profile.get_profile_type_display }}</td>
+                            <td>{% if profile.is_default %}Да{% else %}Нет{% endif %}</td>
+                            <td>
+                                {% if request.profile and request.profile.id == profile.id %}
+                                    Да
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'accounts:profile_update' profile.id %}">Редактировать</a>
+
+                                {% if not request.profile or request.profile.id != profile.id %}
+                                    <form method="post" action="{% url 'accounts:profile_switch' profile.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                        <button type="submit">Сделать активным</button>
+                                    </form>
+                                {% endif %}
+
+                                {% if not profile.is_default %}
+                                    <form method="post" action="{% url 'accounts:profile_make_default' profile.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                        <button type="submit">Сделать основным</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Профили не найдены.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

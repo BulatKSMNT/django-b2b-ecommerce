@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}История просмотров{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+    <link rel="stylesheet" href="{% static 'tracking/css/history.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>История просмотров</h1>
+
+        {% if product_views %}
+            <div class="history-list">
+                {% for item in product_views %}
+                    <article class="history-card">
+                        <div class="history-card__image">
+                            {% with main_image=item.product.get_main_image %}
+                                {% if main_image and main_image.image %}
+                                    <img src="{{ main_image.image.url }}" alt="{{ main_image.alt_text|default:item.product.name }}">
+                                {% else %}
+                                    <div class="history-card__placeholder">Нет фото</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="history-card__content">
+                            <h3>
+                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+                            </h3>
+                            <p>Категория: {{ item.product.category.name }}</p>
+                            <p>Просмотров: {{ item.view_count }}</p>
+                            <p>Последний просмотр: {{ item.last_viewed_at|date:"d.m.Y H:i" }}</p>
+
+                            <div class="history-card__actions">
+                                {% include "shop/includes/add_to_cart_form.html" with product=item.product show_quantity=False %}
+                                {% include "shop/includes/favorite_toggle_form.html" with product=item.product favorite_product_ids=favorite_product_ids %}
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>История просмотров пока пуста.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% if form.non_field_errors %}
+    <div class="form-errors">
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% for field in form %}
+    <div class="lead-form__row">
+        {{ field.label_tag }}
+        {{ field }}
+
+        {% if field.help_text %}
+            <small>{{ field.help_text }}</small>
+        {% endif %}
+
+        {% for error in field.errors %}
+            <div class="lead-form__error">{{ error }}</div>
+        {% endfor %}
+    </div>
+{% endfor %}

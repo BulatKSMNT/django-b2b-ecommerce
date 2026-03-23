@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>Личный кабинет</h1>
+
+        <p><strong>Пользователь:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+
+        {% if request.profile %}
+            <p><strong>Активный профиль:</strong> {{ request.profile.name }}</p>
+            <p><strong>Тип профиля:</strong> {{ request.profile.get_profile_type_display }}</p>
+        {% else %}
+            <p>Активный профиль не найден.</p>
+        {% endif %}
+
+        <p><strong>Количество профилей:</strong> {{ profile_count }}</p>
+
+        <hr>
+
+        <p>
+            <a href="{% url 'accounts:profile_list' %}">Управление профилями</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Выход{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1>Вы вышли из аккаунта</h1>
+        <p><a href="{% url 'pages:home' %}">Вернуться на главную</a></p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+    <link rel="stylesheet" href="{% static 'catalog/css/product.css' %}">
+<link rel="stylesheet" href="{% static 'leads/css/lead_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <div class="container">
+        <nav class="breadcrumbs">
+            <a href="{% url 'pages:home' %}">Главная</a>
+            <span> / </span>
+            <a href="{% url 'catalog:category_list' %}">Каталог</a>
+            <span> / </span>
+            <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+            <span> / </span>
+            <span>{{ product.name }}</span>
+        </nav>
+
+        <div class="product-layout">
+            <div class="product-gallery">
+                {% with images=product.images.all %}
+                    {% if images %}
+                        {% for image in images %}
+                            <img src="{{ image.image.url }}"
+                                 alt="{{ image.alt_text|default:product.name }}"
+                                 class="product-gallery__image">
+                        {% endfor %}
+                    {% else %}
+                        <div class="product-gallery__placeholder">Нет изображения</div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="product-info">
+                <h1>{{ product.name }}</h1>
+
+                <p class="product-price">
+                    {% if product.price %}
+                        от {{ product.price }} ₽
+                    {% else %}
+                        Цена по запросу
+                    {% endif %}
+                </p>
+
+                {% if product.description %}
+                    <div class="product-description">
+                        <p>{{ product.description }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="product-attributes">
+                    <h2>Характеристики</h2>
+
+                    {% if product.attribute_values.all %}
+                        <ul>
+                            {% for attribute_value in product.attribute_values.all %}
+                                <li>
+                                    <strong>{{ attribute_value.attribute.name }}:</strong>
+                                    {{ attribute_value.value }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Характеристики пока не заполнены.</p>
+                    {% endif %}
+                </div>
+
+                <div class="product-actions">
+                    {% include "shop/includes/add_to_cart_form.html" with product=product show_quantity=True %}
+                    {% include "shop/includes/favorite_toggle_form.html" with product=product favorite_product_ids=favorite_product_ids %}
+                </div>
+
+                <div class="product-lead-block">
+                    <h2>Оставить заявку по товару</h2>
+                    {% include "leads/includes/product_lead_form.html" with product=product lead_form=lead_form %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="related-products">
+    <div class="container">
+        <h2>Похожие товары</h2>
+
+        <div class="catalog-grid">
+            {% for product in related_products %}
+                {% include "catalog/includes/product_card.html" with product=product %}
+            {% empty %}
+                <p>Похожие товары отсутствуют.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

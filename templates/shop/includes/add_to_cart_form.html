@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'shop:cart_add' product.id %}" class="shop-inline-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    {% if show_quantity %}
+        <input type="number" name="quantity" value="1" min="1">
+    {% else %}
+        <input type="hidden" name="quantity" value="1">
+    {% endif %}
+    <button type="submit">В корзину</button>
+</form>

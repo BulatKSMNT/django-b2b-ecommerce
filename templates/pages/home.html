@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
+    <link rel="stylesheet" href="{% static 'leads/css/lead_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <h1>Новый проект Lider</h1>
+        <p>Главная страница работает.</p>
+    </div>
+</section>
+
+<section class="catalog-page">
+    <div class="container">
+        <h2>Категории</h2>
+
+        <div class="catalog-grid">
+            {% for category in categories %}
+                {% include "catalog/includes/category_card.html" with category=category %}
+            {% empty %}
+                <p>Категории пока не добавлены.</p>
+            {% endfor %}
+        </div>
+
+        <p style="margin-top: 20px;">
+            <a href="{% url 'catalog:category_list' %}">Перейти в каталог</a>
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2>Оставить заявку</h2>
+        {% include "leads/includes/contact_lead_form.html" with lead_form=contact_lead_form %}
+    </div>
+</section>
+
+{% endblock %}
