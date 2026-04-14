@@ -1,102 +1,199 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}{{ product.name }}{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
-    <link rel="stylesheet" href="{% static 'catalog/css/product.css' %}">
-<link rel="stylesheet" href="{% static 'leads/css/lead_form.css' %}">
-{% endblock %}
+{% block title %}{{ product.name }} | LIDER{% endblock %}
 
 {% block content %}
-<section class="product-page">
-    <div class="container">
-        <nav class="breadcrumbs">
-            <a href="{% url 'pages:home' %}">Главная</a>
-            <span> / </span>
-            <a href="{% url 'catalog:category_list' %}">Каталог</a>
-            <span> / </span>
-            <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
-            <span> / </span>
-            <span>{{ product.name }}</span>
-        </nav>
+<div class="max-w-7xl mx-auto px-6 py-8 pb-32 md:pb-12">
+    <!-- Хлебные крошки -->
+    {% include 'includes/breadcrumbs.html' %}
 
-        <div class="product-layout">
-            <div class="product-gallery">
-                {% with images=product.images.all %}
-                    {% if images %}
-                        {% for image in images %}
-                            <img src="{{ image.image.url }}"
-                                 alt="{{ image.alt_text|default:product.name }}"
-                                 class="product-gallery__image">
-                        {% endfor %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mt-6">
+
+        <!-- Заголовок (Мобильная версия: над галереей) -->
+        <div class="lg:hidden flex flex-col gap-2 mb-2">
+            <span class="text-xs font-bold tracking-[0.1em] text-primary uppercase">{{ category.name }}</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter text-on-surface leading-none">{{ product.name }}</h1>
+        </div>
+
+        <!-- Галерея товара (Адаптивная) -->
+        <div class="lg:col-span-7 flex flex-col-reverse lg:grid lg:grid-cols-6 gap-4">
+
+            {% with images=product.images.all %}
+            <!-- Миниатюры -->
+            <div class="flex lg:col-span-1 lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto no-scrollbar pb-2 lg:pb-0">
+                {% for image in images %}
+                    <button type="button" onclick="changeMainImage('{{ image.image.url }}', this)"
+                            class="gallery-thumbnail flex-none w-20 h-20 lg:w-full lg:h-24 rounded-xl overflow-hidden ring-2 {% if forloop.first %}ring-primary opacity-100{% else %}ring-transparent opacity-60 hover:opacity-100{% endif %} transition-all">
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" class="w-full h-full object-cover">
+                    </button>
+                {% empty %}
+                    <!-- Заглушка для миниатюры -->
+                    <div class="flex-none w-20 h-20 rounded-xl bg-surface-container-high flex items-center justify-center text-outline-variant">
+                        <span class="material-symbols-outlined">image</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Главное фото -->
+            <div class="lg:col-span-5 aspect-square md:aspect-[4/5] bg-surface-container-lowest rounded-xl overflow-hidden relative group border border-outline-variant/10 shadow-sm">
+                {% with primary_image=product.get_main_image %}
+                    {% if primary_image and primary_image.image %}
+                        <img id="mainProductImage" src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     {% else %}
-                        <div class="product-gallery__placeholder">Нет изображения</div>
+                        <div class="w-full h-full flex items-center justify-center bg-surface-container text-outline-variant">
+                            <span class="material-symbols-outlined text-6xl">image</span>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Шильдики -->
+                <div class="absolute top-4 left-4 flex gap-2 flex-wrap">
+                    {% if product.is_active %}
+                        <span class="bg-primary text-on-primary px-3 py-1 text-[10px] font-bold tracking-widest rounded-full uppercase shadow-sm">В наличии</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+
+        <!-- Информация о товаре -->
+        <div class="lg:col-span-5 flex flex-col gap-6 lg:gap-8">
+
+            <!-- Заголовок (Десктопная версия: справа от галереи) -->
+            <div class="hidden lg:block">
+                <span class="text-xs font-bold tracking-[0.1em] text-primary uppercase mb-2 block">{{ category.name }}</span>
+                <h1 class="text-4xl lg:text-5xl font-black text-on-surface tracking-tighter mb-4 leading-none uppercase">{{ product.name }}</h1>
+            </div>
+
+            <!-- Цена -->
+            <div class="flex items-baseline gap-2">
+                {% if product.price %}
+                    <span class="text-3xl lg:text-4xl font-black text-primary tracking-tighter">{{ product.price|floatformat:"0" }} ₽</span>
+                    <span class="text-on-surface-variant text-sm tracking-tight font-medium">/ ед.</span>
+                {% else %}
+                    <span class="text-3xl lg:text-4xl font-black text-primary tracking-tighter">По запросу</span>
+                {% endif %}
+            </div>
+
+            <!-- Характеристики (Bento Grid) -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Характеристики</h3>
+
+                {% with attribute_values=product.attribute_values.all %}
+                    {% if attribute_values %}
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                            {% for item in attribute_values %}
+                                <div class="bg-surface-container-low p-4 sm:p-5 rounded-xl flex flex-col gap-1 border border-outline-variant/10">
+                                    <span class="text-[10px] font-bold text-outline tracking-widest uppercase line-clamp-1" title="{{ item.attribute.name }}">{{ item.attribute.name }}</span>
+                                    <span class="text-base sm:text-lg font-bold leading-tight">{{ item.value }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-on-surface-variant">Характеристики пока не заполнены.</p>
                     {% endif %}
                 {% endwith %}
             </div>
 
-            <div class="product-info">
-                <h1>{{ product.name }}</h1>
+            <!-- Кнопки действий (Десктоп) -->
+            <div class="hidden md:flex flex-row gap-4 mt-2">
+                <!-- Добавление в корзину -->
+                <form method="post" action="{% url 'shop:cart_add' product.id %}" class="flex-1 flex gap-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <input type="number" name="quantity" value="1" min="1" class="w-20 h-14 bg-surface-container-high border-none rounded-xl text-center focus:ring-2 focus:ring-primary outline-none font-bold text-lg">
+                    <button type="submit" class="flex-1 bg-primary text-on-primary h-14 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all active:scale-95 shadow-md">
+                        <span class="material-symbols-outlined">shopping_cart</span> Добавить в корзину
+                    </button>
+                </form>
 
-                <p class="product-price">
-                    {% if product.price %}
-                        от {{ product.price }} ₽
-                    {% else %}
-                        Цена по запросу
-                    {% endif %}
-                </p>
+                <!-- Избранное -->
+                <form method="post" action="{% url 'shop:favorite_toggle' product.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="w-14 h-14 rounded-xl border border-outline-variant flex items-center justify-center {% if product.id in favorite_product_ids %}bg-error-container text-error border-error-container{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-all active:scale-95" title="В избранное">
+                        <span class="material-symbols-outlined" {% if product.id in favorite_product_ids %}style="font-variation-settings: 'FILL' 1;"{% endif %}>favorite</span>
+                    </button>
+                </form>
+            </div>
 
-                {% if product.description %}
-                    <div class="product-description">
-                        <p>{{ product.description }}</p>
-                    </div>
-                {% endif %}
+            <!-- Форма заявки по товару -->
+            {% include 'leads/includes/product_lead_form.html' with form=product_lead_form product=product %}
 
-                <div class="product-attributes">
-                    <h2>Характеристики</h2>
+        </div>
+    </div>
 
-                    {% if product.attribute_values.all %}
-                        <ul>
-                            {% for attribute_value in product.attribute_values.all %}
-                                <li>
-                                    <strong>{{ attribute_value.attribute.name }}:</strong>
-                                    {{ attribute_value.value }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>Характеристики пока не заполнены.</p>
-                    {% endif %}
-                </div>
+    <!-- Описание товара -->
+    {% if product.description %}
+    <section class="mt-16 lg:mt-24 max-w-3xl">
+        <h4 class="text-2xl font-bold mb-6 tracking-tight">Описание</h4>
+        <div class="space-y-4 text-on-surface-variant leading-relaxed text-base">
+            {{ product.description|linebreaks }}
+        </div>
+    </section>
+    {% endif %}
 
-                <div class="product-actions">
-                    {% include "shop/includes/add_to_cart_form.html" with product=product show_quantity=True %}
-                    {% include "shop/includes/favorite_toggle_form.html" with product=product favorite_product_ids=favorite_product_ids %}
-                </div>
-
-                <div class="product-lead-block">
-                    <h2>Оставить заявку по товару</h2>
-                    {% include "leads/includes/product_lead_form.html" with product=product lead_form=lead_form %}
-                </div>
-
+    <!-- Похожие товары (Выводится и на ПК, и на мобилке) -->
+    <section class="mt-20 lg:mt-24">
+        <div class="flex items-end justify-between mb-8 lg:mb-12">
+            <div>
+                <h2 class="text-2xl lg:text-3xl font-black tracking-tight uppercase mb-2">Похожие товары</h2>
+                <div class="h-1 bg-primary-fixed w-16 lg:w-24"></div>
             </div>
         </div>
-    </div>
-</section>
 
-<section class="related-products">
-    <div class="container">
-        <h2>Похожие товары</h2>
+        {% if related_products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                {% for related_product in related_products %}
+                    {% include 'catalog/includes/product_card.html' with product=related_product favorite_product_ids=favorite_product_ids %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-surface-container-lowest p-8 rounded-xl text-center border border-outline-variant/10">
+                <p class="text-on-surface-variant">Похожие товары пока не добавлены.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
 
-        <div class="catalog-grid">
-            {% for product in related_products %}
-                {% include "catalog/includes/product_card.html" with product=product %}
-            {% empty %}
-                <p>Похожие товары отсутствуют.</p>
-            {% endfor %}
-        </div>
+<!-- Плавающий бар действий (Только для мобильных) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <div class="flex gap-3 items-center">
+        <!-- Избранное (Мобилка) -->
+        <form method="post" action="{% url 'shop:favorite_toggle' product.id %}" class="flex-none">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="w-12 h-12 flex items-center justify-center rounded-xl {% if product.id in favorite_product_ids %}bg-error-container text-error{% else %}bg-surface-container-high text-on-surface{% endif %} active:scale-90 transition-transform">
+                <span class="material-symbols-outlined" {% if product.id in favorite_product_ids %}style="font-variation-settings: 'FILL' 1;"{% endif %}>favorite</span>
+            </button>
+        </form>
+
+        <!-- В корзину (Мобилка) -->
+        <form method="post" action="{% url 'shop:cart_add' product.id %}" class="flex-1 flex gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="w-full h-12 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                <span class="material-symbols-outlined text-sm">shopping_cart</span> В корзину
+            </button>
+        </form>
     </div>
-</section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Простой скрипт для переключения главной картинки в галерее
+    function changeMainImage(url, btnElement) {
+        document.getElementById('mainProductImage').src = url;
+
+        // Обновляем стили активной миниатюры
+        document.querySelectorAll('.gallery-thumbnail').forEach(btn => {
+            btn.classList.remove('ring-primary', 'opacity-100');
+            btn.classList.add('ring-transparent', 'opacity-60');
+        });
+        btnElement.classList.remove('ring-transparent', 'opacity-60');
+        btnElement.classList.add('ring-primary', 'opacity-100');
+    }
+</script>
 {% endblock %}

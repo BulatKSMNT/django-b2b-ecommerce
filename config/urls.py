@@ -12,7 +12,7 @@ urlpatterns = [
     path("", include(("apps.pages.urls", "pages"), namespace="pages")),
     path("catalog/", include(("apps.catalog.urls", "catalog"), namespace="catalog")),
     path("accounts/", include(("apps.accounts.urls", "accounts"), namespace="accounts")),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/", include("apps.accounts.auth_urls")),
     path("", include(("apps.shop.urls", "shop"), namespace="shop")),
     path("leads/", include(("apps.leads.urls", "leads"), namespace="leads")),
     path("", include(("apps.tracking.urls", "tracking"), namespace="tracking")),

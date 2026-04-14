@@ -1,21 +1,195 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}{{ page_title }} | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>{{ page_title }}</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-20 md:pb-12 flex items-start gap-8">
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">{{ submit_text }}</button>
-        </form>
+    <!-- Десктопное Боковое меню (Из дашборда) -->
+    <aside class="hidden md:flex flex-col bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 w-72 shrink-0 sticky top-28 shadow-sm">
+        <div class="flex items-center space-x-3 px-2 py-4 mb-2 border-b border-outline-variant/10">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg uppercase">
+                {{ request.user.username|make_list|first }}
+            </div>
+            <div class="overflow-hidden">
+                <div class="text-sm font-bold text-on-surface truncate">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="text-xs text-on-surface-variant truncate">{{ request.profile.name|default:"Профиль не выбран" }}</div>
+            </div>
+        </div>
 
-        <p>
-            <a href="{% url 'accounts:profile_list' %}">Назад к профилям</a>
-        </p>
-    </div>
-</section>
+        <nav class="space-y-1 py-2">
+            <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Дашборд</span>
+            </a>
+            <a href="{% url 'accounts:profile_list' %}" class="flex items-center space-x-3 p-3 bg-primary-container/10 text-primary rounded-lg font-sans text-sm font-bold transition-all duration-200">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+                <span>Мои профили</span>
+            </a>
+            <a href="{% url 'shop:favorites' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Избранное</span>
+            </a>
+            <a href="{% url 'tracking:history' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">history</span>
+                <span>История</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Основная область контента -->
+    <main class="flex-1 w-full space-y-6 md:space-y-8">
+
+        <!-- Хлебные крошки (Только ПК) -->
+        <div class="hidden md:block">
+            {% include 'includes/breadcrumbs.html' %}
+        </div>
+
+        <!-- Заголовок страницы -->
+        <div class="mb-8 md:mb-12 flex items-center gap-4">
+            <!-- Кнопка назад (Только мобилка) -->
+            <a href="{% url 'accounts:profile_list' %}" class="md:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-xl transition-all duration-300 active:scale-90 hover:bg-surface-container-high text-primary">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+
+            <div>
+                <h1 class="text-3xl md:text-5xl font-black tracking-tighter text-on-surface mb-2 leading-none">{{ page_title }}</h1>
+                <p class="text-on-surface-variant text-sm md:text-lg">Редактирование параметров идентификации в системе LIDER</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-6 gap-6">
+
+            <!-- Левая колонка: Форма -->
+            <div class="lg:col-span-4 bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/15 flex flex-col h-full">
+                <form method="post" class="space-y-6 md:space-y-8 flex flex-col h-full">
+                    {% csrf_token %}
+
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+
+                    <!-- Вывод общих ошибок формы -->
+                    {% if form.non_field_errors %}
+                        <div class="bg-error-container text-on-error-container p-4 rounded-xl text-sm font-medium shadow-sm border border-error/20">
+                            {% for error in form.non_field_errors %}
+                                <p class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">error</span> {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Поле: Название профиля -->
+                    <div class="relative group">
+                        <label class="block text-[10px] md:text-xs uppercase tracking-widest font-bold text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.name.id_for_label }}">
+                            {{ form.name.label }}
+                        </label>
+                        <input type="text" name="{{ form.name.html_name }}" id="{{ form.name.id_for_label }}" value="{{ form.name.value|default:'' }}"
+                               class="w-full bg-surface-container-high border-none border-b-2 border-transparent focus:ring-0 focus:border-primary transition-all duration-300 rounded-xl p-4 text-on-surface outline-none {% if form.name.errors %}border-error bg-error-container/10{% endif %}"
+                               placeholder="Введите название..." required>
+                        {% if form.name.errors %}
+                            <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.name.errors.0 }}</span>
+                        {% endif %}
+                        <p class="text-[10px] text-outline mt-1.5 px-1">Например: "Личный" или "ООО Ромашка"</p>
+                    </div>
+
+                    <!-- Поле: Тип профиля -->
+                    <div class="relative group">
+                        <label class="block text-[10px] md:text-xs uppercase tracking-widest font-bold text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.profile_type.id_for_label }}">
+                            {{ form.profile_type.label }}
+                        </label>
+                        <div class="relative">
+                            {{ form.profile_type }}
+                            <!-- Стилизуем select через JavaScript (ниже) или применяем Tailwind-классы прямо к виджету в forms.py.
+                                 Но так как мы не меняем бэк, мы просто обернем стандартный select -->
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+                        </div>
+                        {% if form.profile_type.errors %}
+                            <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.profile_type.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопки управления -->
+                    <div class="pt-4 flex flex-col sm:flex-row gap-3 md:gap-4 mt-auto">
+                        <button type="submit" class="flex-1 bg-primary text-on-primary font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all duration-300 flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined text-xl">save</span>
+                            <span>{{ submit_text|default:'Сохранить' }}</span>
+                        </button>
+                        <a href="{% url 'accounts:profile_list' %}" class="flex-1 bg-surface-container-high text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold py-4 px-8 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 text-center">
+                            <span class="material-symbols-outlined text-xl">arrow_back</span>
+                            <span>Отмена</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Правая колонка: Декор и Статистика (Bento) -->
+            <div class="lg:col-span-2 grid grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
+
+                <!-- Статус проверки -->
+                <div class="col-span-2 lg:col-span-1 bg-primary-container text-on-primary-container p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden group shadow-sm">
+                    <div class="relative z-10">
+                        <h3 class="text-lg md:text-xl font-bold mb-2">Статус проверки</h3>
+                        <p class="text-xs md:text-sm opacity-90 leading-relaxed">Профиль проходит автоматическую валидацию данных в реальном времени.</p>
+                    </div>
+                    <div class="mt-8 flex items-center space-x-2 relative z-10">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest font-bold">{% if profile.is_active %}Активен{% else %}Готов к работе{% endif %}</span>
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-white/15 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                </div>
+
+                <!-- Заглушка: Ваш менеджер -->
+                <div class="col-span-2 lg:col-span-1 bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/15 relative group">
+                    <div class="p-6 relative z-10">
+                        <div class="flex items-center gap-4 mb-5">
+                            <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant/30 shadow-sm shrink-0">
+                                <img alt="Менеджер" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1Bfo5w2athrwwvHbmTCbAcAkunv0HjWJaFz3ru9dPC3yB1pWScgVZAnSXr1VslsUReHcf40D3EoWVyLC1GcMo_GNYASNi8kGxOLCgvwFGmUhEztWv7t5RoiORcjwiwMoGr78wkWpkMnhNKt63Ssn5grVYFd8zzt4Z79ZHedLK-wB7LM6C9lcn3V_B8vJEAWp2ZXwJ6tLAXmQVzog9z3SbgTHrQt6t17YjvCsa6HiMBDxbsNCijHcAQnTRKudK7LV6G6VnoYm_kKI"/>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-on-surface leading-tight">Ваш менеджер</h3>
+                                <p class="text-xs text-on-surface-variant">Александр Волков</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <a href="tel:+78001234567" class="flex items-center gap-3 text-xs font-bold text-primary hover:underline transition-all hover:translate-x-1">
+                                <span class="material-symbols-outlined text-base">call</span> 8 (800) 123-45-67
+                            </a>
+                            <a href="mailto:support@lider.pro" class="flex items-center gap-3 text-xs font-bold text-primary hover:underline transition-all hover:translate-x-1">
+                                <span class="material-symbols-outlined text-base">mail</span> support@lider.pro
+                            </a>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-9xl">architecture</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Принудительная стилизация стандартного select от Django под дизайн Tailwind */
+    select[name="profile_type"] {
+        width: 100%;
+        background-color: var(--surface-container-high, #e9e8e7);
+        border: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        padding-right: 2.5rem;
+        color: var(--on-surface, #1b1c1c);
+        outline: none;
+        transition: all 0.3s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+    select[name="profile_type"]:focus {
+        border-color: var(--primary, #006859);
+    }
+</style>
 {% endblock %}

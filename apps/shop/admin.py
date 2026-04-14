@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import Cart, CartItem, FavoriteItem
 
 
-class CartItemInline(admin.TabularInline):
+class CartItemInline(TabularInline):
     model = CartItem
     extra = 0
     autocomplete_fields = ("product",)
@@ -13,7 +14,7 @@ class CartItemInline(admin.TabularInline):
 
 
 @admin.register(Cart)
-class CartAdmin(admin.ModelAdmin):
+class CartAdmin(ModelAdmin):
     list_display = ("id", "profile", "user_email", "total_quantity", "subtotal", "updated_at")
     search_fields = (
         "profile__name",
@@ -37,14 +38,14 @@ class CartAdmin(admin.ModelAdmin):
 
 
 @admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
+class CartItemAdmin(ModelAdmin):
     list_display = ("id", "cart", "product", "quantity", "line_total", "updated_at")
     search_fields = ("product__name", "cart__profile__name", "cart__profile__user__email")
     autocomplete_fields = ("cart", "product")
 
 
 @admin.register(FavoriteItem)
-class FavoriteItemAdmin(admin.ModelAdmin):
+class FavoriteItemAdmin(ModelAdmin):
     list_display = ("id", "profile", "product", "created_at")
     search_fields = ("profile__name", "profile__user__email", "product__name")
     autocomplete_fields = ("profile", "product")

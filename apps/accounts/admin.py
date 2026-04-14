@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Profile, User
 
 
-class ProfileInline(admin.TabularInline):
+class ProfileInline(TabularInline):
     model = Profile
     extra = 0
     fields = ("name", "profile_type", "is_default", "is_active", "created_at")
@@ -20,7 +20,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 @admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdmin):
     list_display = ("id", "name", "user", "profile_type", "is_default", "is_active", "created_at")
     list_filter = ("profile_type", "is_default", "is_active")
     search_fields = ("name", "user__username", "user__email", "user__first_name", "user__last_name")

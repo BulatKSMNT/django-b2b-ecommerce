@@ -1,28 +1,147 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}Избранное{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
-    <link rel="stylesheet" href="{% static 'shop/css/favorites.css' %}">
-{% endblock %}
+{% block title %}Избранное | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Избранное</h1>
+<div class="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 pb-32 md:pb-12">
+    <!-- Хлебные крошки -->
+    {% include 'includes/breadcrumbs.html' %}
 
-        {% if products %}
-            <div class="catalog-grid">
-                {% for product in products %}
-                    {% include "catalog/includes/product_card.html" with product=product favorite_product_ids=favorite_product_ids %}
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>В избранном пока ничего нет.</p>
-            <p><a href="{% url 'catalog:category_list' %}">Перейти в каталог</a></p>
-        {% endif %}
+    <div class="mb-8 md:mb-12 mt-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2 md:mb-4">Избранное</h1>
+        <p class="text-sm md:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Ваш персональный выбор строительных решений. Все сохраненные материалы и спецификации для ваших будущих проектов в одном месте.
+        </p>
     </div>
-</section>
+
+    {% if products %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {% for product in products %}
+
+                <!-- Карточка товара (Единая для Mobile и Desktop) -->
+                <div class="group bg-surface-container-lowest rounded-xl overflow-hidden transition-all duration-300 hover:translate-y-[-4px] border border-outline-variant/10 shadow-sm hover:shadow-md flex flex-row md:flex-col h-32 md:h-auto relative">
+
+                    <!-- Изображение -->
+                    <a href="{{ product.get_absolute_url }}" class="w-1/3 md:w-full h-full md:h-64 relative overflow-hidden shrink-0 block">
+                        {% with primary_image=product.get_main_image %}
+                            {% if primary_image and primary_image.image %}
+                                <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center bg-surface-container text-outline-variant">
+                                    <span class="material-symbols-outlined text-4xl">image</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Шильдик "В наличии" (Только десктоп, чтобы не перегружать мобилку) -->
+                        {% if product.is_active %}
+                            <div class="hidden md:block absolute bottom-4 left-4">
+                                <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">В наличии</span>
+                            </div>
+                        {% endif %}
+                    </a>
+
+                    <!-- Контент карточки -->
+                    <div class="w-2/3 md:w-full p-4 md:p-6 flex flex-col justify-between flex-grow">
+
+                        <!-- Верхняя часть (Заголовок и удаление) -->
+                        <div>
+                            <div class="flex justify-between items-start mb-1 md:mb-2 gap-2">
+                                <a href="{{ product.get_absolute_url }}">
+                                    <h3 class="text-sm md:text-xl font-bold leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-2">{{ product.name }}</h3>
+                                </a>
+
+                                <!-- Кнопка удаления (Крестик на мобилке, Сердечко на ПК) -->
+                                <div class="shrink-0 -mt-1 -mr-1 md:absolute md:top-4 md:right-4 z-10">
+                                    <!-- Форма удаления -->
+                                    <form method="post" action="{% url 'shop:favorite_toggle' product.id %}" class="inline-block">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+                                        <!-- Вид для мобилки (Крестик) -->
+                                        <button type="submit" class="md:hidden text-on-surface-variant/50 hover:text-error transition-colors p-1" title="Удалить из избранного">
+                                            <span class="material-symbols-outlined text-lg">close</span>
+                                        </button>
+
+                                        <!-- Вид для ПК (Кнопка с сердечком поверх фото) -->
+                                        <button type="submit" class="hidden md:flex bg-white/90 backdrop-blur p-2 rounded-full text-error shadow-sm hover:scale-105 active:scale-95 transition-transform" title="Удалить из избранного">
+                                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Описание / Категория -->
+                            <p class="hidden md:block text-sm text-on-surface-variant mb-4 leading-relaxed line-clamp-2">
+                                {{ product.description|default:"Подробное описание доступно на карточке товара." }}
+                            </p>
+                            <p class="md:hidden text-[10px] text-on-surface-variant mt-1 uppercase tracking-wider line-clamp-1">{{ product.category.name }}</p>
+                        </div>
+
+                        <!-- Нижняя часть (Цена и Корзина) -->
+                        <div class="mt-auto">
+                            <!-- Характеристики (Только ПК) -->
+                            <div class="hidden md:flex gap-2 mb-6 flex-wrap">
+                                {% for item in product.attribute_values.all|slice:":3" %}
+                                    <span class="bg-surface-container-highest px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-on-surface-variant truncate max-w-[100px]" title="{{ item.value }}">{{ item.value }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="flex justify-between items-center md:items-end gap-2 mt-2 md:mt-0">
+                                <span class="font-bold text-primary text-base md:text-xl whitespace-nowrap">
+                                    {% if product.price %}
+                                        {{ product.price|floatformat:"0" }} <span class="text-xs md:text-sm font-medium text-on-surface-variant md:ml-1">₽{% if not request.user.is_authenticated %}/ед.{% endif %}</span>
+                                    {% else %}
+                                        По запросу
+                                    {% endif %}
+                                </span>
+
+                                <!-- Форма добавления в корзину -->
+                                <form method="post" action="{% url 'shop:cart_add' product.id %}" class="shrink-0">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <input type="hidden" name="quantity" value="1">
+
+                                    <!-- Мобильная кнопка (+) -->
+                                    <button type="submit" class="md:hidden text-primary font-bold text-xs uppercase tracking-widest flex items-center gap-1 active:scale-90 transition-transform p-1">
+                                        <span class="material-symbols-outlined text-sm bg-primary/10 rounded-md p-1">add</span>
+                                    </button>
+
+                                    <!-- Десктопная кнопка -->
+                                    <button type="submit" class="hidden md:flex w-full bg-secondary-container hover:bg-secondary-fixed text-on-secondary-container py-3 px-6 rounded-xl font-bold transition-colors items-center justify-center gap-2 active:scale-95">
+                                        <span class="material-symbols-outlined text-sm">shopping_cart</span> В корзину
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endfor %}
+
+            <!-- Карточка-призыв добавить еще товары (Из макета) -->
+            <a href="{% url 'catalog:category_list' %}" class="hidden md:flex flex-col items-center justify-center text-center border-2 border-dashed border-outline-variant/50 rounded-xl p-8 hover:bg-surface-container-lowest hover:border-primary/50 transition-colors group cursor-pointer min-h-[350px]">
+                <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors text-5xl mb-3">add_circle</span>
+                <p class="text-on-surface-variant group-hover:text-on-surface transition-colors text-sm font-bold">Добавьте больше товаров из каталога</p>
+            </a>
+
+        </div>
+    {% else %}
+        <!-- Пустое состояние -->
+        <div class="flex flex-col items-center justify-center py-20 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
+            <div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-6 text-outline-variant">
+                <span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black tracking-tight mb-3">Избранное пока пустое</h2>
+            <p class="text-sm md:text-base text-on-surface-variant max-w-sm mx-auto mb-8 leading-relaxed">
+                Добавляйте товары в избранное из каталога или со страницы товара, чтобы не потерять их.
+            </p>
+            <a href="{% url 'catalog:category_list' %}" class="inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl font-bold hover:bg-primary-fixed-dim transition-all active:scale-95 shadow-md">
+                Перейти в каталог
+                <span class="material-symbols-outlined">explore</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

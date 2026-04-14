@@ -1,29 +1,53 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}Каталог{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
-{% endblock %}
+{% block title %}Каталог продукции | LIDER{% endblock %}
 
 {% block content %}
-<section class="catalog-page">
-    <div class="container">
-        <h1>Каталог</h1>
+<div class="max-w-7xl mx-auto px-6 py-8">
+    {% include 'includes/breadcrumbs.html' %}
 
-        <form method="get" class="catalog-search">
-            <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск по категориям">
-            <button type="submit">Найти</button>
-        </form>
+    <section class="mt-4 mb-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface leading-none mb-4">Каталог</h1>
+        <p class="text-on-surface-variant leading-relaxed text-sm md:text-base max-w-2xl">
+            Премиальные строительные решения для современной архитектуры и долговечных конструкций.
+        </p>
+    </section>
 
-        <div class="catalog-grid">
+    <!-- Строка поиска -->
+    <form method="get" class="relative mb-10">
+        <div class="flex items-center bg-surface-container-high rounded-xl px-4 py-3.5 focus-within:ring-2 ring-primary transition-all duration-300">
+            <span class="material-symbols-outlined text-outline">search</span>
+            <input name="q" value="{{ search_query|default:'' }}" class="bg-transparent border-none focus:ring-0 w-full text-base ml-2 placeholder:text-outline outline-none" placeholder="Поиск по категориям..." type="text"/>
+            <button type="submit" class="hidden">Найти</button>
+        </div>
+    </form>
+
+    <!-- Сетка категорий -->
+    {% if categories %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             {% for category in categories %}
-                {% include "catalog/includes/category_card.html" with category=category %}
-            {% empty %}
-                <p>Категории не найдены.</p>
+                {% include 'catalog/includes/category_card.html' with category=category %}
             {% endfor %}
         </div>
-    </div>
-</section>
+    {% else %}
+        <div class="p-12 text-center bg-surface-container-lowest rounded-xl border border-outline-variant/20 mb-12 shadow-sm">
+            <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">search_off</span>
+            <h3 class="text-xl font-bold mb-2">Категории не найдены</h3>
+            <p class="text-on-surface-variant mb-6">Попробуйте изменить запрос или вернитесь позже.</p>
+            <a href="{% url 'catalog:category_list' %}" class="inline-block bg-primary hover:bg-primary-fixed-dim text-on-primary px-6 py-3 rounded-lg font-bold transition-colors">Сбросить поиск</a>
+        </div>
+    {% endif %}
+
+    <!-- Спецпредложение (Из мобильного макета) -->
+    <section class="bg-primary rounded-xl p-8 mb-12 text-on-primary overflow-hidden relative shadow-lg">
+        <div class="relative z-10">
+            <h2 class="text-3xl font-black mb-4 leading-none">Нужен индивидуальный расчет?</h2>
+            <p class="text-sm opacity-90 mb-6 leading-relaxed max-w-md">Оставьте заявку, и наши инженеры подготовят смету по вашему проекту с учетом всех требований.</p>
+            <a href="{% url 'pages:contacts' %}" class="inline-block bg-white hover:bg-surface-container text-primary px-6 py-3 rounded-lg font-bold text-sm transition-all active:scale-95 shadow-md">
+                Оставить заявку
+            </a>
+        </div>
+        <span class="material-symbols-outlined absolute -right-8 -bottom-8 text-[12rem] opacity-10 pointer-events-none" style="font-variation-settings: 'FILL' 1;">architecture</span>
+    </section>
+</div>
 {% endblock %}

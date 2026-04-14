@@ -1,5 +1,55 @@
-<footer>
-    <div class="container">
-        <p>© Lider</p>
+<footer class="bg-slate-50 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 py-16 md:py-20">
+
+        <div class="col-span-1">
+            <div class="text-xl font-bold text-teal-800 mb-4">LIDER</div>
+            <p class="text-sm leading-relaxed text-slate-500 mb-6 max-w-xs">
+                Лидер на рынке сэндвич-панелей и кровельных материалов. Мы создаем будущее строительной индустрии сегодня.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+            <p class="font-bold text-sm uppercase tracking-widest text-slate-900">Навигация</p>
+            <ul class="space-y-2 flex flex-col">
+                <a href="{% url 'pages:home' %}" class="text-sm transition-colors {% if request.path == '/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Главная</a>
+                <a href="{% url 'catalog:category_list' %}" class="text-sm transition-colors {% if '/catalog/' in request.path %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Каталог продукции</a>
+                <a href="{% url 'pages:about' %}" class="text-sm transition-colors {% if request.path == '/about/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">О компании</a>
+                <a href="{% url 'pages:contacts' %}" class="text-sm transition-colors {% if request.path == '/contacts/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Контакты</a>
+                <a href="{% url 'tracking:history' %}" class="text-sm transition-colors {% if request.path == '/history/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">История просмотров</a>
+            </ul>
+        </div>
+
+        <div class="space-y-4">
+            <p class="font-bold text-sm uppercase tracking-widest text-slate-900">Документы и Сервис</p>
+            <ul class="space-y-2 flex flex-col">
+                <a href="{% url 'pages:privacy_policy' %}" class="text-sm transition-colors {% if request.path == '/privacy-policy/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Политика конфиденциальности</a>
+                <a href="{% url 'pages:personal_data' %}" class="text-sm transition-colors {% if request.path == '/personal-data/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Персональные данные</a>
+                <a href="{% url 'pages:public_offer' %}" class="text-sm transition-colors {% if request.path == '/public-offer/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Публичная оферта</a>
+                <a href="{% url 'pages:delivery_payment' %}" class="text-sm transition-colors {% if request.path == '/delivery-payment/' %}text-primary font-bold{% else %}text-slate-500 hover:text-teal-600{% endif %}">Доставка и оплата</a>
+            </ul>
+        </div>
+
+
+        <div class="space-y-4">
+            <p class="font-bold text-sm uppercase tracking-widest text-slate-900">Связь</p>
+            <p class="text-sm text-slate-500 mb-1">г. Москва, ул. Промышленная, 14</p>
+            <a href="tel:+78005553535" class="block text-lg font-bold text-teal-700 hover:text-primary transition-colors">8 (800) 555-35-35</a>
+
+            <div class="flex gap-4 mt-6">
+                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center hover:bg-teal-100 transition-colors cursor-pointer text-slate-600 hover:text-primary">
+                    <span class="material-symbols-outlined text-[20px]">public</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center hover:bg-teal-100 transition-colors cursor-pointer text-slate-600 hover:text-primary">
+                    <span class="material-symbols-outlined text-[20px]">mail</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="border-t border-slate-200 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-8 text-center md:text-left text-xs text-slate-400">
+            © {% now "Y" %} LIDER. Строительные материалы нового поколения. Все права защищены.
+        </div>
     </div>
 </footer>

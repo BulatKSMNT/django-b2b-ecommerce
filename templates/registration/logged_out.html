@@ -1,12 +1,38 @@
-{% extends "base.html" %}
-
-{% block title %}Выход{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Выход выполнен | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Вы вышли из аккаунта</h1>
-        <p><a href="{% url 'pages:home' %}">Вернуться на главную</a></p>
+<div class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center p-4 overflow-hidden bg-surface">
+
+    <!-- Фоновые декоративные элементы -->
+    <div class="absolute top-0 left-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-secondary/5 rounded-full blur-[100px]"></div>
     </div>
-</section>
+
+    <!-- Центральная карточка -->
+    <div class="w-full max-w-[480px] bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] shadow-2xl shadow-on-surface/5 border border-outline-variant/15 text-center relative z-10">
+
+        <!-- Иконка -->
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-5xl">logout</span>
+        </div>
+
+        <!-- Текст -->
+        <h1 class="text-3xl font-black tracking-tighter text-on-surface mb-4">Вы вышли из аккаунта</h1>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-8">
+            Сессия успешно завершена. Вы можете вернуться на главную страницу или снова войти в систему в любое время.
+        </p>
+
+        <!-- Кнопки действий -->
+        <div class="flex flex-col gap-3">
+            <a href="{% url 'login' %}" class="w-full inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined text-lg">login</span> Войти снова
+            </a>
+            <a href="{% url 'pages:home' %}" class="w-full inline-flex justify-center items-center gap-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface font-bold py-4 rounded-xl transition-all duration-300 active:scale-95">
+                На главную
+            </a>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

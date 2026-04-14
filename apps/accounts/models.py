@@ -22,12 +22,13 @@ class Profile(models.Model):
         verbose_name="Пользователь",
     )
     name = models.CharField("Название профиля", max_length=255)
-    profile_type = models.CharField(
+    profile_type = (models.CharField
+(
         "Тип профиля",
         max_length=20,
         choices=ProfileType.choices,
         default=ProfileType.PERSONAL,
-    )
+    ))
     is_default = models.BooleanField("Профиль по умолчанию", default=False)
     is_active = models.BooleanField("Активный", default=True)
     created_at = models.DateTimeField("Создан", auto_now_add=True)

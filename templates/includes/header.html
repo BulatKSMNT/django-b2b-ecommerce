@@ -1,41 +1,137 @@
-<header>
-    <div class="container">
-        <a href="{% url 'pages:home' %}">Lider</a>
+<header class="fixed top-0 w-full z-50 glass-nav shadow-sm transition-all duration-300">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 relative z-50">
 
-        <nav>
-            <a href="{% url 'pages:home' %}">Главная</a>
-            <a href="{% url 'catalog:category_list' %}">Каталог</a>
-            <a href="{% url 'tracking:history' %}">История</a>
-            <a href="{% url 'shop:favorites' %}">
-                Избранное
-                {% if shop_favorites_count %}({{ shop_favorites_count }}){% endif %}
+        <!-- Логотип -->
+        <a href="{% url 'pages:home' %}" class="text-2xl font-black text-teal-800 dark:text-teal-500 uppercase tracking-tighter">
+            LIDER
+        </a>
+
+        <!-- Десктопное меню -->
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="{% url 'pages:home' %}" class="{% if request.path == '/' %}text-teal-700 font-bold border-b-2 border-teal-700 pb-1{% else %}text-slate-600 hover:text-teal-600 transition-colors{% endif %}">Главная</a>
+            <a href="{% url 'catalog:category_list' %}" class="{% if '/catalog/' in request.path %}text-teal-700 font-bold border-b-2 border-teal-700 pb-1{% else %}text-slate-600 hover:text-teal-600 transition-colors{% endif %}">Каталог</a>
+            <a href="{% url 'pages:contacts' %}" class="{% if request.path == '/contacts/' %}text-teal-700 font-bold border-b-2 border-teal-700 pb-1{% else %}text-slate-600 hover:text-teal-600 transition-colors{% endif %}">Контакты</a>
+            <a href="{% url 'tracking:history' %}" class="{% if request.path == '/history/' %}text-teal-700 font-bold border-b-2 border-teal-700 pb-1{% else %}text-slate-600 hover:text-teal-600 transition-colors{% endif %}">История</a>
+        </div>
+
+        <!-- Иконки и авторизация -->
+        <div class="flex items-center space-x-2 md:space-x-6">
+            <div class="flex space-x-1 md:space-x-4">
+                <a href="{% url 'shop:favorites' %}" class="relative text-slate-600 hover:text-teal-600 transition-colors p-2 rounded-full hover:bg-slate-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined">favorite</span>
+                    {% if shop_favorites_count %}
+                        <span class="absolute top-1 right-1 bg-primary text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">{{ shop_favorites_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'shop:cart' %}" class="relative text-slate-600 hover:text-teal-600 transition-colors p-2 rounded-full hover:bg-slate-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    {% if shop_cart_total_quantity %}
+                        <span class="absolute top-1 right-1 bg-primary text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">{{ shop_cart_total_quantity }}</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Десктоп Auth -->
+            <div class="hidden md:flex items-center">
+                {% if request.user.is_authenticated %}
+                    <!-- Вывод имени профиля с ограничением длины -->
+                    <a href="{% url 'accounts:dashboard' %}" title="{{ request.profile.name|default:request.user.username }}" class="text-teal-700 font-semibold border border-teal-700/20 px-4 py-2 rounded-xl hover:bg-teal-50 transition-colors flex items-center gap-2 max-w-[200px]">
+                        <span class="material-symbols-outlined text-sm shrink-0">
+                            {% if request.profile and request.profile.profile_type == 'company' %}business{% else %}person{% endif %}
+                        </span>
+                        <span class="truncate">{{ request.profile.name|default:request.user.username|truncatechars:15 }}</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-teal-700 font-semibold border border-teal-700/20 px-4 py-2 rounded-xl hover:bg-teal-50 transition-colors">Войти</a>
+                {% endif %}
+            </div>
+
+            <!-- Мобильный бургер-кнопка -->
+            <button id="mobile-menu-btn" class="md:hidden text-teal-700 p-2 focus:outline-none relative z-50 hover:bg-slate-100 rounded-lg transition-colors">
+                <span id="burger-icon" class="material-symbols-outlined text-3xl transition-transform duration-300">menu</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Мобильное выпадающее меню (Шторка) -->
+    <!-- Класс translate-x-full прячет его за правый край экрана -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col pt-24 px-6 pb-24 overflow-y-auto">
+
+        <nav class="flex flex-col space-y-4 text-xl font-bold text-slate-800">
+            <a href="{% url 'pages:home' %}" class="hover:text-primary transition-colors flex items-center gap-4 border-b border-outline-variant/10 pb-4">
+                <span class="material-symbols-outlined text-primary">home</span> Главная
             </a>
-            <a href="{% url 'shop:cart' %}">
-                Корзина
-                {% if shop_cart_total_quantity %}({{ shop_cart_total_quantity }}){% endif %}
+            <a href="{% url 'catalog:category_list' %}" class="hover:text-primary transition-colors flex items-center gap-4 border-b border-outline-variant/10 pb-4">
+                <span class="material-symbols-outlined text-primary">inventory_2</span> Каталог
             </a>
-            <a href="/admin/">Админка</a>
+            <a href="{% url 'pages:about' %}" class="hover:text-primary transition-colors flex items-center gap-4 border-b border-outline-variant/10 pb-4">
+                <span class="material-symbols-outlined text-primary">info</span> О компании
+            </a>
+            <a href="{% url 'pages:contacts' %}" class="hover:text-primary transition-colors flex items-center gap-4 border-b border-outline-variant/10 pb-4">
+                <span class="material-symbols-outlined text-primary">call</span> Контакты
+            </a>
+            <a href="{% url 'tracking:history' %}" class="hover:text-primary transition-colors flex items-center gap-4 border-b border-outline-variant/10 pb-4">
+                <span class="material-symbols-outlined text-primary">history</span> История просмотров
+            </a>
         </nav>
 
-        <div>
+        <!-- Блок авторизации в мобильном меню -->
+        <div class="mt-auto border-t border-slate-200 pt-6 flex flex-col gap-3">
             {% if request.user.is_authenticated %}
-                <span>
-                    {{ request.user.username }}
-                    {% if request.profile %}
-                        / {{ request.profile.name }}
-                    {% endif %}
-                </span>
-
-                <a href="{% url 'accounts:dashboard' %}">Кабинет</a>
-
-                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                <div class="flex items-center gap-4 mb-2 bg-surface-container-low p-4 rounded-xl">
+                    <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl shrink-0">
+                        {{ request.profile.name|default:request.user.username|make_list|first|upper }}
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="font-bold text-on-surface truncate" title="{{ request.profile.name|default:request.user.username }}">{{ request.profile.name|default:request.user.username|truncatechars:20 }}</div>
+                        <div class="text-xs text-on-surface-variant truncate">{{ request.user.get_full_name|default:request.user.username }}</div>
+                    </div>
+                </div>
+                <a href="{% url 'accounts:dashboard' %}" class="w-full bg-primary-container text-on-primary-container py-4 rounded-xl font-bold flex justify-center items-center gap-2 active:scale-95 transition-transform">
+                    <span class="material-symbols-outlined">person</span> Личный кабинет
+                </a>
+                <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit">Выйти</button>
+                    <button type="submit" class="w-full bg-surface-container-high text-on-surface-variant py-4 rounded-xl font-bold flex justify-center items-center gap-2 hover:text-error transition-colors active:scale-95">
+                        <span class="material-symbols-outlined">logout</span> Выйти из аккаунта
+                    </button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}">Войти</a>
-                <a href="{% url 'accounts:signup' %}">Регистрация</a>
+                <a href="{% url 'login' %}" class="w-full bg-primary text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                    Войти в систему
+                </a>
+                <a href="{% url 'accounts:signup' %}" class="w-full bg-surface-container-high text-on-surface-variant py-4 rounded-xl font-bold flex justify-center items-center gap-2 active:scale-95 transition-transform">
+                    Регистрация
+                </a>
             {% endif %}
         </div>
     </div>
 </header>
+
+<!-- Скрипт для работы мобильного меню -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('burger-icon');
+
+        if (btn && menu) {
+            btn.addEventListener('click', function() {
+                // Если меню содержит класс translate-x-full, значит оно закрыто
+                const isOpen = !menu.classList.contains('translate-x-full');
+
+                if (isOpen) {
+                    // Закрываем меню: уводим вправо, возвращаем иконку меню и скролл
+                    menu.classList.add('translate-x-full');
+                    icon.textContent = 'menu';
+                    document.body.style.overflow = '';
+                } else {
+                    // Открываем меню: выводим на экран, ставим крестик и убираем скролл у body
+                    menu.classList.remove('translate-x-full');
+                    icon.textContent = 'close';
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        }
+    });
+</script>

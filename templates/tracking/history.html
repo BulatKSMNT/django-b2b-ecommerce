@@ -1,51 +1,114 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}История просмотров{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'catalog/css/catalog.css' %}">
-    <link rel="stylesheet" href="{% static 'tracking/css/history.css' %}">
-{% endblock %}
+{% block title %}История просмотров | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>История просмотров</h1>
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 pb-32 md:pb-12">
+    <!-- Хлебные крошки -->
+    {% include 'includes/breadcrumbs.html' %}
 
-        {% if product_views %}
-            <div class="history-list">
-                {% for item in product_views %}
-                    <article class="history-card">
-                        <div class="history-card__image">
-                            {% with main_image=item.product.get_main_image %}
-                                {% if main_image and main_image.image %}
-                                    <img src="{{ main_image.image.url }}" alt="{{ main_image.alt_text|default:item.product.name }}">
-                                {% else %}
-                                    <div class="history-card__placeholder">Нет фото</div>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
+    <!-- Заголовок страницы -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-6 mt-4">
+        <div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-on-surface">История просмотров</h1>
+            <p class="text-on-surface-variant max-w-2xl text-base md:text-lg leading-relaxed">
+                Здесь хранятся товары, которыми вы интересовались в последнее время. Мы сохраняем историю, чтобы вы могли быстро вернуться к нужным позициям.
+            </p>
+        </div>
 
-                        <div class="history-card__content">
-                            <h3>
-                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
-                            </h3>
-                            <p>Категория: {{ item.product.category.name }}</p>
-                            <p>Просмотров: {{ item.view_count }}</p>
-                            <p>Последний просмотр: {{ item.last_viewed_at|date:"d.m.Y H:i" }}</p>
-
-                            <div class="history-card__actions">
-                                {% include "shop/includes/add_to_cart_form.html" with product=item.product show_quantity=False %}
-                                {% include "shop/includes/favorite_toggle_form.html" with product=item.product favorite_product_ids=favorite_product_ids %}
-                            </div>
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>История просмотров пока пуста.</p>
-        {% endif %}
+        <!-- Кнопка очистки истории (Пока скрыта, так как нет бэкенда для этого действия) -->
+        <!--
+        <button class="flex items-center gap-2 px-6 py-3 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl font-medium shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-xl">delete</span>
+            Очистить историю
+        </button>
+        -->
     </div>
-</section>
+
+    <!-- Сетка товаров (История) -->
+    {% if product_views %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            {% for item in product_views %}
+
+                <div class="group relative bg-surface-container-lowest rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-on-surface/5 border border-outline-variant/10 hover:border-primary/20 flex flex-col h-full">
+
+                    <!-- Изображение -->
+                    <a href="{{ item.product.get_absolute_url }}" class="aspect-[16/10] overflow-hidden bg-surface-container-low block relative">
+                        {% with primary_image=item.product.get_main_image %}
+                            {% if primary_image and primary_image.image %}
+                                <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:item.product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-outline-variant">
+                                    <span class="material-symbols-outlined text-4xl">image</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Кнопка избранного поверх фото -->
+                        <div class="absolute top-3 right-3 z-10">
+                            {% include 'shop/includes/favorite_toggle_form.html' with product=item.product favorite_product_ids=favorite_product_ids %}
+                        </div>
+                    </a>
+
+                    <!-- Контент карточки -->
+                    <div class="p-5 flex flex-col flex-grow">
+
+                        <!-- Мета-информация (Категория и Время) -->
+                        <div class="flex justify-between items-start mb-3 gap-2">
+                            <span class="text-[10px] font-bold tracking-[0.1em] text-primary uppercase bg-primary/10 px-2 py-1 rounded truncate max-w-[60%]">
+                                {{ item.product.category.name }}
+                            </span>
+                            <span class="text-[10px] md:text-[11px] text-outline whitespace-nowrap text-right" title="Количество просмотров: {{ item.view_count }}">
+                                {{ item.last_viewed_at|date:"d M Y, H:i" }}
+                            </span>
+                        </div>
+
+                        <!-- Название и Описание -->
+                        <a href="{{ item.product.get_absolute_url }}" class="block mb-2">
+                            <h3 class="text-lg font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">{{ item.product.name }}</h3>
+                        </a>
+                        <p class="text-sm text-on-surface-variant mb-6 flex-grow line-clamp-2">
+                            {{ item.product.description|default:"Подробности на странице товара." }}
+                        </p>
+
+                        <!-- Цена и Корзина -->
+                        <div class="mt-auto flex items-end justify-between border-t border-outline-variant/10 pt-4">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest">
+                                    {% if item.product.price %}От{% else %}Цена{% endif %}
+                                </span>
+                                <span class="text-xl font-black text-on-surface leading-none mt-1">
+                                    {% if item.product.price %}
+                                        {{ item.product.price|floatformat:"0" }} <span class="text-sm font-medium">₽</span>
+                                    {% else %}
+                                        <span class="text-base">По запросу</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Кнопка добавления в корзину -->
+                            {% include 'shop/includes/add_to_cart_form.html' with product=item.product show_quantity=False %}
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <!-- Пустое состояние -->
+        <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
+            <div class="w-24 h-24 bg-surface-container-low rounded-full flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-5xl text-outline">history</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black mb-3">Вы еще ничего не смотрели</h2>
+            <p class="text-sm md:text-base text-on-surface-variant max-w-md mx-auto mb-8 leading-relaxed">
+                Начните знакомство с нашим каталогом, и здесь появятся товары, которые вас заинтересовали.
+            </p>
+            <a href="{% url 'catalog:category_list' %}" class="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold shadow-md hover:shadow-lg hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all active:scale-95 flex items-center gap-2">
+                Перейти в каталог <span class="material-symbols-outlined text-lg">explore</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

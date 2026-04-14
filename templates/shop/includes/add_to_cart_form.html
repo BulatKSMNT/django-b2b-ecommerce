@@ -1,10 +1,18 @@
-<form method="post" action="{% url 'shop:cart_add' product.id %}" class="shop-inline-form">
+<form method="post" action="{% url 'shop:cart_add' product.id %}" class="flex items-center gap-2">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
     {% if show_quantity %}
-        <input type="number" name="quantity" value="1" min="1">
+        <!-- Вариант для карточки детального просмотра (с количеством) -->
+        <input type="number" name="quantity" value="1" min="1" class="w-16 h-12 bg-surface-container-high border-none rounded-lg text-center focus:ring-2 focus:ring-primary outline-none font-bold">
+        <button type="submit" class="bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold px-6 h-12 rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2">
+            В корзину
+        </button>
     {% else %}
+        <!-- Вариант для списка (только иконка) -->
         <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="bg-primary-container hover:bg-primary-fixed-dim text-on-primary-container w-12 h-12 rounded-xl transition-all active:scale-95 shadow-sm hover:shadow-md flex items-center justify-center" aria-label="В корзину">
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </button>
     {% endif %}
-    <button type="submit">В корзину</button>
 </form>

@@ -11,6 +11,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
 
 INSTALLED_APPS = [
+    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -109,3 +110,41 @@ TRACKING_EXCLUDED_PATH_PREFIXES = [
     "/favicon.ico",
     "/robots.txt",
 ]
+
+# Настройки темы оформления админки (Django Unfold)
+UNFOLD = {
+    "SITE_TITLE": "LIDER Admin",
+    "SITE_HEADER": "LIDER",
+    "SITE_URL": "/",
+    "COLORS": {
+        "primary": {
+            "50": "#f4fffa",
+            "100": "#8df5de",
+            "200": "#70d8c2",
+            "300": "#008471",
+            "400": "#00725d",
+            "500": "#006b58",
+            "600": "#006859",
+            "700": "#005142",
+            "800": "#005045",
+            "900": "#002019",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation":[
+            {
+                "title": "Аналитика",
+                "separator": True,
+                "items":[
+                    {
+                        "title": "Аналитический дашборд",
+                        "icon": "analytics",
+                        "link": "/admin/analytics/dashboard/",
+                    },
+                ],
+            },
+        ],
+    },
+}

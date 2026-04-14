@@ -1,13 +1,70 @@
-<form method="post" action="{% url 'leads:create_product' product.id %}" class="lead-form">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+<div class="mt-4 p-6 lg:p-8 bg-primary rounded-[2rem] text-on-primary shadow-xl relative overflow-hidden">
+    <!-- Декоративное пятно на фоне -->
+    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
 
-    <div class="lead-form__row">
-        <label for="lead-product-quantity">Количество</label>
-        <input id="lead-product-quantity" type="number" name="quantity" value="1" min="1">
+    <div class="relative z-10">
+        <h3 class="text-2xl font-bold tracking-tight mb-2">Рассчитать проект</h3>
+        <p class="text-on-primary-container text-sm mb-6 opacity-90 leading-relaxed">
+            Оставьте заявку, и наш инженер подготовит смету по товару «{{ product.name }}» в течение 15 минут.
+        </p>
+
+        <form action="{% url 'leads:create_product' product.id %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <input type="hidden" name="quantity" value="1"> <!-- Кол-во по умолчанию для лида -->
+
+            {% if form.non_field_errors %}
+                <div class="bg-error text-on-error p-3 rounded-lg text-sm mb-4">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Поле Имя -->
+            <div>
+                <input type="text" name="{{ form.fullname.html_name }}" id="{{ form.fullname.id_for_label }}"
+                       class="w-full bg-primary-container border-none rounded-xl px-4 py-4 text-on-primary placeholder:text-on-primary/60 focus:ring-2 focus:ring-secondary-fixed transition-all outline-none"
+                       placeholder="Ваше имя" value="{{ form.fullname.value|default:'' }}" required>
+                {% if form.fullname.errors %}<span class="text-error-container text-xs mt-1 block">{{ form.fullname.errors.0 }}</span>{% endif %}
+            </div>
+
+            <!-- Поле Телефон -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <input type="tel" name="{{ form.phone_number.html_name }}" id="{{ form.phone_number.id_for_label }}"
+                           class="w-full bg-primary-container border-none rounded-xl px-4 py-4 text-on-primary placeholder:text-on-primary/60 focus:ring-2 focus:ring-secondary-fixed transition-all outline-none"
+                           placeholder="+7 (___) ___-__-__" value="{{ form.phone_number.value|default:'' }}" required>
+                    {% if form.phone_number.errors %}<span class="text-error-container text-xs mt-1 block">{{ form.phone_number.errors.0 }}</span>{% endif %}
+                </div>
+
+                <!-- Поле Email -->
+                <div>
+                    <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}"
+                           class="w-full bg-primary-container border-none rounded-xl px-4 py-4 text-on-primary placeholder:text-on-primary/60 focus:ring-2 focus:ring-secondary-fixed transition-all outline-none"
+                           placeholder="Email" value="{{ form.email.value|default:'' }}" required>
+                    {% if form.email.errors %}<span class="text-error-container text-xs mt-1 block">{{ form.email.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <!-- Скрытое поле комментария -->
+            <div class="hidden">
+                <textarea name="{{ form.comment.html_name }}">{{ form.comment.value|default:'' }}</textarea>
+            </div>
+
+            <!-- Согласие -->
+            <label class="flex items-start gap-3 cursor-pointer group pt-2">
+                <input type="checkbox" name="{{ form.agree_to_policy.html_name }}" id="{{ form.agree_to_policy.id_for_label }}"
+                       class="mt-1 w-4 h-4 rounded text-secondary-fixed focus:ring-secondary-fixed border-none bg-primary-container" required {% if form.agree_to_policy.value %}checked{% endif %}>
+                <span class="text-xs text-on-primary/70 leading-tight group-hover:text-on-primary transition-colors">
+                    Я соглашаюсь на обработку данных в соответствии с <a href="{% url 'pages:privacy_policy' %}" class="underline hover:text-secondary-fixed">политикой конфиденциальности</a>.
+                </span>
+            </label>
+
+            <!-- Кнопка -->
+            <button type="submit" class="w-full bg-secondary-container text-on-secondary-container font-bold py-4 rounded-xl shadow-lg hover:bg-secondary-fixed active:scale-[0.98] transition-all uppercase tracking-wide text-sm mt-2">
+                Отправить заявку
+            </button>
+        </form>
     </div>
-
-    {% include "leads/includes/lead_form_fields.html" with form=lead_form %}
-
-    <button type="submit">Отправить заявку по товару</button>
-</form>
+</div>

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Контакты | LIDER - Строительные материалы нового поколения{% endblock %}
+
+{% block content %}
+<div class="pb-20">
+    <!-- Хлебные крошки -->
+    <div class="max-w-7xl mx-auto px-6 pt-6">
+        {% include 'includes/breadcrumbs.html' %}
+    </div>
+
+    <!-- 1. Hero Section Asymmetric -->
+    <section class="max-w-7xl mx-auto px-6 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
+        <div class="lg:col-span-7">
+            <h1 class="text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-none mb-4 lg:mb-6 text-on-surface">Свяжитесь <br class="hidden md:block"/>с нами</h1>
+            <p class="text-base md:text-lg text-on-surface-variant max-w-xl leading-relaxed">
+                Мы всегда на связи, чтобы обсудить ваш проект. Архитектурная точность и профессиональный подход в каждой детали строительных решений LIDER.
+            </p>
+        </div>
+
+        <div class="lg:col-span-5 h-48 md:h-64 bg-primary-container rounded-xl md:rounded-[2rem] relative overflow-hidden group shadow-lg">
+            <img class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Офис LIDER" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYF995m4DXoCYO8LeJHh71OMWuKmAZSL0-ARF4_XBgEC0TiAHlMcVtpvucEkmDjy-tXsULEAKFQxZDOT-HARlyHek3bSk-64-8smbKk6ru1TR3cMji2brPaURUhlXkU7j4RfRp3itcEUyfzy8uB9KOypRMzCYkty1201ndHJj38RAYsC4V8hd0UO7CkMDnZ2jrIgT4Q5ba82gBlxmDVq0d8hEVyWXMulmdSVF2kBIERshxXUicAXqjkSikEq4Mm-bYzrsFlnS8Q-c"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex items-end p-6 md:p-8">
+                <div class="text-white">
+                    <p class="text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-80">Центральный офис</p>
+                    <p class="text-lg md:text-xl font-bold mt-1">Работаем для вашего успеха</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Main Content Canvas -->
+    <section class="bg-surface-container-low py-12 md:py-24 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+
+                <!-- Левая колонка: Информация и Карта -->
+                <div class="space-y-8 md:space-y-12 lg:space-y-16">
+
+                    <!-- Bento Grid Контакты -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:flex lg:flex-col lg:gap-10">
+
+                        <!-- Адрес (Занимает всю ширину на мобилках) -->
+                        <div class="col-span-1 md:col-span-2 flex flex-col lg:flex-row gap-4 lg:gap-6 group bg-surface-container-lowest lg:bg-transparent p-6 lg:p-0 rounded-2xl lg:rounded-none border-b-4 border-primary lg:border-none shadow-sm lg:shadow-none">
+                            <div class="w-12 h-12 bg-primary-container lg:bg-white rounded-xl flex items-center justify-center shadow-sm text-on-primary-container lg:text-primary lg:group-hover:bg-primary lg:group-hover:text-white transition-colors duration-300 shrink-0">
+                                <span class="material-symbols-outlined text-2xl">location_on</span>
+                            </div>
+                            <div>
+                                <p class="text-xs md:text-sm font-bold uppercase tracking-wider text-primary mb-1 md:mb-2">Адрес</p>
+                                <p class="text-lg md:text-2xl font-bold leading-tight text-on-surface">{{ contact_data.address|default:"г. Москва, ул. Промышленная, д. 11" }}</p>
+                                <p class="text-xs md:text-sm text-on-surface-variant mt-2">Бизнес-центр «Структура», 4 этаж</p>
+                            </div>
+                        </div>
+
+                        <!-- Телефон -->
+                        <div class="flex flex-col lg:flex-row gap-4 lg:gap-6 group bg-surface-container-lowest lg:bg-transparent p-6 lg:p-0 rounded-2xl lg:rounded-none shadow-sm lg:shadow-none">
+                            <div class="w-12 h-12 bg-surface-container-high lg:bg-white rounded-xl flex items-center justify-center shadow-sm text-primary lg:group-hover:bg-primary lg:group-hover:text-white transition-colors duration-300 shrink-0">
+                                <span class="material-symbols-outlined text-2xl">phone_in_talk</span>
+                            </div>
+                            <div>
+                                <p class="text-xs md:text-sm font-bold uppercase tracking-wider text-primary mb-1 md:mb-2">Телефон</p>
+                                <p class="text-lg md:text-2xl font-bold leading-tight text-on-surface">
+                                    <a href="tel:{{ contact_data.phone|default:'+78005553535' }}" class="hover:text-primary transition-colors">{{ contact_data.phone|default:"8 (800) 555-35-35" }}</a>
+                                </p>
+                                <p class="text-xs md:text-sm text-on-surface-variant mt-2">Отдел продаж: 8 (495) 123-45-67</p>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex flex-col lg:flex-row gap-4 lg:gap-6 group bg-surface-container-lowest lg:bg-transparent p-6 lg:p-0 rounded-2xl lg:rounded-none shadow-sm lg:shadow-none">
+                            <div class="w-12 h-12 bg-surface-container-high lg:bg-white rounded-xl flex items-center justify-center shadow-sm text-primary lg:group-hover:bg-primary lg:group-hover:text-white transition-colors duration-300 shrink-0">
+                                <span class="material-symbols-outlined text-2xl">alternate_email</span>
+                            </div>
+                            <div>
+                                <p class="text-xs md:text-sm font-bold uppercase tracking-wider text-primary mb-1 md:mb-2">Email</p>
+                                <p class="text-lg md:text-2xl font-bold leading-tight text-on-surface">
+                                    <a href="mailto:{{ contact_data.email|default:'info@lider-panels.ru' }}" class="hover:text-primary transition-colors">{{ contact_data.email|default:"info@lider-panels.ru" }}</a>
+                                </p>
+                                <p class="text-xs md:text-sm text-on-surface-variant mt-2">Для партнеров: partners@lider-panels.ru</p>
+                            </div>
+                        </div>
+
+                        <!-- Режим работы (Из мобильного макета) -->
+                        <div class="col-span-1 md:col-span-2 flex flex-col lg:flex-row gap-4 lg:gap-6 group bg-surface-container-high lg:bg-transparent p-6 lg:p-0 rounded-2xl lg:rounded-none lg:mt-4">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-primary lg:group-hover:bg-primary lg:group-hover:text-white transition-colors duration-300 shrink-0 hidden lg:flex">
+                                <span class="material-symbols-outlined text-2xl">schedule</span>
+                            </div>
+                            <div class="w-full">
+                                <div class="flex items-center gap-2 mb-3 lg:hidden">
+                                    <span class="material-symbols-outlined text-primary text-xl">schedule</span>
+                                    <p class="text-xs md:text-sm font-bold uppercase tracking-wider text-primary">Режим работы</p>
+                                </div>
+                                <p class="hidden lg:block text-sm font-bold uppercase tracking-wider text-primary mb-2">Режим работы</p>
+
+                                <div class="space-y-2 text-sm text-on-surface-variant w-full lg:max-w-xs">
+                                    <div class="flex justify-between border-b border-outline-variant/10 pb-1">
+                                        <span>Пн — Пт</span>
+                                        <span class="text-on-surface font-bold">09:00 – 18:00</span>
+                                    </div>
+                                    <div class="flex justify-between pb-1">
+                                        <span>Сб — Вс</span>
+                                        <span class="text-error font-bold">Выходной</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Map Placeholder -->
+                    <div class="aspect-[4/3] md:aspect-video w-full rounded-2xl overflow-hidden shadow-md relative group bg-surface-container-highest border border-outline-variant/20">
+                        <!-- Здесь позже будет iframe Яндекса, пока красивая заглушка из дизайна -->
+                        <img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 transition-all duration-700" alt="Карта проезда" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgAwhDCOYAqveizBv-fZYFPCLUerk11CkOt4mi0L2UrKRAcDsE1iF3mFjF1womfJJhPtN4SjX4QJ9D6pb5wcG6SuMXLkpoAYRSoDeW42nv1Lx48QoIO7vWrtQWX8ZFZ4UvreGdnVwTgQYywKgNpe5wjoN78JIVHPxWhIQgVRYCB3mL5UNa117F0KD2NJWekraFCuk91xIL0yml2oMl7WyAjdmIunyGbbUlfhGKkUPXbMPZjs9_zj_AURjv3QzJz7o__vjo3wzZhGE"/>
+                        <div class="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors duration-500"></div>
+
+                        <!-- Пин на карте -->
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                            <span class="material-symbols-outlined text-5xl text-primary drop-shadow-xl" style="font-variation-settings: 'FILL' 1;">location_on</span>
+                        </div>
+
+                        <!-- Инфо плашка -->
+                        <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur p-4 rounded-xl shadow-lg border border-white/50 cursor-pointer hover:bg-white transition-colors">
+                            <div class="flex items-center gap-3 mb-1">
+                                <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                <span class="text-[10px] font-bold text-teal-900 tracking-wider uppercase">Мы на карте</span>
+                            </div>
+                            <p class="text-sm font-bold text-on-surface">LIDER Production Center</p>
+                            <p class="text-xs text-primary mt-1 font-medium group-hover:underline">Проложить маршрут &rarr;</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка: Форма обратной связи -->
+                <div class="bg-surface-container-lowest p-8 md:p-10 lg:p-14 rounded-2xl shadow-xl lg:shadow-sm border border-outline-variant/10">
+                    <div class="mb-8 md:mb-12">
+                        <h2 class="text-2xl md:text-3xl font-black tracking-tight mb-3 md:mb-4 text-on-surface">Напишите нам</h2>
+                        <p class="text-sm md:text-base text-on-surface-variant leading-relaxed">Оставьте заявку, и наш технический специалист свяжется с вами в течение 15 минут для консультации.</p>
+                    </div>
+
+                    <!-- Подключаем нашу Django форму заявки -->
+                    <div class="contact-lead-wrapper">
+                        {% include 'leads/includes/contact_lead_form.html' with form=contact_lead_form %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Social & Accents (Десктоп) -->
+    <section class="py-16 md:py-24 max-w-7xl mx-auto px-6 hidden md:block">
+        <div class="flex flex-wrap justify-center gap-12 opacity-70">
+            <div class="flex items-center gap-3 grayscale hover:grayscale-0 transition-all cursor-pointer group">
+                <span class="material-symbols-outlined text-4xl group-hover:text-primary transition-colors">factory</span>
+                <span class="text-xl font-bold tracking-tighter">Собственное производство</span>
+            </div>
+            <div class="flex items-center gap-3 grayscale hover:grayscale-0 transition-all cursor-pointer group">
+                <span class="material-symbols-outlined text-4xl group-hover:text-primary transition-colors">verified</span>
+                <span class="text-xl font-bold tracking-tighter">Сертификация ГОСТ</span>
+            </div>
+            <div class="flex items-center gap-3 grayscale hover:grayscale-0 transition-all cursor-pointer group">
+                <span class="material-symbols-outlined text-4xl group-hover:text-primary transition-colors">speed</span>
+                <span class="text-xl font-bold tracking-tighter">Быстрая доставка</span>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Переопределение стилей для формы внутри страницы контактов, чтобы инпуты были серыми (bg-surface-container-low), как в макете */
+    .contact-lead-wrapper .bg-surface-container-high {
+        background-color: var(--surface-container-low, #f5f3f3) !important;
+    }
+</style>
+{% endblock %}

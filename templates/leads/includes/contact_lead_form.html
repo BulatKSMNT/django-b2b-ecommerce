@@ -1,8 +1,94 @@
-<form method="post" action="{% url 'leads:create_contact' %}" class="lead-form">
+<form method="post" action="{% url 'leads:create_contact' %}" class="flex flex-col gap-6 md:gap-8 w-full">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
-    {% include "leads/includes/lead_form_fields.html" with form=lead_form %}
+    <!-- Вывод общих ошибок -->
+    {% if form.non_field_errors %}
+        <div class="bg-error-container text-on-error-container p-4 rounded-xl text-sm shadow-sm border border-error/20">
+            {% for error in form.non_field_errors %}
+                <p class="font-medium flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">error</span> {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    <button type="submit">Отправить заявку</button>
+    <!-- Поле: Имя (ФИО) -->
+    <div class="relative group">
+        <label class="block text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.fullname.id_for_label }}">
+            {{ form.fullname.label|default:"Ваше имя" }}
+            {% if form.fullname.field.required %}<span class="text-error ml-0.5">*</span>{% endif %}
+        </label>
+        <input type="text" name="{{ form.fullname.html_name }}" id="{{ form.fullname.id_for_label }}"
+               class="w-full bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl p-4 text-on-surface transition-all outline-none placeholder:text-outline-variant/60 shadow-sm"
+               placeholder="Иван Иванов"
+               value="{{ form.fullname.value|default:'' }}" {% if form.fullname.field.required %}required{% endif %}>
+        {% if form.fullname.errors %}
+            <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.fullname.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Поле: Телефон -->
+        <div class="relative group">
+            <label class="block text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.phone_number.id_for_label }}">
+                {{ form.phone_number.label|default:"Телефон" }}
+                {% if form.phone_number.field.required %}<span class="text-error ml-0.5">*</span>{% endif %}
+            </label>
+            <input type="tel" name="{{ form.phone_number.html_name }}" id="{{ form.phone_number.id_for_label }}"
+                   class="w-full bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl p-4 text-on-surface transition-all outline-none placeholder:text-outline-variant/60 shadow-sm"
+                   placeholder="+7 (___) ___-__-__"
+                   value="{{ form.phone_number.value|default:'' }}" {% if form.phone_number.field.required %}required{% endif %}>
+            {% if form.phone_number.errors %}
+                <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.phone_number.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Поле: Email -->
+        <div class="relative group">
+            <label class="block text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.email.id_for_label }}">
+                {{ form.email.label|default:"Email" }}
+                {% if form.email.field.required %}<span class="text-error ml-0.5">*</span>{% endif %}
+            </label>
+            <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}"
+                   class="w-full bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl p-4 text-on-surface transition-all outline-none placeholder:text-outline-variant/60 shadow-sm"
+                   placeholder="example@mail.ru"
+                   value="{{ form.email.value|default:'' }}" {% if form.email.field.required %}required{% endif %}>
+            {% if form.email.errors %}
+                <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.email.errors.0 }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Поле: Комментарий -->
+    <div class="relative group">
+        <label class="block text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1 transition-colors group-focus-within:text-primary" for="{{ form.comment.id_for_label }}">
+            {{ form.comment.label|default:"Комментарий" }}
+            {% if form.comment.field.required %}<span class="text-error ml-0.5">*</span>{% endif %}
+        </label>
+        <textarea name="{{ form.comment.html_name }}" id="{{ form.comment.id_for_label }}" rows="4"
+                  class="w-full bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl p-4 text-on-surface transition-all outline-none resize-none placeholder:text-outline-variant/60 shadow-sm"
+                  placeholder="Расскажите о вашем проекте или задайте вопрос..." {% if form.comment.field.required %}required{% endif %}>{{ form.comment.value|default:'' }}</textarea>
+        {% if form.comment.errors %}
+            <span class="text-error text-xs font-medium mt-1.5 block px-1">{{ form.comment.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- Поле: Согласие -->
+    <div class="flex items-start gap-4 pt-2">
+        <input type="checkbox" name="{{ form.agree_to_policy.html_name }}" id="{{ form.agree_to_policy.id_for_label }}"
+               class="mt-1 w-5 h-5 rounded text-primary focus:ring-primary focus:ring-offset-0 border-outline-variant/40 bg-surface-container-highest cursor-pointer transition-colors shadow-sm"
+               {% if form.agree_to_policy.field.required %}required{% endif %} {% if form.agree_to_policy.value %}checked{% endif %}>
+        <label class="text-sm text-on-surface-variant leading-tight cursor-pointer select-none" for="{{ form.agree_to_policy.id_for_label }}">
+            Я согласен с <a href="{% url 'pages:privacy_policy' %}" class="text-primary font-semibold underline underline-offset-2 hover:text-primary-fixed-dim transition-colors">политикой конфиденциальности</a> и даю согласие на обработку персональных данных.
+        </label>
+    </div>
+
+    <!-- Кнопка -->
+    <div class="pt-4">
+        <button type="submit" class="w-full bg-primary text-on-primary py-5 px-8 rounded-xl font-bold text-base md:text-lg hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all duration-300 shadow-xl shadow-primary/20 flex justify-center items-center gap-3 active:scale-[0.98] group">
+            <span class="tracking-wide">Отправить запрос</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+    </div>
 </form>

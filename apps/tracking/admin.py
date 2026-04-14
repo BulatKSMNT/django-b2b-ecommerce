@@ -1,10 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import PageVisit, ProductView, UserEvent, Visitor
 
 
 @admin.register(Visitor)
-class VisitorAdmin(admin.ModelAdmin):
+class VisitorAdmin(ModelAdmin):
     list_display = ("id", "uuid", "user", "session_key", "first_seen_at", "last_seen_at")
     search_fields = ("uuid", "session_key", "user__username", "user__email")
     list_filter = ("first_seen_at", "last_seen_at")

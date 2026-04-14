@@ -1,0 +1,20 @@
+<div class="product-attributes">
+    <h2 class="section-title section-title--left">Характеристики</h2>
+
+    {% with attribute_values=product.attribute_values.all %}
+        {% if attribute_values %}
+            <dl class="product-attributes__list">
+                {% for item in attribute_values %}
+                    <div class="product-attributes__row">
+                        <dt>{{ item.attribute.name }}</dt>
+                        <dd>{{ item.value }}</dd>
+                    </div>
+                {% endfor %}
+            </dl>
+        {% else %}
+            <div class="empty-state empty-state--compact">
+                <p>Характеристики для этого товара пока не заполнены.</p>
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>

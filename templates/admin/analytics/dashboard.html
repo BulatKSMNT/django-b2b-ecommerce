@@ -1,174 +1,453 @@
-{% extends "admin/base_site.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>LIDER Admin - Аналитика</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-{% block content %}
-<div id="content-main">
-    <h1>Аналитический dashboard</h1>
+    <!-- Подключаем библиотеку для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <p>
-        Период:
-        {% for option in allowed_days %}
-            {% if option == days %}
-                <strong>{{ option }} дн.</strong>
-            {% else %}
-                <a href="?days={{ option }}">{{ option }} дн.</a>
-            {% endif %}
-            {% if not forloop.last %} | {% endif %}
-        {% endfor %}
-    </p>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+                "surface-container": "#efeded", "primary": "#006859", "tertiary-fixed": "#e4e2e1",
+                "tertiary": "#5c5c5c", "error": "#ba1a1a", "surface-dim": "#dbdad9",
+                "primary-container": "#008471", "on-primary-container": "#f4fffa",
+                "on-secondary-container": "#00725d", "on-error": "#ffffff",
+                "surface-container-lowest": "#ffffff", "background": "#fbf9f9",
+                "secondary-fixed": "#93f5d9", "inverse-on-surface": "#f2f0f0",
+                "primary-fixed-dim": "#70d8c2", "surface": "#fbf9f9",
+                "secondary-fixed-dim": "#76d8bd", "on-secondary-fixed": "#002019",
+                "inverse-primary": "#70d8c2", "surface-tint": "#006b5c",
+                "surface-container-low": "#f5f3f3", "on-tertiary-fixed-variant": "#474747",
+                "secondary-container": "#93f5d9", "surface-container-highest": "#e3e2e2",
+                "surface-bright": "#fbf9f9", "outline": "#6d7a76", "inverse-surface": "#303031",
+                "on-primary-fixed": "#00201b", "outline-variant": "#bcc9c5",
+                "on-error-container": "#93000a", "surface-variant": "#e3e2e2",
+                "on-surface": "#1b1c1c", "on-secondary": "#ffffff",
+                "on-primary-fixed-variant": "#005045", "secondary": "#006b58",
+                "primary-fixed": "#8df5de", "on-secondary-fixed-variant": "#005142",
+                "error-container": "#ffdad6", "on-surface-variant": "#3d4946",
+                "on-tertiary-container": "#fffcfb", "on-tertiary-fixed": "#1b1c1c",
+                "surface-container-high": "#e9e8e7", "on-tertiary": "#ffffff",
+                "on-primary": "#ffffff", "tertiary-fixed-dim": "#c8c6c6",
+                "tertiary-container": "#757474", "on-background": "#1b1c1c"
+            },
+            fontFamily: { headline: ["Inter"], body: ["Inter"], label: ["Inter"] }
+          }
+        }
+      }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen pb-20 md:pb-0">
 
-    <h2>Общая сводка</h2>
-    <table class="adminlist">
-        <tbody>
-            <tr><th>Просмотры страниц</th><td>{{ overview.page_hits }}</td></tr>
-            <tr><th>Уникальные посетители</th><td>{{ overview.unique_visitors }}</td></tr>
-            <tr><th>Уникальные профили</th><td>{{ overview.unique_profiles }}</td></tr>
-            <tr><th>Средняя длительность страницы, мс</th><td>{{ overview.avg_page_duration_ms }}</td></tr>
-            <tr><th>Просмотры товаров</th><td>{{ overview.product_views }}</td></tr>
-            <tr><th>Добавления в корзину</th><td>{{ overview.cart_adds }}</td></tr>
-            <tr><th>Добавления в избранное</th><td>{{ overview.favorite_adds }}</td></tr>
-            <tr><th>Заявки</th><td>{{ overview.leads_total }}</td></tr>
-            <tr><th>High-priority заявки</th><td>{{ overview.high_priority_leads }}</td></tr>
-            <tr><th>Конверсия просмотр товара → корзина</th><td>{{ product_to_cart_rate }}%</td></tr>
-            <tr><th>Конверсия корзина → заявка из корзины</th><td>{{ cart_to_lead_rate }}%</td></tr>
-        </tbody>
-    </table>
+    <!-- Десктопное Боковое меню (SideNavBar) -->
+    <aside class="hidden md:flex flex-col p-4 space-y-2 h-screen w-64 border-r border-outline-variant/30 bg-slate-50 sticky top-0 shrink-0">
+        <div class="flex items-center gap-3 px-2 mb-8 mt-2">
+            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-md">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">architecture</span>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-teal-900 leading-none">LIDER Admin</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Backoffice</p>
+            </div>
+        </div>
 
-    <h2>Заявки по источникам</h2>
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>Источник</th>
-                <th>Количество</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in lead_sources %}
-                <tr>
-                    <td>{{ row.label }}</td>
-                    <td>{{ row.count }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="2">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <nav class="flex-1 space-y-1.5">
+            <a href="{% url 'admin:index' %}" class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:translate-x-1 transition-all duration-200 rounded-lg opacity-80 hover:opacity-100 font-sans text-sm font-medium">
+                <span class="material-symbols-outlined">dashboard</span> Главная Админки
+            </a>
 
-    <h2>Заявки по статусам</h2>
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>Статус</th>
-                <th>Количество</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in lead_statuses %}
-                <tr>
-                    <td>{{ row.label }}</td>
-                    <td>{{ row.count }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="2">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <!-- Активный пункт: Аналитика -->
+            <a href="{% url 'admin_analytics_dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 bg-teal-50 text-teal-800 rounded-lg transition-all duration-200 font-sans text-sm font-bold shadow-sm border border-teal-100">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span> Аналитика
+            </a>
 
-    <h2>Топ страниц</h2>
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>Путь</th>
-                <th>Маршрут</th>
-                <th>Хиты</th>
-                <th>Уникальные посетители</th>
-                <th>Средняя длительность, мс</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in top_pages %}
-                <tr>
-                    <td>{{ row.path }}</td>
-                    <td>{{ row.route_name }}</td>
-                    <td>{{ row.hits }}</td>
-                    <td>{{ row.unique_visitors }}</td>
-                    <td>{{ row.avg_duration_ms|floatformat:0 }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="5">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <a href="{% url 'admin:leads_lead_changelist' %}" class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:translate-x-1 transition-all duration-200 rounded-lg opacity-80 hover:opacity-100 font-sans text-sm font-medium">
+                <span class="material-symbols-outlined">leaderboard</span> Заявки (Лиды)
+            </a>
 
-    <h2>Топ товаров</h2>
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Категория</th>
-                <th>Просмотры</th>
-                <th>В корзину</th>
-                <th>В избранное</th>
-                <th>Заявок</th>
-                <th>Кол-во в заявках</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in top_products %}
-                <tr>
-                    <td>{{ row.product_name }}</td>
-                    <td>{{ row.category_name }}</td>
-                    <td>{{ row.product_views }}</td>
-                    <td>{{ row.cart_adds }}</td>
-                    <td>{{ row.favorite_adds }}</td>
-                    <td>{{ row.lead_count }}</td>
-                    <td>{{ row.lead_quantity }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="7">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <a href="{% url 'admin:catalog_product_changelist' %}" class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:translate-x-1 transition-all duration-200 rounded-lg opacity-80 hover:opacity-100 font-sans text-sm font-medium">
+                <span class="material-symbols-outlined">inventory_2</span> Каталог товаров
+            </a>
 
-    <h2>Горячие заявки</h2>
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Дата</th>
-                <th>Клиент</th>
-                <th>Источник</th>
-                <th>Скор</th>
-                <th>Приоритет</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for lead in hot_leads %}
-                <tr>
-                    <td><a href="{% url 'admin:leads_lead_change' lead.id %}">{{ lead.id }}</a></td>
-                    <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
-                    <td>{{ lead.fullname }}</td>
-                    <td>{{ lead.get_source_display }}</td>
-                    <td>{% if lead.score %}{{ lead.score.score }}{% else %}-{% endif %}</td>
-                    <td>{% if lead.score %}{{ lead.score.get_priority_display }}{% else %}-{% endif %}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="6">Нет данных</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <a href="{% url 'admin:accounts_user_changelist' %}" class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:translate-x-1 transition-all duration-200 rounded-lg opacity-80 hover:opacity-100 font-sans text-sm font-medium">
+                <span class="material-symbols-outlined">group</span> Пользователи
+            </a>
+        </nav>
 
-    <h2>Агрегаты</h2>
-    <table class="adminlist">
-        <tbody>
-            <tr>
-                <th>Последняя дата PageDailyMetric</th>
-                <td>{% if latest_page_metric %}{{ latest_page_metric.date }}{% else %}нет{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Последняя дата ProductDailyMetric</th>
-                <td>{% if latest_product_metric %}{{ latest_product_metric.date }}{% else %}нет{% endif %}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+        <div class="mt-auto pt-4 border-t border-slate-200/60">
+            <a href="{% url 'pages:home' %}" target="_blank" class="w-full bg-primary text-white py-2.5 px-4 rounded-xl font-bold text-sm hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-colors mb-4 flex items-center justify-center gap-2 shadow-md">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Открыть сайт
+            </a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-error/10 hover:text-error transition-all rounded-lg opacity-80 hover:opacity-100 font-sans text-sm font-bold">
+                    <span class="material-symbols-outlined">logout</span> Выход
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Мобильная нижняя панель навигации -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-xl shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50 flex justify-around items-center px-4 py-3 border-t border-outline-variant/20">
+        <a href="{% url 'admin_analytics_dashboard' %}" class="bg-teal-50 text-teal-700 rounded-lg px-4 py-2 flex flex-col items-center gap-0.5 border border-teal-100">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Аналитика</span>
+        </a>
+        <a href="{% url 'admin:leads_lead_changelist' %}" class="text-slate-500 hover:bg-slate-100 px-4 py-2 flex flex-col items-center gap-0.5 rounded-lg transition-colors">
+            <span class="material-symbols-outlined">leaderboard</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Заявки</span>
+        </a>
+        <a href="{% url 'admin:index' %}" class="text-slate-500 hover:bg-slate-100 px-4 py-2 flex flex-col items-center gap-0.5 rounded-lg transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Админка</span>
+        </a>
+    </nav>
+
+    <!-- Основной Контент -->
+    <main class="flex-1 flex flex-col min-w-0 bg-surface relative">
+
+        <!-- Шапка страницы -->
+        <header class="h-auto md:h-20 py-4 md:py-0 flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-8 sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-outline-variant/10 gap-4 md:gap-0">
+            <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 w-full md:w-auto">
+                <div class="flex justify-between items-center w-full md:w-auto">
+                    <h2 class="text-2xl md:text-xl font-black md:font-bold text-on-surface tracking-tight">Аналитика</h2>
+                    <span class="md:hidden px-2 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded uppercase tracking-widest">Admin</span>
+                </div>
+
+                <!-- Фильтр периодов -->
+                <form method="get" class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/30 w-fit">
+                    <span class="material-symbols-outlined text-outline text-sm">calendar_month</span>
+                    <select name="days" onchange="this.form.submit()" class="bg-transparent border-none text-sm font-bold text-primary focus:ring-0 p-0 pr-6 cursor-pointer outline-none w-full">
+                        {% for item in allowed_days %}
+                            <option value="{{ item }}" {% if item == days %}selected{% endif %}>За последние {{ item }} дней</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="hidden md:flex items-center gap-6">
+                <span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded uppercase tracking-widest">Данные с {{ since|date:"d.m.Y" }}</span>
+                <div class="h-8 w-[1px] bg-outline-variant/30"></div>
+                <div class="flex items-center gap-3 pl-2">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-on-surface leading-none">{{ request.user.username }}</p>
+                        <p class="text-[10px] text-outline font-medium mt-1 uppercase tracking-widest">Администратор</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container font-black text-lg">
+                        {{ request.user.username|make_list|first|upper }}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Контент Дашборда -->
+        <div class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-x-hidden">
+
+            <!-- Bento Карточки (Ключевые метрики) -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div class="bg-surface-container-lowest p-5 md:p-6 rounded-xl md:rounded-2xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 md:p-3 bg-primary/10 text-primary rounded-lg md:rounded-xl group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-xl md:text-2xl">visibility</span>
+                        </div>
+                    </div>
+                    <p class="text-outline text-[10px] md:text-xs font-bold uppercase tracking-wider line-clamp-1">Просмотры страниц</p>
+                    <h3 class="text-2xl md:text-3xl font-black mt-1 text-on-surface">{{ overview.page_hits|default:0 }}</h3>
+                </div>
+
+                <div class="bg-surface-container-lowest p-5 md:p-6 rounded-xl md:rounded-2xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 md:p-3 bg-secondary-container text-on-secondary-container rounded-lg md:rounded-xl group-hover:bg-secondary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-xl md:text-2xl">leaderboard</span>
+                        </div>
+                    </div>
+                    <p class="text-outline text-[10px] md:text-xs font-bold uppercase tracking-wider line-clamp-1">Всего заявок</p>
+                    <h3 class="text-2xl md:text-3xl font-black mt-1 text-on-surface">{{ overview.leads_total|default:0 }}</h3>
+                </div>
+
+                <div class="bg-surface-container-lowest p-5 md:p-6 rounded-xl md:rounded-2xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 md:p-3 bg-surface-container-high text-on-surface-variant rounded-lg md:rounded-xl group-hover:bg-on-surface-variant group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-xl md:text-2xl">shopping_cart</span>
+                        </div>
+                    </div>
+                    <p class="text-outline text-[10px] md:text-xs font-bold uppercase tracking-wider line-clamp-1">Добавлений в корзину</p>
+                    <h3 class="text-2xl md:text-3xl font-black mt-1 text-on-surface">{{ overview.cart_adds|default:0 }}</h3>
+                </div>
+
+                <div class="bg-surface-container-lowest p-5 md:p-6 rounded-xl md:rounded-2xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-2 md:p-3 bg-error-container text-on-error-container rounded-lg md:rounded-xl group-hover:bg-error group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-xl md:text-2xl">local_fire_department</span>
+                        </div>
+                    </div>
+                    <p class="text-outline text-[10px] md:text-xs font-bold uppercase tracking-wider line-clamp-1">Горячие заявки (ML)</p>
+                    <h3 class="text-2xl md:text-3xl font-black mt-1 text-on-surface">{{ overview.high_priority_leads|default:0 }}</h3>
+                </div>
+            </section>
+
+            <!-- Секция: Динамика и Источники -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+
+                <!-- ИНТЕРАКТИВНЫЙ ГРАФИК (Chart.js) -->
+                <div class="lg:col-span-2 bg-surface-container-lowest p-6 md:p-8 rounded-2xl border border-outline-variant/20 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h4 class="text-lg md:text-xl font-black text-on-surface tracking-tight">Активность каталога</h4>
+                            <p class="text-xs md:text-sm text-outline font-medium mt-1">Динамика заявок и корзин за {{ days }} дн.</p>
+                        </div>
+                    </div>
+
+                    <!-- Контейнер для графика Chart.js -->
+                    <div class="relative h-48 md:h-64 w-full mt-auto">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Источники заявок (Прогресс бары) -->
+                <div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl border border-outline-variant/20 shadow-sm flex flex-col">
+                    <h4 class="text-lg md:text-xl font-black text-on-surface tracking-tight mb-6">Источники заявок</h4>
+                    <div class="space-y-5 flex-grow">
+                        {% if lead_sources %}
+                            {% for item in lead_sources %}
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between items-center text-xs md:text-sm font-bold tracking-wide">
+                                        <span class="truncate pr-2">{{ item.label }}</span>
+                                        <span class="text-primary bg-primary/10 px-2 py-0.5 rounded">{{ item.count }}</span>
+                                    </div>
+                                    <div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+                                        <div class="h-full {% if forloop.counter == 1 %}bg-primary{% elif forloop.counter == 2 %}bg-primary-container{% elif forloop.counter == 3 %}bg-secondary{% else %}bg-outline-variant{% endif %} rounded-full" style="width: min(100%, calc({{ item.count }} * 10% + 5%));"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-sm text-outline font-medium text-center py-4">Нет данных за период</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Конверсии -->
+                    <div class="mt-6 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-outline font-bold uppercase tracking-wider">Корзина → Лид</span>
+                            <span class="font-black text-primary">{{ cart_to_lead_rate }}%</span>
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-[10px] text-outline font-bold uppercase tracking-wider">Товар → Корзина</span>
+                            <span class="font-black text-primary">{{ product_to_cart_rate }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Горячие Лиды -->
+            <section class="space-y-4">
+                <div class="flex justify-between items-end">
+                    <h3 class="font-black text-xl md:text-2xl tracking-tight">Горячие заявки (ML Scoring)</h3>
+                    <a href="{% url 'admin:leads_lead_changelist' %}" class="text-primary text-xs md:text-sm font-bold hover:underline flex items-center">Все заявки <span class="material-symbols-outlined text-sm align-middle ml-1">chevron_right</span></a>
+                </div>
+
+                {% if hot_leads %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for lead in hot_leads %}
+                            <a href="{% url 'admin:leads_lead_change' lead.id %}" class="bg-surface-container-lowest p-4 md:p-5 rounded-xl flex items-center justify-between border-l-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300 {% if lead.score.priority == 'high' %}border-error{% elif lead.score.priority == 'medium' %}border-amber-400{% else %}border-teal-500{% endif %} border-y border-r border-y-outline-variant/10 border-r-outline-variant/10 shadow-sm">
+                                <div class="flex items-center gap-4 overflow-hidden">
+                                    <div class="w-10 h-10 md:w-12 md:h-12 shrink-0 bg-surface-container rounded-full flex items-center justify-center text-teal-800 font-black text-sm md:text-base">
+                                        {{ lead.fullname|make_list|first|upper }}
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <p class="font-bold text-sm md:text-base text-on-surface truncate">{{ lead.fullname }}</p>
+                                        <p class="text-[10px] md:text-xs text-on-surface-variant truncate mt-0.5">{{ lead.created_at|date:"d M Y, H:i" }} • {{ lead.get_source_display }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0 ml-4 flex flex-col items-end gap-1">
+                                    <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider {% if lead.status == 'new' %}bg-secondary-container text-on-secondary-container{% elif lead.status == 'in_progress' %}bg-primary text-on-primary{% else %}bg-surface-container-high text-outline{% endif %}">
+                                        {{ lead.get_status_display }}
+                                    </span>
+                                    <span class="text-[10px] font-bold text-outline mt-1" title="Скор заявки">Score: {{ lead.score.score|default:"-" }}</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10 text-center">
+                        <p class="text-sm text-outline font-medium">Нет обработанных ML заявок за выбранный период.</p>
+                    </div>
+                {% endif %}
+            </section>
+
+            <!-- Таблицы: Топ товаров и Топ страниц -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 pb-10">
+
+                <!-- Топ товаров -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-5 md:p-6 border-b border-surface-container flex justify-between items-center bg-slate-50/50">
+                        <h4 class="text-lg md:text-xl font-black tracking-tight text-on-surface">Топ товаров</h4>
+                        <a href="{% url 'admin:catalog_product_changelist' %}" class="text-xs font-bold text-primary hover:underline">Управление</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left whitespace-nowrap">
+                            <thead class="bg-slate-50/80 text-[10px] uppercase font-bold tracking-widest text-outline">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container">Товар</th>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container text-center">В корзину</th>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container text-center">В заявках</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs md:text-sm divide-y divide-surface-container">
+                                {% for item in top_products %}
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-4 md:px-6 py-3">
+                                            <div class="font-bold text-on-surface truncate max-w-[150px] md:max-w-[250px]" title="{{ item.product_name }}">{{ item.product_name }}</div>
+                                            <div class="text-[10px] text-outline mt-0.5">{{ item.category_name|default:"Без категории" }}</div>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-3 text-center font-bold text-teal-700">{{ item.cart_adds|default:0 }}</td>
+                                        <td class="px-4 md:px-6 py-3 text-center font-black text-primary">{{ item.lead_count|default:0 }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3" class="px-6 py-8 text-center text-outline">Нет данных</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Топ страниц -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-5 md:p-6 border-b border-surface-container bg-slate-50/50">
+                        <h4 class="text-lg md:text-xl font-black tracking-tight text-on-surface">Популярные страницы</h4>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left whitespace-nowrap">
+                            <thead class="bg-slate-50/80 text-[10px] uppercase font-bold tracking-widest text-outline">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container">URL пути</th>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container text-center">Хиты</th>
+                                    <th class="px-4 md:px-6 py-3 border-b border-surface-container text-center">Уники</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs md:text-sm divide-y divide-surface-container">
+                                {% for item in top_pages %}
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-4 md:px-6 py-3">
+                                            <div class="font-medium text-on-surface truncate max-w-[150px] md:max-w-[250px]" title="{{ item.path }}">{{ item.path }}</div>
+                                            <div class="text-[10px] text-outline mt-0.5">{{ item.route_name|default:"—" }}</div>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-3 text-center font-bold">{{ item.hits|default:0 }}</td>
+                                        <td class="px-4 md:px-6 py-3 text-center font-bold text-teal-700">{{ item.unique_visitors|default:0 }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3" class="px-6 py-8 text-center text-outline">Нет данных</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Скрипт инициализации графика Chart.js -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ищем canvas, если он есть
+            const canvas = document.getElementById('activityChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Получаем JSON из бэкенда (из views.py)
+            // Используем default:'{}' чтобы не было ошибки JS, если переменная пустая
+            const rawData = '{{ chart_json|escapejs }}';
+            let chartData = { labels:[], leads: [], carts:[] };
+
+            if (rawData && rawData !== '') {
+                try {
+                    chartData = JSON.parse(rawData);
+                } catch(e) {
+                    console.error("Ошибка парсинга данных для графика", e);
+                }
+            }
+
+            new Chart(ctx, {
+                type: 'bar', // Тип графика: столбчатый
+                data: {
+                    labels: chartData.labels, // Дни (Ось X)
+                    datasets:[
+                        {
+                            label: 'Заявки (Лиды)',
+                            data: chartData.leads,
+                            backgroundColor: '#006859', // Наш Primary цвет
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        },
+                        {
+                            label: 'Добавлений в корзину',
+                            data: chartData.carts,
+                            backgroundColor: '#8df5de', // Наш Primary-fixed
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                font: { family: 'Inter', size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(27, 28, 28, 0.9)',
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 12 },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { font: { family: 'Inter', size: 10 }, color: '#6d7a76' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e3e2e2', drawBorder: false }, // Линии сетки
+                            ticks: { font: { family: 'Inter', size: 10 }, color: '#6d7a76', precision: 0 }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}О компании | LIDER{% endblock %}
+
+{% block content %}
+<div class="pb-20">
+    <!-- Хлебные крошки -->
+    <div class="max-w-7xl mx-auto px-6 pt-6">
+        {% include 'includes/breadcrumbs.html' %}
+    </div>
+
+    <!-- 1. Hero Section -->
+    <section class="relative overflow-hidden py-10 lg:py-20 bg-surface">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7">
+                <span class="inline-block px-3 py-1 mb-6 text-[10px] md:text-xs font-bold tracking-widest uppercase bg-primary-container text-on-primary-container rounded-lg">
+                    Лидер рынка
+                </span>
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-on-surface mb-6 lg:mb-8 leading-[1.1]">
+                    Создаем фундамент <br/> <span class="text-primary">будущего</span>
+                </h1>
+                <p class="text-base md:text-lg lg:text-xl text-on-surface-variant leading-relaxed max-w-xl">
+                    Компания LIDER — ведущий производитель современных строительных материалов. Мы объединяем инженерную точность с инновационными технологиями для реализации самых смелых архитектурных идей.
+                </p>
+            </div>
+            <div class="lg:col-span-5 relative mt-8 lg:mt-0">
+                <div class="aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl relative z-10">
+                    <img alt="Modern construction site" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD04B9v8pmL3YRprlMv7vZlBLn3cbEg_3SN5c_yooviDspbu7q6BbiEC3rHXbO9177hPtkirdyYqkElBJdVR2RU1iJOT6phYyqwLmP5Kz41eTU6kEvsLHgiBkTAgmNK8EAc0e5RwBjgQe-diBAM0io7Agv-QrMsVj11Tq_FMRKgKriyyfXmd5FU5XNdzn-WgHX2F5Ap29NWfd2l8mlX1KpuJe5AmYX0QKSqoSpKffg9Vvqkz910ZXXSjGv19_HaU6W4e2LhD0sI6_U"/>
+                </div>
+                <div class="absolute -bottom-6 -left-6 w-32 h-32 md:w-48 md:h-48 bg-primary/10 rounded-2xl -z-10"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Stats Section (Bento Grid Style) -->
+    <section class="py-12 md:py-20 bg-surface-container-low px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-surface-container-lowest p-8 md:p-10 rounded-2xl flex flex-col justify-center shadow-sm">
+                    <div class="text-4xl md:text-5xl font-black text-primary mb-2">15 лет</div>
+                    <div class="text-on-surface-variant font-medium tracking-wide uppercase text-xs md:text-sm">Безупречной работы</div>
+                </div>
+                <div class="bg-primary p-8 md:p-10 rounded-2xl flex flex-col justify-center text-on-primary shadow-lg">
+                    <div class="text-4xl md:text-5xl font-black mb-2">1000+</div>
+                    <div class="text-on-primary-container font-medium tracking-wide uppercase text-xs md:text-sm">Успешных проектов</div>
+                </div>
+                <div class="bg-surface-container-lowest p-8 md:p-10 rounded-2xl flex flex-col justify-center border-l-4 border-primary shadow-sm">
+                    <div class="text-4xl md:text-5xl font-black text-on-surface mb-2">50+</div>
+                    <div class="text-on-surface-variant font-medium tracking-wide uppercase text-xs md:text-sm">Регионов поставки</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Mission & Values -->
+    <section class="py-16 md:py-24 bg-surface px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
+
+                <!-- Sticky Header (С фоном на мобилке) -->
+                <div class="w-full lg:w-1/3 sticky top-[60px] md:top-[80px] z-30 bg-surface/95 backdrop-blur-md lg:bg-transparent py-4 lg:py-0 -mx-6 px-6 lg:mx-0 lg:px-0 border-b border-outline-variant/10 lg:border-none shadow-sm lg:shadow-none">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-on-surface mb-2 md:mb-4">Наша Миссия</h2>
+                    <div class="h-1 w-16 md:w-20 bg-primary mb-2 md:mb-6 rounded-full"></div>
+                    <p class="text-on-surface-variant leading-relaxed text-sm md:text-lg hidden sm:block">
+                        Мы стремимся трансформировать строительную индустрию, предлагая решения, которые делают здания долговечными, энергоэффективными и эстетичными. Наш приоритет — надежность в каждой детали.
+                    </p>
+                </div>
+
+                <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 pt-2 lg:pt-0">
+                    <!-- Value 1 -->
+                    <div class="p-6 md:p-8 bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-primary text-3xl md:text-4xl mb-4" data-icon="verified">verified</span>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3">Бескомпромиссное качество</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Каждое изделие проходит многоуровневый контроль в собственной лаборатории. Мы используем только сертифицированное сырье.</p>
+                    </div>
+                    <!-- Value 2 -->
+                    <div class="p-6 md:p-8 bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-primary text-3xl md:text-4xl mb-4" data-icon="schedule">schedule</span>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3">Строгие сроки</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Оптимизированная логистика и мощная производственная база позволяют нам гарантировать соблюдение графиков на объектах.</p>
+                    </div>
+                    <!-- Value 3 -->
+                    <div class="p-6 md:p-8 bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-primary text-3xl md:text-4xl mb-4" data-icon="engineering">engineering</span>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3">Глубокая экспертиза</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Команда инженеров LIDER оказывает полную техническую поддержку: от расчета спецификаций до шеф-монтажа.</p>
+                    </div>
+                    <!-- Value 4 -->
+                    <div class="p-6 md:p-8 bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-primary text-3xl md:text-4xl mb-4" data-icon="biotech">biotech</span>
+                        <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3">Инновации в производстве</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Мы постоянно инвестируем в обновление оборудования, внедряя автоматизированные линии последнего поколения.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 4. History Timeline (Мобильный макет, адаптированный под широкие экраны) -->
+    <section class="py-16 md:py-24 bg-surface-container-low px-6">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-12 text-center md:text-left">История развития</h2>
+
+            <div class="relative flex flex-col gap-10 md:gap-12">
+                <!-- Линия таймлайна -->
+                <div class="absolute left-[11px] md:left-[15px] top-2 bottom-2 w-[2px] bg-outline-variant/30"></div>
+
+                <!-- 2008 -->
+                <div class="relative pl-10 md:pl-14 group">
+                    <div class="absolute left-0 md:left-1 top-1.5 w-6 h-6 rounded-full bg-primary border-4 border-surface-container-low group-hover:scale-125 transition-transform"></div>
+                    <span class="text-primary font-black text-xl md:text-2xl">2008</span>
+                    <h4 class="font-bold text-lg mt-1 text-on-surface">Основание компании</h4>
+                    <p class="text-sm text-on-surface-variant mt-2 leading-relaxed">Запуск первой линии по производству кровельных материалов в центральном регионе.</p>
+                </div>
+
+                <!-- 2015 -->
+                <div class="relative pl-10 md:pl-14 group">
+                    <div class="absolute left-0 md:left-1 top-1.5 w-6 h-6 rounded-full bg-outline-variant border-4 border-surface-container-low group-hover:bg-primary group-hover:scale-125 transition-all"></div>
+                    <span class="text-on-surface-variant font-black text-xl md:text-2xl group-hover:text-primary transition-colors">2015</span>
+                    <h4 class="font-bold text-lg mt-1 text-on-surface">Масштабирование</h4>
+                    <p class="text-sm text-on-surface-variant mt-2 leading-relaxed">Открытие завода по производству PIR и минераловатных сэндвич-панелей.</p>
+                </div>
+
+                <!-- 2023 -->
+                <div class="relative pl-10 md:pl-14 group">
+                    <div class="absolute left-0 md:left-1 top-1.5 w-6 h-6 rounded-full bg-outline-variant border-4 border-surface-container-low group-hover:bg-primary group-hover:scale-125 transition-all"></div>
+                    <span class="text-on-surface-variant font-black text-xl md:text-2xl group-hover:text-primary transition-colors">2023</span>
+                    <h4 class="font-bold text-lg mt-1 text-on-surface">LIDER 2.0</h4>
+                    <p class="text-sm text-on-surface-variant mt-2 leading-relaxed">Полная автоматизация логистических процессов и выход на международные рынки.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Key Advantages (Асимметричный layout из мобильного макета) -->
+    <section class="py-16 md:py-24 bg-surface px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="mb-12 text-center md:text-left">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface">Почему выбирают нас</h2>
+            </div>
+
+            <div class="flex flex-col gap-6 md:gap-8">
+                <!-- Adv 1 -->
+                <div class="relative flex flex-col md:items-end">
+                    <div class="w-full md:w-3/4 bg-surface-container-lowest p-6 md:p-8 rounded-2xl z-10 border border-outline-variant/10 shadow-sm hover:-translate-y-1 transition-transform">
+                        <span class="text-5xl md:text-6xl font-black text-primary/10 absolute -top-4 md:-top-6 left-4 md:left-6">01</span>
+                        <h4 class="text-lg md:text-xl font-bold mb-2">Собственное производство</h4>
+                        <p class="text-sm text-on-surface-variant">Полный цикл контроля качества от сырья до готового изделия на наших мощностях.</p>
+                    </div>
+                </div>
+
+                <!-- Adv 2 -->
+                <div class="relative flex flex-col md:items-start md:translate-y-4">
+                    <div class="w-full md:w-3/4 bg-primary text-on-primary p-6 md:p-8 rounded-2xl z-10 shadow-xl hover:-translate-y-1 transition-transform">
+                        <span class="text-5xl md:text-6xl font-black text-white/20 absolute -top-4 md:-top-6 right-4 md:right-6">02</span>
+                        <h4 class="text-lg md:text-xl font-bold mb-2">Логистика</h4>
+                        <p class="text-sm opacity-90">Собственный автопарк и сеть складов обеспечивают бесперебойные поставки точно в срок.</p>
+                    </div>
+                </div>
+
+                <!-- Adv 3 -->
+                <div class="relative flex flex-col md:items-end md:mt-8">
+                    <div class="w-full md:w-3/4 bg-surface-container-lowest p-6 md:p-8 rounded-2xl z-10 border border-outline-variant/10 shadow-sm hover:-translate-y-1 transition-transform">
+                        <span class="text-5xl md:text-6xl font-black text-primary/10 absolute -top-4 md:-top-6 left-4 md:left-6">03</span>
+                        <h4 class="text-lg md:text-xl font-bold mb-2">Сертификация</h4>
+                        <p class="text-sm text-on-surface-variant">Вся продукция соответствует международным стандартам безопасности и долговечности.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. CTA Section (Glassmorphism) -->
+    <section class="py-12 md:py-24 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-primary py-16 md:py-20 px-6 md:px-12 shadow-2xl">
+            <!-- Фоновое изображение -->
+            <div class="absolute inset-0 opacity-20 pointer-events-none">
+                <img alt="Abstract texture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZUAIoGlBc1EP2wiUYheA5N_GzI8FgSG_yBz0H6iduZdpUlUKqKtsJ_HMiyDmF4kbhImRtF31Y65fN1woc2kVpVUyacFXMgjILrSQtIFWUvc5lNkj6k9tKj5HMZ6V2qUu-X_s5wHqwY6khYKoXKGPDUWCDETuXNMQ5wQItHGNLfAebY_3oxGV04ljsQIXFkoWi_OKAXYqzEhOJoertlh5U7MlugsVW7GsPiMBeBbmMgvk4i3ytHoWcOz7fh8N2Cv2Mvjb68WPxnwY"/>
+            </div>
+
+            <div class="relative z-10 text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-on-primary mb-4 md:mb-6 leading-tight">Готовы начать проект с надежным партнером?</h2>
+                <p class="text-on-primary-container text-base md:text-lg mb-8 md:mb-10 opacity-90 max-w-2xl mx-auto">
+                    Получите консультацию эксперта и подробный расчет стоимости вашего заказа в течение одного рабочего дня.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'pages:contacts' %}" class="bg-white text-primary px-8 py-4 rounded-xl font-bold text-base md:text-lg hover:bg-slate-100 transition-colors shadow-lg active:scale-95 duration-200">
+                        Оставить заявку
+                    </a>
+                    <a href="{% url 'catalog:category_list' %}" class="bg-primary-container text-on-primary-container border border-white/20 px-8 py-4 rounded-xl font-bold text-base md:text-lg hover:bg-teal-700 transition-colors active:scale-95 duration-200">
+                        Перейти в каталог
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

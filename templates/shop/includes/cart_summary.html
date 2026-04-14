@@ -1,0 +1,47 @@
+<div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/10 flex flex-col gap-6">
+    <h2 class="text-2xl font-black tracking-tight">Итого</h2>
+
+    <div class="space-y-3">
+        <div class="flex justify-between items-center text-sm md:text-base text-on-surface-variant">
+            <span>Количество позиций:</span>
+            <span class="font-bold text-on-surface">{{ cart_data.total_quantity|default:0 }} ед.</span>
+        </div>
+
+        <div class="pt-4 border-t border-outline-variant/20 flex flex-col gap-1">
+            <span class="text-sm text-on-surface-variant">Общая сумма:</span>
+            <span class="text-3xl md:text-4xl font-black text-primary tracking-tighter">
+                {% if cart_data.subtotal %}{{ cart_data.subtotal|floatformat:"0" }} ₽{% else %}По запросу{% endif %}
+            </span>
+        </div>
+
+        {% if cart_data.has_unpriced_items %}
+            <div class="p-3 bg-error-container/50 rounded-lg mt-2 border border-error/20">
+                <p class="text-[10px] text-error leading-tight font-medium">
+                    * В корзине есть позиции с ценой по запросу. Финальная сумма уточняется менеджером.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Кнопка скроллит к форме заказчика -->
+    <a href="#order-form" class="w-full bg-primary text-on-primary py-4 md:py-5 rounded-xl font-bold text-base hover:bg-primary-fixed-dim transition-all duration-300 flex items-center justify-center gap-3 group shadow-lg shadow-primary/20 active:scale-95 text-center">
+        Заполнить данные
+        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_downward</span>
+    </a>
+
+    <div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg mt-2">
+        <span class="material-symbols-outlined text-primary text-lg">verified</span>
+        <p class="text-[10px] md:text-xs text-on-surface-variant leading-relaxed font-medium">
+            Ваша заявка будет обработана инженером в течение 30 минут в рабочее время.
+        </p>
+    </div>
+
+    <!-- Очистка корзины -->
+    <form method="post" action="{% url 'shop:cart_clear' %}" class="mt-2 text-center">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" class="text-xs font-bold text-error/80 hover:text-error uppercase tracking-widest transition-colors py-2 px-4 rounded-lg hover:bg-error-container/50">
+            Очистить корзину
+        </button>
+    </form>
+</div>

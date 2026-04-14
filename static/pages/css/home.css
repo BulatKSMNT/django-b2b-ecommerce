@@ -1,0 +1,120 @@
+.hero-section {
+    padding: 56px 0 48px;
+    background:
+        linear-gradient(135deg, rgba(17,24,39,.96), rgba(31,41,55,.88)),
+        url('/static/core/img/Inst_servis.webp') center/cover no-repeat;
+    color: #fff;
+}
+
+.hero-section__grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 28px;
+    align-items: center;
+}
+
+.hero-section h1 {
+    margin: 0 0 18px;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 800;
+}
+
+.hero-section p {
+    margin: 0 0 28px;
+    max-width: 680px;
+    color: rgba(255,255,255,.82);
+    line-height: 1.7;
+    font-size: 17px;
+}
+
+.hero-section__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero-section__panel {
+    display: grid;
+    gap: 14px;
+}
+
+.hero-metric {
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(8px);
+}
+
+.hero-metric strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.hero-metric span {
+    color: rgba(255,255,255,.75);
+    line-height: 1.6;
+}
+
+.section-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+.lead-layout {
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.lead-card {
+    padding: 24px;
+}
+
+.lead-card__header {
+    margin-bottom: 18px;
+}
+
+@media (max-width: 992px) {
+    .hero-section__grid,
+    .lead-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-section h1 {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 40px 0 32px;
+    }
+
+    .hero-section h1 {
+        font-size: 32px;
+    }
+
+    .hero-section p {
+        font-size: 15px;
+    }
+
+    .hero-section__actions,
+    .section-actions {
+        flex-direction: column;
+    }
+
+    .hero-section__actions .btn,
+    .section-actions .btn {
+        width: 100%;
+    }
+
+    .lead-card {
+        padding: 18px;
+    }
+}

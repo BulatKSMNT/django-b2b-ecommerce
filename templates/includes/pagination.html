@@ -1,0 +1,37 @@
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav class="pagination-nav" aria-label="Пагинация">
+    <ul class="pagination-list">
+        {% if page_obj.has_previous %}
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}" class="pagination-link">
+                    Назад
+                </a>
+            </li>
+        {% else %}
+            <li><span class="pagination-link is-disabled">Назад</span></li>
+        {% endif %}
+
+        {% for page_num in page_obj.paginator.page_range %}
+            {% if page_num == page_obj.number %}
+                <li><span class="pagination-link is-active">{{ page_num }}</span></li>
+            {% elif page_num >= page_obj.number|add:'-2' and page_num <= page_obj.number|add:'2' %}
+                <li>
+                    <a href="?page={{ page_num }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}" class="pagination-link">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}" class="pagination-link">
+                    Вперёд
+                </a>
+            </li>
+        {% else %}
+            <li><span class="pagination-link is-disabled">Вперёд</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

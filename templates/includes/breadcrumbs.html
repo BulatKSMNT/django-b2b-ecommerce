@@ -1,0 +1,23 @@
+{% if breadcrumbs %}
+<nav class="flex flex-wrap items-center py-2 md:py-4 text-xs md:text-sm font-medium text-on-surface-variant" aria-label="Хлебные крошки">
+    {% for item in breadcrumbs %}
+
+        {% if item.url %}
+            <a href="{{ item.url }}" class="hover:text-primary transition-colors duration-200">
+                {{ item.title }}
+            </a>
+        {% else %}
+            <!-- Текущая страница (без ссылки, цвет чуть темнее) -->
+            <span class="text-on-surface" aria-current="page">
+                {{ item.title }}
+            </span>
+        {% endif %}
+
+        <!-- Разделитель (выводится, если это не последний элемент) -->
+        {% if not forloop.last %}
+            <span class="mx-2 text-outline-variant/60 font-normal">/</span>
+        {% endif %}
+
+    {% endfor %}
+</nav>
+{% endif %}

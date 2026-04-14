@@ -2,10 +2,11 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Category, Product, ProductImage, Attribute, ProductAttributeValue
 
 
-class ProductImageInline(admin.TabularInline):
+class ProductImageInline(TabularInline):
     model = ProductImage
     extra = 1
     fields = ("image", "preview", "alt_text", "is_primary", "sort_order")
@@ -18,14 +19,14 @@ class ProductImageInline(admin.TabularInline):
         return "Нет изображения"
 
 
-class ProductAttributeValueInline(admin.TabularInline):
+class ProductAttributeValueInline(TabularInline):
     model = ProductAttributeValue
     extra = 1
     autocomplete_fields = ("attribute",)
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_display = ("id", "name", "slug", "is_active", "product_count", "updated_at")
     list_filter = ("is_active",)
     search_fields = ("name", "description")
@@ -42,7 +43,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ModelAdmin):
     list_display = ("id", "name", "category", "price", "is_active", "main_image_preview", "updated_at")
     list_filter = ("is_active", "category")
     search_fields = ("name", "description")
@@ -69,7 +70,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductImage)
-class ProductImageAdmin(admin.ModelAdmin):
+class ProductImageAdmin(ModelAdmin):
     list_display = ("id", "product", "is_primary", "sort_order", "preview")
     list_filter = ("is_primary", "product__category")
     search_fields = ("product__name", "alt_text")
@@ -83,7 +84,7 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 
 @admin.register(Attribute)
-class AttributeAdmin(admin.ModelAdmin):
+class AttributeAdmin(ModelAdmin):
     list_display = ("id", "name", "category", "is_active", "sort_order")
     list_filter = ("is_active", "category")
     search_fields = ("name",)
@@ -91,7 +92,7 @@ class AttributeAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductAttributeValue)
-class ProductAttributeValueAdmin(admin.ModelAdmin):
+class ProductAttributeValueAdmin(ModelAdmin):
     list_display = ("id", "product", "attribute", "value")
     list_filter = ("attribute__category", "attribute")
     search_fields = ("product__name", "attribute__name", "value")

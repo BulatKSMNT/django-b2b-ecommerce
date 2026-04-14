@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+
 from apps.tracking.models import UserEvent
 from apps.tracking.services import record_event
 
@@ -21,6 +22,7 @@ def signup(request):
     if request.method == "POST" and form.is_valid():
         user = form.save()
         login(request, user)
+
         record_event(
             request,
             UserEvent.EventType.SIGNUP,
@@ -37,6 +39,10 @@ def signup(request):
 def dashboard(request):
     context = {
         "profile_count": request.user.profiles.filter(is_active=True).count(),
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Личный кабинет", "url": None},
+        ],
     }
     return render(request, "accounts/dashboard.html", context)
 
@@ -49,6 +55,11 @@ def profile_list(request):
         "accounts/profile_list.html",
         {
             "profiles": profiles,
+            "breadcrumbs": [
+                {"title": "Главная", "url": reverse("pages:home")},
+                {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
+                {"title": "Профили", "url": None},
+            ],
         },
     )
 
@@ -79,6 +90,12 @@ def profile_create(request):
             "form": form,
             "page_title": "Создать профиль",
             "submit_text": "Создать",
+            "breadcrumbs": [
+                {"title": "Главная", "url": reverse("pages:home")},
+                {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
+                {"title": "Профили", "url": reverse("accounts:profile_list")},
+                {"title": "Создать профиль", "url": None},
+            ],
         },
     )
 
@@ -102,6 +119,12 @@ def profile_update(request, pk):
             "profile": profile,
             "page_title": "Редактировать профиль",
             "submit_text": "Сохранить",
+            "breadcrumbs": [
+                {"title": "Главная", "url": reverse("pages:home")},
+                {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
+                {"title": "Профили", "url": reverse("accounts:profile_list")},
+                {"title": str(profile), "url": None},
+            ],
         },
     )
 

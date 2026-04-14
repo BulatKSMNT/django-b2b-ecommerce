@@ -1,7 +1,9 @@
+import json
 from datetime import timedelta
 
 from django.contrib import admin
 from django.db.models import Avg, Count, Q, Sum
+from django.db.models.functions import TruncDate
 from django.template.response import TemplateResponse
 from django.utils import timezone
 
@@ -13,7 +15,7 @@ from .models import LeadScore, PageDailyMetric, ProductDailyMetric
 
 def admin_analytics_dashboard(request):
     raw_days = request.GET.get("days", "7")
-    allowed_days = {1, 7, 14, 30, 90}
+    allowed_days = {7, 14, 30, 90}
 
     try:
         days = int(raw_days)
@@ -23,7 +25,9 @@ def admin_analytics_dashboard(request):
     if days not in allowed_days:
         days = 7
 
-    since = timezone.now() - timedelta(days=days)
+    # Определяем начало периода (сбрасываем до начала дня)
+    now = timezone.now()
+    since = (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     page_visits_qs = PageVisit.objects.filter(created_at__gte=since)
     events_qs = UserEvent.objects.filter(created_at__gte=since)
@@ -53,6 +57,39 @@ def admin_analytics_dashboard(request):
     cart_source_leads = leads_qs.filter(source=Lead.Source.CART).count()
     if overview["cart_adds"]:
         cart_to_lead_rate = round(cart_source_leads / overview["cart_adds"] * 100, 2)
+
+    # ==== НОВОЕ: ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКА CHART.JS ====
+    # Генерируем список дат для оси X (от since до сегодня)
+    date_list = [(since + timedelta(days=i)).date() for i in range(days + 1)]
+    date_labels = [d.strftime("%d.%m") for d in date_list]
+
+    # Группируем лиды по дням
+    leads_by_date = (
+        leads_qs
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+    )
+    leads_dict = {item['date']: item['count'] for item in leads_by_date if item['date']}
+    chart_leads_data = [leads_dict.get(d, 0) for d in date_list]
+
+    # Группируем добавления в корзину по дням
+    carts_by_date = (
+        cart_add_events
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+    )
+    carts_dict = {item['date']: item['count'] for item in carts_by_date if item['date']}
+    chart_carts_data =[carts_dict.get(d, 0) for d in date_list]
+
+    # Упаковываем в JSON для передачи в шаблон
+    chart_json = json.dumps({
+        "labels": date_labels,
+        "leads": chart_leads_data,
+        "carts": chart_carts_data,
+    })
+    # ========================================================
 
     top_pages = list(
         page_visits_qs.values("path", "route_name")
@@ -146,5 +183,6 @@ def admin_analytics_dashboard(request):
         "hot_leads": hot_leads,
         "latest_page_metric": latest_page_metric,
         "latest_product_metric": latest_product_metric,
+        "chart_json": chart_json, # Передаем JSON с данными в шаблон
     }
     return TemplateResponse(request, "admin/analytics/dashboard.html", context)

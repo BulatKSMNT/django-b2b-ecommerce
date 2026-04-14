@@ -1,29 +1,237 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Личный кабинет{% endblock %}
+{% block title %}Личный кабинет | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Личный кабинет</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-8 items-start">
 
-        <p><strong>Пользователь:</strong> {{ request.user.username }}</p>
-        <p><strong>Email:</strong> {{ request.user.email }}</p>
+    <!-- Боковое меню (Desktop Sidebar) -->
+    <aside class="hidden md:flex flex-col bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 w-72 shrink-0 sticky top-28 shadow-sm">
+        <div class="flex items-center space-x-3 px-2 py-4 mb-2 border-b border-outline-variant/10">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg uppercase">
+                {{ request.user.username|make_list|first }}
+            </div>
+            <div class="overflow-hidden">
+                <div class="text-sm font-bold text-on-surface truncate">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="text-xs text-on-surface-variant truncate">{{ request.profile.name|default:"Профиль не выбран" }}</div>
+            </div>
+        </div>
 
-        {% if request.profile %}
-            <p><strong>Активный профиль:</strong> {{ request.profile.name }}</p>
-            <p><strong>Тип профиля:</strong> {{ request.profile.get_profile_type_display }}</p>
-        {% else %}
-            <p>Активный профиль не найден.</p>
-        {% endif %}
+        <nav class="space-y-1 py-2">
+            <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-3 p-3 bg-primary-container/10 text-primary rounded-lg font-sans text-sm font-bold transition-all duration-200">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                <span>Дашборд</span>
+            </a>
+            <a href="{% url 'accounts:profile_list' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">group</span>
+                <span>Мои профили</span>
+            </a>
+            <a href="{% url 'shop:favorites' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Избранное</span>
+            </a>
+            <a href="{% url 'tracking:history' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">history</span>
+                <span>История</span>
+            </a>
+            <a href="{% url 'password_change' %}" class="flex items-center space-x-3 p-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg font-sans text-sm font-medium transition-all duration-200">
+                <span class="material-symbols-outlined">security</span>
+                <span>Сменить пароль</span>
+            </a>
+            <!-- Заглушка для заказов -->
+            <div class="flex items-center justify-between p-3 text-on-surface-variant/50 rounded-lg font-sans text-sm font-medium cursor-not-allowed" title="В разработке">
+                <div class="flex items-center space-x-3">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>Мои заказы</span>
+                </div>
+                <span class="text-[10px] uppercase tracking-widest font-bold bg-surface-container-high px-2 py-0.5 rounded">Скоро</span>
+            </div>
+        </nav>
 
-        <p><strong>Количество профилей:</strong> {{ profile_count }}</p>
+        <div class="mt-4 border-t border-outline-variant/10 pt-4">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex items-center space-x-3 p-3 text-error/80 hover:text-error hover:bg-error-container/30 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="font-sans text-sm font-bold">Выйти из аккаунта</span>
+                </button>
+            </form>
+        </div>
+    </aside>
 
-        <hr>
+    <!-- Основная область контента -->
+    <div class="flex-1 w-full space-y-8 md:space-y-10">
 
-        <p>
-            <a href="{% url 'accounts:profile_list' %}">Управление профилями</a>
-        </p>
+        <!-- Приветственный блок (Hero) -->
+        <section class="relative overflow-hidden rounded-[2rem] bg-primary-container p-8 md:p-10 text-on-primary-container min-h-[220px] md:min-h-[240px] flex flex-col justify-end shadow-lg">
+            <!-- Фоновая абстракция / Картинка -->
+            <div class="absolute top-0 right-0 w-full md:w-1/2 h-full opacity-20 pointer-events-none">
+                <img class="object-cover w-full h-full grayscale mix-blend-overlay" alt="Архитектура" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATlO6grWqnKI5mApuXKKR__BE-xsySJhq71B1tOsJ1O-dkAA2dQ5LGpSCLVU8RKauford-SA0BE3ci567RAcX5d8x7SqF6uXbqt-g42_K8uMzbu0UJN5y4et3gXyQJeIKw8aDwTMjunNYS-n9w88YbUjPCKlcvlo2TQ5UE-CY341s47_d6U1C8utrYEU0aDS-4HVSZHkRadnQMcLp0_xsd2shjDR94pwXkOasPzYvFX9Bjtw6m-5eVZFBDCnxLra_DwhaN_WgwzoM"/>
+            </div>
+
+            <div class="relative z-10 flex flex-col gap-2">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest">
+                        {% if request.profile %}{{ request.profile.get_profile_type_display }}{% else %}Аккаунт{% endif %}
+                    </span>
+                    <span class="text-sm opacity-80 font-medium hidden md:inline">С нами с {{ request.user.date_joined|date:"Y" }} года</span>
+                </div>
+
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                    Добро пожаловать, <br class="md:hidden"/>{{ request.user.first_name|default:request.user.username }}
+                </h1>
+                <p class="opacity-90 max-w-lg text-sm md:text-base mt-2">
+                    Активный профиль: <strong>{{ request.profile.name|default:"Не выбран" }}</strong>. Управляйте заказами и избранными материалами в одном месте.
+                </p>
+            </div>
+        </section>
+
+        <!-- Сетка быстрых действий (Bento Navigation) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <!-- Избранное -->
+            <a href="{% url 'shop:favorites' %}" class="group bg-surface-container-lowest p-5 md:p-6 rounded-2xl transition-all duration-300 hover:bg-primary/5 border border-outline-variant/20 hover:border-primary/30 shadow-sm hover:shadow-md flex flex-col">
+                <div class="flex justify-between items-start mb-4 md:mb-6">
+                    <div class="p-3 rounded-xl bg-error-container/50 text-error">
+                        <span class="material-symbols-outlined text-2xl md:text-3xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                    </div>
+                    <span class="text-xs md:text-sm font-bold text-on-surface-variant">{{ shop_favorites_count|default:0 }} ТОВАРОВ</span>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-on-surface mb-1 md:mb-2">Избранное</h3>
+                <p class="text-on-surface-variant text-xs md:text-sm mb-4 md:mb-6 flex-grow hidden md:block">Ваши сохраненные сэндвич-панели и решения.</p>
+                <span class="inline-flex items-center text-primary font-bold text-xs md:text-sm tracking-wide group-hover:translate-x-1 transition-transform mt-auto">
+                    ПЕРЕЙТИ <span class="material-symbols-outlined ml-1 md:ml-2 text-sm md:text-base">arrow_forward</span>
+                </span>
+            </a>
+
+            <!-- Корзина -->
+            <a href="{% url 'shop:cart' %}" class="group bg-surface-container-lowest p-5 md:p-6 rounded-2xl transition-all duration-300 hover:bg-primary/5 border border-outline-variant/20 hover:border-primary/30 shadow-sm hover:shadow-md flex flex-col">
+                <div class="flex justify-between items-start mb-4 md:mb-6">
+                    <div class="p-3 rounded-xl bg-primary-container/20 text-primary">
+                        <span class="material-symbols-outlined text-2xl md:text-3xl">shopping_cart</span>
+                    </div>
+                    <span class="text-xs md:text-sm font-bold text-on-surface-variant">{{ shop_cart_total_quantity|default:0 }} ПОЗИЦИЙ</span>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-on-surface mb-1 md:mb-2">Корзина</h3>
+                <p class="text-on-surface-variant text-xs md:text-sm mb-4 md:mb-6 flex-grow hidden md:block">Готовые к заявке спецификации материалов.</p>
+                <span class="inline-flex items-center text-primary font-bold text-xs md:text-sm tracking-wide group-hover:translate-x-1 transition-transform mt-auto">
+                    ОФОРМИТЬ <span class="material-symbols-outlined ml-1 md:ml-2 text-sm md:text-base">arrow_forward</span>
+                </span>
+            </a>
+
+            <!-- Профили (На мобилке выводится 3-й карточкой) -->
+            <a href="{% url 'accounts:profile_list' %}" class="col-span-2 md:col-span-1 group bg-surface-container-lowest p-5 md:p-6 rounded-2xl transition-all duration-300 hover:bg-primary/5 border border-outline-variant/20 hover:border-primary/30 shadow-sm hover:shadow-md flex flex-col items-center justify-between md:items-start md:justify-start flex-row md:flex-col">
+                <div class="flex justify-between items-start w-full mb-0 md:mb-6">
+                    <div class="flex items-center gap-4 md:block">
+                        <div class="p-3 rounded-xl bg-surface-container-highest text-on-surface-variant md:mb-0">
+                            <span class="material-symbols-outlined text-2xl md:text-3xl">group</span>
+                        </div>
+                        <div class="md:hidden">
+                            <h3 class="text-lg font-bold text-on-surface">Мои профили</h3>
+                            <span class="text-xs font-bold text-on-surface-variant">{{ profile_count|default:0 }} ДОСТУПНО</span>
+                        </div>
+                    </div>
+                    <span class="hidden md:block text-sm font-bold text-on-surface-variant">{{ profile_count|default:0 }} ПРОФИЛЕЙ</span>
+                    <span class="md:hidden material-symbols-outlined text-outline">chevron_right</span>
+                </div>
+                <h3 class="hidden md:block text-xl font-bold text-on-surface mb-2">Профили</h3>
+                <p class="text-on-surface-variant text-sm mb-6 flex-grow hidden md:block">Переключение между личным аккаунтом и компаниями.</p>
+                <span class="hidden md:inline-flex items-center text-primary font-bold text-sm tracking-wide group-hover:translate-x-1 transition-transform mt-auto">
+                    УПРАВЛЕНИЕ <span class="material-symbols-outlined ml-2 text-base">arrow_forward</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- Данные профиля & Заглушки -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+
+            <!-- Карточка пользователя -->
+            <div class="lg:col-span-5 bg-surface-container-low border border-outline-variant/10 rounded-[2rem] p-6 md:p-8 space-y-6 h-full shadow-sm">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden text-primary">
+                        <span class="material-symbols-outlined text-3xl md:text-4xl">person</span>
+                    </div>
+                    <div>
+                        <h4 class="text-lg md:text-xl font-bold text-on-surface leading-tight">{{ request.user.get_full_name|default:request.user.username }}</h4>
+                        <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">{{ request.profile.name|default:"Базовый аккаунт" }}</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 bg-surface-container-lowest p-4 rounded-2xl">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 mb-1">Email</span>
+                        <span class="text-on-surface font-medium text-sm">{{ request.user.email|default:"Не указан" }}</span>
+                    </div>
+                    {% if request.profile and request.profile.profile_type == 'company' %}
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 mb-1">Тип профиля</span>
+                        <span class="text-on-surface font-medium text-sm">Юридическое лицо</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'accounts:profile_list' %}" class="block w-full py-4 text-center bg-white text-on-surface border border-outline-variant/30 rounded-xl font-bold text-xs md:text-sm tracking-wide hover:bg-surface-container transition-colors shadow-sm">
+                    НАСТРОЙКИ ПРОФИЛЕЙ
+                </a>
+            </div>
+
+            <!-- Заглушки из дизайна (Orders, Status, Invoices) -->
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                <!-- Заглушка: Заказы -->
+                <div class="bg-surface-container-lowest border border-outline-variant/10 p-6 md:p-8 rounded-[2rem] flex flex-col justify-between min-h-[180px] md:min-h-[220px] shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <h4 class="text-[10px] md:text-sm font-bold uppercase tracking-widest text-on-surface-variant">Всего заказов</h4>
+                        <span class="bg-surface-container-high px-2 py-1 rounded text-[10px] font-bold uppercase text-on-surface-variant">Скоро</span>
+                    </div>
+                    <div class="opacity-50">
+                        <div class="text-5xl md:text-6xl font-black text-primary mb-2">0</div>
+                        <p class="text-on-surface-variant text-xs md:text-sm">История заказов будет доступна позже.</p>
+                    </div>
+                </div>
+
+                <!-- Заглушка: Статус -->
+                <div class="bg-primary p-6 md:p-8 rounded-[2rem] text-on-primary flex flex-col justify-between min-h-[180px] md:min-h-[220px] relative overflow-hidden shadow-lg">
+                    <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-8xl md:text-9xl">verified</span>
+                    <h4 class="text-[10px] md:text-sm font-bold uppercase tracking-widest opacity-70">Статус программы</h4>
+                    <div class="relative z-10">
+                        <div class="text-2xl md:text-3xl font-black mb-2">Базовый уровень</div>
+                        <p class="opacity-80 text-xs md:text-sm">Персональные скидки рассчитываются менеджером индивидуально.</p>
+                    </div>
+                </div>
+
+                <!-- Настройки мобильные (Список как в макете) -->
+                <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/10 rounded-[2rem] p-2 shadow-sm md:hidden">
+                    <h2 class="px-4 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Настройки и помощь</h2>
+                    <div class="space-y-1">
+                        <a href="{% url 'password_change' %}" class="w-full flex items-center justify-between px-4 py-4 rounded-xl hover:bg-surface-container transition-colors text-left">
+                            <div class="flex items-center gap-4">
+                                <span class="material-symbols-outlined text-primary">security</span>
+                                <span class="font-bold text-sm">Сменить пароль</span>
+                            </div>
+                            <span class="material-symbols-outlined text-outline">chevron_right</span>
+                        </a>
+                        <a href="{% url 'pages:contacts' %}" class="w-full flex items-center justify-between px-4 py-4 rounded-xl hover:bg-surface-container transition-colors text-left">
+                            <div class="flex items-center gap-4">
+                                <span class="material-symbols-outlined text-primary">headset_mic</span>
+                                <span class="font-bold text-sm">Связаться с менеджером</span>
+                            </div>
+                            <span class="material-symbols-outlined text-outline">chevron_right</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Выход на мобильных -->
+                <div class="sm:col-span-2 md:hidden">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-error font-bold py-4 bg-error-container/30 rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-95 border border-error-container">
+                            <span class="material-symbols-outlined">logout</span>
+                            Выйти из аккаунта
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>
 {% endblock %}

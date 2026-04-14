@@ -1,38 +1,47 @@
-<article class="product-card">
-    <a href="{{ product.get_absolute_url }}" class="product-card__link">
-        <div class="product-card__image-wrap">
-            {% with main_image=product.get_main_image %}
-                {% if main_image and main_image.image %}
-                    <img src="{{ main_image.image.url }}"
-                         alt="{{ main_image.alt_text|default:product.name }}"
-                         class="product-card__image">
+<div class="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden hover:shadow-xl transition-all duration-500 border border-outline-variant/20 h-full relative">
+
+    <div class="relative h-[220px] md:h-[240px] overflow-hidden bg-surface-container-low">
+        <a href="{{ product.get_absolute_url }}" class="block w-full h-full">
+            {% with primary_image=product.get_main_image %}
+                {% if primary_image and primary_image.image %}
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:product.name }}">
                 {% else %}
-                    <div class="product-card__placeholder">Нет изображения</div>
+                    <div class="w-full h-full flex items-center justify-center text-outline-variant"><span class="material-symbols-outlined text-5xl">image</span></div>
                 {% endif %}
             {% endwith %}
+        </a>
+
+        <!-- Кнопка избранного в углу поверх картинки -->
+        <div class="absolute top-3 right-3 z-10">
+            {% include 'shop/includes/favorite_toggle_form.html' with product=product favorite_product_ids=favorite_product_ids %}
         </div>
-
-        <div class="product-card__content">
-            <h3 class="product-card__title">{{ product.name }}</h3>
-
-            {% if product.description %}
-                <p class="product-card__description">
-                    {{ product.description|truncatechars:100 }}
-                </p>
-            {% endif %}
-
-            <p class="product-card__price">
-                {% if product.price %}
-                    от {{ product.price }} ₽
-                {% else %}
-                    Цена по запросу
-                {% endif %}
-            </p>
-        </div>
-    </a>
-
-    <div class="product-card__actions">
-        {% include "shop/includes/add_to_cart_form.html" with product=product show_quantity=False %}
-        {% include "shop/includes/favorite_toggle_form.html" with product=product favorite_product_ids=favorite_product_ids %}
     </div>
-</article>
+
+    <div class="p-5 md:p-6 flex flex-col flex-grow">
+        <a href="{{ product.get_absolute_url }}" class="block mb-2">
+            <h3 class="text-lg md:text-xl font-bold group-hover:text-primary transition-colors leading-tight line-clamp-2">{{ product.name }}</h3>
+        </a>
+
+        <p class="text-xs md:text-sm text-on-surface-variant mb-6 flex-grow line-clamp-2">
+            {{ product.description|default:"Характеристики уточняйте на странице товара." }}
+        </p>
+
+        <div class="flex items-end justify-between mt-auto">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest">
+                    {% if product.price %}От{% else %}Цена{% endif %}
+                </span>
+                <span class="text-xl md:text-2xl font-black text-primary leading-none whitespace-nowrap">
+                    {% if product.price %}
+                        {{ product.price|floatformat:"0" }} <span class="text-sm font-medium">₽</span>
+                    {% else %}
+                        <span class="text-base md:text-lg">По запросу</span>
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Кнопка Корзины -->
+            {% include 'shop/includes/add_to_cart_form.html' with product=product show_quantity=False %}
+        </div>
+    </div>
+</div>

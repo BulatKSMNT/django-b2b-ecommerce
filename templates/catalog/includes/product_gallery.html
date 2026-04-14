@@ -1,0 +1,31 @@
+<div class="product-gallery">
+    {% with images=product.images.all %}
+        {% if images %}
+            <div id="productGallery{{ product.id }}" class="carousel slide product-gallery__carousel" data-bs-ride="false">
+                <div class="carousel-inner">
+                    {% for image in images %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img
+                                src="{{ image.image.url }}"
+                                class="d-block w-100 product-gallery__main-image"
+                                alt="{{ image.alt_text|default:product.name }}">
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productGallery{{ product.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Предыдущее фото</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productGallery{{ product.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Следующее фото</span>
+                    </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="product-gallery__empty">Фотографии товара пока не добавлены</div>
+        {% endif %}
+    {% endwith %}
+</div>

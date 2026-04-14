@@ -1,13 +1,13 @@
 from django.contrib import messages
-from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_GET, require_POST
+
+from apps.catalog.models import Product
 from apps.leads.services import get_scoped_lead_form
 from apps.tracking.models import UserEvent
 from apps.tracking.services import record_event
-
-from apps.catalog.models import Product
 
 from .forms import AddToCartForm, UpdateCartItemForm
 from .services import (
@@ -50,7 +50,11 @@ def cart_detail(request):
         "cart_data": cart_data,
         "update_forms": update_forms,
         "favorite_product_ids": get_favorite_product_ids(request),
-        "lead_form": get_scoped_lead_form(request, "cart"),
+        "cart_lead_form": get_scoped_lead_form(request, "cart"),
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Корзина", "url": None},
+        ],
     }
     return render(request, "shop/cart.html", context)
 
@@ -66,6 +70,7 @@ def cart_add(request, product_id):
 
     quantity = form.cleaned_data["quantity"]
     add_product_to_cart(request, product, quantity)
+
     record_event(
         request,
         UserEvent.EventType.CART_ADD,
@@ -74,7 +79,6 @@ def cart_add(request, product_id):
     )
 
     messages.success(request, f"Товар «{product.name}» добавлен в корзину.")
-
     return redirect(_get_safe_next_url(request, product.get_absolute_url()))
 
 
@@ -85,10 +89,11 @@ def cart_update(request, product_id):
 
     if not form.is_valid():
         messages.error(request, "Некорректное количество товара.")
-        return redirect(_get_safe_next_url(request, "shop:cart"))
+        return redirect(_get_safe_next_url(request, reverse("shop:cart")))
 
     quantity = form.cleaned_data["quantity"]
     set_product_quantity(request, product, quantity)
+
     if quantity <= 0:
         record_event(
             request,
@@ -96,6 +101,7 @@ def cart_update(request, product_id):
             product=product,
             metadata={"quantity": 0},
         )
+        messages.success(request, f"Товар «{product.name}» удалён из корзины.")
     else:
         record_event(
             request,
@@ -103,10 +109,6 @@ def cart_update(request, product_id):
             product=product,
             metadata={"quantity": quantity},
         )
-
-    if quantity <= 0:
-        messages.success(request, f"Товар «{product.name}» удалён из корзины.")
-    else:
         messages.success(request, f"Количество товара «{product.name}» обновлено.")
 
     return redirect(_get_safe_next_url(request, reverse("shop:cart")))
@@ -116,6 +118,7 @@ def cart_update(request, product_id):
 def cart_remove(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_active=True)
     remove_product_from_cart(request, product)
+
     record_event(
         request,
         UserEvent.EventType.CART_REMOVE,
@@ -130,6 +133,7 @@ def cart_remove(request, product_id):
 @require_POST
 def cart_clear_view(request):
     clear_cart(request)
+
     record_event(
         request,
         UserEvent.EventType.CART_CLEAR,
@@ -148,6 +152,10 @@ def favorites_list(request):
     context = {
         "products": products,
         "favorite_product_ids": favorite_product_ids,
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Избранное", "url": None},
+        ],
     }
     return render(request, "shop/favorites.html", context)
 
@@ -156,6 +164,7 @@ def favorites_list(request):
 def favorite_toggle(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_active=True)
     is_now_favorite = toggle_favorite(request, product)
+
     record_event(
         request,
         UserEvent.EventType.FAVORITE_ADD if is_now_favorite else UserEvent.EventType.FAVORITE_REMOVE,

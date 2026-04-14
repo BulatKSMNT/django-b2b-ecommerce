@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.db.models import Count, Sum
 from django.utils import timezone
-
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Lead, LeadItem
 
 
-class LeadItemInline(admin.TabularInline):
+class LeadItemInline(TabularInline):
     model = LeadItem
     extra = 0
     autocomplete_fields = ("product",)
@@ -59,7 +59,7 @@ def mark_canceled(modeladmin, request, queryset):
 
 
 @admin.register(Lead)
-class LeadAdmin(admin.ModelAdmin):
+class LeadAdmin(ModelAdmin):
     list_display = (
         "id",
         "created_at",
@@ -192,7 +192,7 @@ class LeadAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeadItem)
-class LeadItemAdmin(admin.ModelAdmin):
+class LeadItemAdmin(ModelAdmin):
     list_display = (
         "id",
         "lead",

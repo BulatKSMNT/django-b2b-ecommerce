@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Публичная оферта | LIDER{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+    <div class="max-w-7xl mx-auto px-6 pt-6">
+        {% include 'includes/breadcrumbs.html' %}
+    </div>
+
+    <section class="max-w-7xl mx-auto px-6 mb-12 mt-6">
+        <div class="inline-block px-4 py-1.5 bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase rounded-full mb-6">
+            Юридическая информация
+        </div>
+        <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter text-on-surface mb-6 leading-tight">
+            Публичная <br class="hidden md:block"/><span class="text-primary">оферта</span>
+        </h1>
+        <p class="text-base md:text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+            Пользовательское соглашение и условия продажи строительных материалов через интернет-каталог LIDER.
+        </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+        <aside class="hidden lg:block lg:col-span-3">
+            <div class="sticky top-28 space-y-4 p-6 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-outline mb-6">Содержание</h3>
+
+                <!-- ДОБАВЛЕНЫ КЛАССЫ toc-link и transition для плавности -->
+                <nav id="toc-nav" class="flex flex-col gap-4 relative">
+                    <a class="toc-link text-sm transition-all duration-300 text-primary font-bold translate-x-1" href="#general">1. Общие положения</a>
+                    <a class="toc-link text-sm transition-all duration-300 text-on-surface-variant font-medium hover:text-primary hover:translate-x-1" href="#catalog">2. Информация в каталоге</a>
+                    <a class="toc-link text-sm transition-all duration-300 text-on-surface-variant font-medium hover:text-primary hover:translate-x-1" href="#pricing">3. Цены и порядок оплаты</a>
+                    <a class="toc-link text-sm transition-all duration-300 text-on-surface-variant font-medium hover:text-primary hover:translate-x-1" href="#liability">4. Ответственность сторон</a>
+                </nav>
+            </div>
+        </aside>
+
+        <article class="lg:col-span-9 space-y-12 md:space-y-16 text-on-surface-variant leading-relaxed">
+
+            <!-- ДОБАВЛЕН КЛАСС content-section -->
+            <section class="scroll-mt-28 content-section" id="general">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-6 flex items-center gap-4 text-on-surface">
+                    <span class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg text-base md:text-lg shrink-0">1</span>
+                    Общие положения
+                </h2>
+                <div class="space-y-4 text-base md:text-lg">
+                    <p>Данный документ является официальным предложением (публичной офертой) ООО «ЛИДЕР» и содержит все существенные условия поставки строительных материалов.</p>
+                    <p>Оформление запроса или заявки через Корзину сайта не является фактом заключения договора купли-продажи. Договор считается заключенным только после подписания спецификации обеими сторонами и выставления счета.</p>
+                </div>
+            </section>
+
+            <div class="h-px bg-surface-container-highest"></div>
+
+            <!-- ДОБАВЛЕН КЛАСС content-section -->
+            <section class="scroll-mt-28 content-section" id="catalog">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-6 flex items-center gap-4 text-on-surface">
+                    <span class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg text-base md:text-lg shrink-0">2</span>
+                    Информация о товарах
+                </h2>
+                <div class="space-y-4 text-base md:text-lg">
+                    <div class="p-6 bg-error-container/20 rounded-xl border border-error/10 text-on-surface">
+                        <p class="font-bold mb-2 text-error">Важно: Сайт носит исключительно информационный характер.</p>
+                        <p class="text-sm">Ни при каких условиях информационные материалы и цены, размещенные на сайте, не являются публичной офертой, определяемой положениями Статьи 437 Гражданского кодекса РФ.</p>
+                    </div>
+                    <p>Технические характеристики, цвета RAL и комплектация могут быть изменены производителем без предварительного уведомления.</p>
+                </div>
+            </section>
+
+            <div class="h-px bg-surface-container-highest"></div>
+
+            <!-- ДОБАВЛЕН КЛАСС content-section -->
+            <section class="scroll-mt-28 content-section" id="pricing">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-6 flex items-center gap-4 text-on-surface">
+                    <span class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg text-base md:text-lg shrink-0">3</span>
+                    Цены и порядок расчетов
+                </h2>
+                <div class="space-y-4 text-base md:text-lg">
+                    <p>Цены, указанные на сайте в формате «от ... ₽», являются ориентировочными базовыми ценами. Финальная стоимость продукции рассчитывается менеджером индивидуально с учетом:</p>
+                    <ul class="list-disc list-inside pl-4 space-y-2">
+                        <li>Объема закупки;</li>
+                        <li>Стоимости металла и сырья на день выставления счета;</li>
+                        <li>Сложности фасонных и доборных элементов;</li>
+                        <li>Логистики до объекта заказчика.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="h-px bg-surface-container-highest"></div>
+
+            <!-- ДОБАВЛЕН БЛОК И КЛАСС content-section -->
+            <section class="scroll-mt-28 content-section" id="liability">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-6 flex items-center gap-4 text-on-surface">
+                    <span class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg text-base md:text-lg shrink-0">4</span>
+                    Ответственность сторон
+                </h2>
+                <div class="space-y-4 text-base md:text-lg">
+                    <p>Стороны несут ответственность за неисполнение или ненадлежащее исполнение условий соглашения в соответствии с законодательством Российской Федерации.</p>
+                    <p>Поставщик не несет ответственности за ущерб, причиненный Заказчику вследствие ненадлежащего использования или хранения строительных материалов.</p>
+                </div>
+            </section>
+
+        </article>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Скрипт для подсветки активного пункта в "Содержании" при скролле
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.toc-link');
+
+        // Настраиваем IntersectionObserver (срабатывает, когда секция доходит до верхней трети экрана)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -60% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Убираем активные классы у всех
+                    navLinks.forEach(link => {
+                        link.classList.remove('text-primary', 'font-bold', 'translate-x-1');
+                        link.classList.add('text-on-surface-variant', 'font-medium');
+
+                        // Если href ссылки совпадает с id видимой секции — добавляем ей активный стиль
+                        if (link.getAttribute('href') === '#' + entry.target.id) {
+                            link.classList.remove('text-on-surface-variant', 'font-medium');
+                            link.classList.add('text-primary', 'font-bold', 'translate-x-1');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+</script>
+{% endblock %}

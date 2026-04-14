@@ -1,68 +1,172 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Профили{% endblock %}
+{% block title %}Мои профили | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Профили</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-32 md:pb-12">
+    <!-- Хлебные крошки -->
+    {% include 'includes/breadcrumbs.html' %}
 
-        <p>
-            <a href="{% url 'accounts:profile_create' %}">Создать новый профиль</a>
-        </p>
+    <!-- Header & Primary Action -->
+    <section class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mt-6 mb-8 md:mb-12">
+        <div class="space-y-1">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface leading-none mb-2">Профили</h1>
+            <p class="text-on-surface-variant text-sm md:text-base">Управляйте своими личными и корпоративными учетными записями</p>
+        </div>
+        <a href="{% url 'accounts:profile_create' %}" class="w-full sm:w-auto bg-primary text-on-primary px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-xl">add_circle</span>
+            Создать профиль
+        </a>
+    </section>
 
-        {% if profiles %}
-            <table border="1" cellpadding="10" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Название</th>
-                        <th>Тип</th>
-                        <th>Основной</th>
-                        <th>Активный сейчас</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <!-- Bento Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+
+        <!-- Основной / Активный профиль (Крупная карточка) -->
+        <div class="md:col-span-4 md:row-span-2 bg-primary-container/10 border border-primary/10 rounded-2xl p-6 md:p-8 flex flex-col justify-between group relative overflow-hidden shadow-sm">
+            <div class="absolute top-0 right-0 p-4 md:p-6">
+                <div class="bg-primary text-on-primary px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    Текущий (Активный)
+                </div>
+            </div>
+
+            <div class="relative z-10 mt-6 md:mt-0">
+                <span class="material-symbols-outlined text-primary text-5xl mb-4 md:mb-6" style="font-variation-settings: 'FILL' 1;">
+                    {% if request.profile.profile_type == 'company' %}apartment{% else %}person{% endif %}
+                </span>
+
+                <h3 class="text-3xl md:text-4xl font-black tracking-tight text-on-surface mb-2 leading-tight">
+                    {{ request.profile.name|default:"Не выбран" }}
+                </h3>
+
+                <div class="flex items-center gap-2 text-on-surface-variant mt-3">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-primary/80 bg-primary/10 px-2 py-1 rounded">
+                        {{ request.profile.get_profile_type_display }}
+                    </span>
+                    {% if request.profile.is_default %}
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-secondary bg-secondary/10 px-2 py-1 rounded flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[12px]">star</span> Основной
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-10 flex flex-col sm:flex-row gap-3 relative z-10">
+                {% if request.profile %}
+                    <a href="{% url 'accounts:profile_update' request.profile.id %}" class="w-full sm:w-auto bg-primary text-on-primary py-3 px-6 rounded-xl font-bold flex justify-center items-center gap-2 active:scale-95 transition-all shadow-md">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                        Редактировать
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Декоративная иконка на фоне -->
+            <div class="absolute bottom-0 right-0 opacity-5 -mb-8 -mr-8 pointer-events-none">
+                <span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">
+                    {% if request.profile.profile_type == 'company' %}corporate_fare{% else %}account_circle{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Статистика (Bento блоки) -->
+        <div class="grid grid-cols-2 md:grid-cols-1 md:col-span-2 gap-4 md:gap-6 h-full">
+            <!-- Заказы -->
+            <div class="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline-variant/10 shadow-sm opacity-60 relative group" title="Раздел в разработке">
+                <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                <div class="mt-6">
+                    <p class="text-3xl font-black text-on-surface tracking-tighter leading-none mb-1">0</p>
+                    <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Заказов</p>
+                </div>
+                <div class="absolute top-3 right-3 bg-surface-container-high text-outline text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Скоро</div>
+            </div>
+
+            <!-- Профили -->
+            <div class="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline-variant/10 shadow-sm">
+                <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">group</span>
+                <div class="mt-6">
+                    <p class="text-3xl font-black text-on-surface tracking-tighter leading-none mb-1">{{ profiles|length }}</p>
+                    <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Профилей создано</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список остальных профилей (Неактивных) -->
+        {% if profiles|length > 1 %}
+            <div class="col-span-1 md:col-span-6 mt-4">
+                <h3 class="text-xl font-bold mb-4 px-1 text-on-surface">Другие профили</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                     {% for profile in profiles %}
-                        <tr>
-                            <td>{{ profile.id }}</td>
-                            <td>{{ profile.name }}</td>
-                            <td>{{ profile.get_profile_type_display }}</td>
-                            <td>{% if profile.is_default %}Да{% else %}Нет{% endif %}</td>
-                            <td>
-                                {% if request.profile and request.profile.id == profile.id %}
-                                    Да
-                                {% else %}
-                                    Нет
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url 'accounts:profile_update' profile.id %}">Редактировать</a>
+                        {% if not request.profile or request.profile.id != profile.id %}
 
-                                {% if not request.profile or request.profile.id != profile.id %}
-                                    <form method="post" action="{% url 'accounts:profile_switch' profile.id %}" style="display:inline;">
+                        <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/15 shadow-sm hover:border-primary/30 transition-all flex flex-col justify-between h-full group relative overflow-hidden">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-outline-variant group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">
+                                            {% if profile.profile_type == 'company' %}business{% else %}person{% endif %}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-0.5">{{ profile.get_profile_type_display }}</span>
+                                        <h4 class="text-lg font-bold text-on-surface leading-tight">{{ profile.name }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2 mt-auto">
+                                <!-- Сделать активным (Авто-сабмит) -->
+                                <form method="post" action="{% url 'accounts:profile_switch' profile.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit" class="w-full bg-white border border-primary/20 text-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm active:scale-[0.98]">
+                                        <span class="material-symbols-outlined text-lg">login</span> Сделать активным
+                                    </button>
+                                </form>
+
+                                <div class="flex gap-2">
+                                    <!-- Редактировать -->
+                                    <a href="{% url 'accounts:profile_update' profile.id %}" class="flex-1 bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container py-2.5 rounded-lg font-bold text-xs flex justify-center items-center transition-colors">
+                                        Настройки
+                                    </a>
+
+                                    <!-- Сделать основным -->
+                                    {% if not profile.is_default %}
+                                    <form method="post" action="{% url 'accounts:profile_make_default' profile.id %}" class="flex-1">
                                         {% csrf_token %}
                                         <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                        <button type="submit">Сделать активным</button>
+                                        <button type="submit" class="w-full bg-surface-container-low text-on-surface-variant hover:text-secondary hover:bg-secondary-container/50 py-2.5 rounded-lg font-bold text-xs flex justify-center items-center transition-colors" title="Назначить профилем по умолчанию">
+                                            Сделать основным
+                                        </button>
                                     </form>
-                                {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
 
-                                {% if not profile.is_default %}
-                                    <form method="post" action="{% url 'accounts:profile_make_default' profile.id %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                        <button type="submit">Сделать основным</button>
-                                    </form>
-                                {% endif %}
-                            </td>
-                        </tr>
+                        {% endif %}
                     {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Профили не найдены.</p>
+
+                </div>
+            </div>
         {% endif %}
+
+        <!-- Блок Поддержки (На всю ширину снизу) -->
+        <div class="md:col-span-6 bg-secondary text-on-secondary rounded-2xl p-8 relative overflow-hidden mt-6">
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-2 max-w-xl">
+                    <h4 class="text-2xl font-black leading-tight">Нужна помощь с документами?</h4>
+                    <p class="text-on-secondary/80 text-sm md:text-base leading-relaxed">Наши специалисты помогут оформить юрлицо в системе, подготовить договоры и настроить документооборот.</p>
+                </div>
+                <a href="{% url 'pages:contacts' %}" class="w-fit bg-on-secondary text-secondary px-6 py-4 rounded-xl text-sm font-bold active:scale-95 transition-all shadow-lg flex items-center gap-2 whitespace-nowrap hover:bg-surface">
+                    <span class="material-symbols-outlined">support_agent</span> Связаться с менеджером
+                </a>
+            </div>
+            <!-- Декоративный элемент -->
+            <span class="material-symbols-outlined absolute -bottom-10 -right-6 text-9xl text-on-secondary/10 pointer-events-none" style="font-variation-settings: 'FILL' 1;">description</span>
+        </div>
+
     </div>
-</section>
+</div>
 {% endblock %}

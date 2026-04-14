@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}403 — Страница не доступна | LIDER{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Декоративный фон "чертеж" для 404 страницы */
+    .bg-blueprint {
+        background-image: radial-gradient(circle at 2px 2px, rgba(0, 104, 89, 0.05) 1px, transparent 0);
+        background-size: 24px 24px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="relative min-h-[calc(100vh-80px)] flex items-center justify-center p-4 lg:p-12 overflow-hidden bg-surface bg-blueprint">
+
+    <!-- Декоративные Архитектурные элементы (Фон) -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <!-- Блюр пятна -->
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl hidden md:block"></div>
+        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl hidden md:block"></div>
+
+        <!-- Иконки-чертежи -->
+        <div class="absolute -top-10 -right-10 opacity-5 transform rotate-12">
+            <span class="material-symbols-outlined text-[240px] text-primary" style="font-variation-settings: 'FILL' 1;">architecture</span>
+        </div>
+        <div class="absolute top-1/4 -left-20 opacity-5 transform -rotate-45">
+            <span class="material-symbols-outlined text-[320px] text-secondary">construction</span>
+        </div>
+        <div class="absolute bottom-10 -right-16 opacity-5 md:opacity-10">
+            <span class="material-symbols-outlined text-[180px] text-primary" style="font-variation-settings: 'FILL' 1;">foundation</span>
+        </div>
+    </div>
+
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+
+        <!-- Левая часть: Типографика и Кнопки -->
+        <div class="flex flex-col space-y-6 md:space-y-8 text-center lg:text-left order-2 lg:order-1 mt-8 lg:mt-0">
+            <div class="space-y-2 md:space-y-4">
+                <!-- Мобильный огромный текст 404 (На ПК он внутри иллюстрации) -->
+                <h2 class="lg:hidden text-[100px] md:text-[140px] font-black leading-none tracking-tighter text-primary/10 select-none mb-4">
+                    403
+                </h2>
+
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface leading-tight">
+                    Упс! Кажется, мы <br class="hidden md:block"/>сбились с чертежа.
+                </h1>
+                <p class="text-base md:text-xl text-on-surface-variant max-w-lg mx-auto lg:mx-0 font-medium leading-relaxed">
+                    Возможно, у Вас недостаточно прав для просмотра этой страницы. Давайте вернемся к проверенным маршрутам.
+                </p>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4 max-w-[280px] sm:max-w-none mx-auto lg:mx-0 w-full sm:w-auto">
+                <a href="{% url 'pages:home' %}" class="w-full sm:w-auto flex items-center justify-center px-10 py-4 bg-primary text-on-primary rounded-xl font-bold transition-all duration-300 hover:bg-primary-fixed-dim hover:text-on-primary-fixed shadow-lg shadow-primary/20 active:scale-95 gap-2">
+                    <span class="material-symbols-outlined">home</span>
+                    На главную
+                </a>
+                <a href="{% url 'catalog:category_list' %}" class="w-full sm:w-auto flex items-center justify-center px-10 py-4 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all duration-300 hover:bg-secondary-fixed active:scale-95 gap-2">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    В каталог
+                </a>
+            </div>
+
+            <!-- Технические шильдики (из мобильного макета) -->
+            <div class="pt-8 flex flex-wrap justify-center lg:justify-start gap-2 opacity-70">
+                <span class="px-3 py-1 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest text-on-surface-variant rounded-full">Error_Code: 404</span>
+                <span class="px-3 py-1 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest text-on-surface-variant rounded-full">Status: Offline</span>
+            </div>
+        </div>
+
+        <!-- Правая часть: Иллюстрация (Glassmorphism + Картинка) -->
+        <div class="relative order-1 lg:order-2 flex justify-center items-center">
+            <div class="relative w-full max-w-[400px] lg:max-w-[500px] aspect-square flex items-center justify-center">
+
+                <!-- Огромный текст 404 на фоне (Десктоп) -->
+                <div class="hidden lg:block absolute z-0">
+                    <h2 class="text-[200px] font-black leading-none tracking-tighter text-primary/5 select-none">404</h2>
+                </div>
+
+                <!-- Главная стеклянная карточка -->
+                <div class="bg-white/40 backdrop-blur-xl border border-white/40 w-4/5 h-4/5 rounded-[40px] absolute transform rotate-6 z-20 shadow-2xl flex flex-col items-center justify-center p-8">
+                    <!-- Картинка чертежа внутри карточки -->
+                    <div class="absolute inset-0 z-0 opacity-40 mix-blend-multiply p-4">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-4yibKWhTYcVLFq9Yu-445j57gQWvABUjp-h_6paPR8AFKXNBWQE6M0A782i44K1gCXxNitzoF8ZZMCaKYtnPSCPDaRQCpNj7f-BQ9aljIyaEk_IXOvg6DEqGiumIv7BxeerRJQoltxCsBzKCVaddfNUM_SxpuXIFt9bwzwrfvDs6i6c5-sUETUKBX4x1hD7W_BBlJunMVhmYUXsK6r4DTkpdURzlYiA-BzGbLFBrmbdOzTnttknCJbZ9kLG8OSFA13fanLdcw9c" alt="Чертеж" class="w-full h-full object-contain">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
+                            <span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">architecture</span>
+                        </div>
+                        <div class="h-2 w-32 bg-primary/40 rounded-full mb-3"></div>
+                        <div class="h-2 w-24 bg-primary/30 rounded-full mb-3"></div>
+                        <div class="h-2 w-28 bg-primary/20 rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Дополнительные стеклянные карточки -->
+                <div class="bg-white/50 backdrop-blur-md w-1/2 h-1/2 rounded-[30px] absolute -top-4 -right-4 z-30 transform -rotate-12 shadow-xl border border-white/50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-secondary text-6xl">search_off</span>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-md w-1/3 h-1/3 rounded-[24px] absolute -bottom-4 -left-4 md:-bottom-8 md:-left-4 z-30 transform rotate-12 md:rotate-45 shadow-lg border border-white/60 flex flex-col items-center justify-center text-center p-2">
+                    <span class="material-symbols-outlined text-error text-3xl md:text-4xl mb-1">warning</span>
+                    <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">System Error</span>
+                </div>
+
+                <!-- Абстрактный фон за карточками -->
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-full blur-2xl -z-10"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

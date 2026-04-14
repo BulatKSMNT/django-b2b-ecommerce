@@ -1,11 +1,12 @@
-<form method="post" action="{% url 'shop:favorite_toggle' product.id %}" class="shop-inline-form">
+<form method="post" action="{% url 'shop:favorite_toggle' product.id %}" class="inline-block">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
-    <button type="submit">
-        {% if favorite_product_ids and product.id in favorite_product_ids %}
-            Убрать из избранного
-        {% else %}
-            В избранное
-        {% endif %}
+    <button type="submit"
+            class="bg-white/70 backdrop-blur-md hover:bg-white text-primary w-10 h-10 rounded-full transition-colors shadow-sm flex items-center justify-center group-hover:shadow-md"
+            title="{% if product.id in favorite_product_ids %}Убрать из избранного{% else %}В избранное{% endif %}">
+        <span class="material-symbols-outlined {% if product.id in favorite_product_ids %}text-error{% endif %}"
+              {% if product.id in favorite_product_ids %}style="font-variation-settings: 'FILL' 1;"{% endif %}>
+            favorite
+        </span>
     </button>
 </form>

@@ -1,22 +1,153 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}Регистрация | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Регистрация</h1>
+<div class="relative min-h-[calc(100vh-80px)] flex items-center justify-center p-4 lg:p-10 overflow-hidden bg-surface">
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Зарегистрироваться</button>
-        </form>
-
-        <p>
-            Уже есть аккаунт?
-            <a href="{% url 'login' %}">Войти</a>
-        </p>
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]"></div>
+        <div class="lg:hidden absolute bottom-0 right-0 w-full h-1/2 opacity-5">
+            <img class="w-full h-full object-cover grayscale" alt="texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCADHKJQNYeyWpxy4OOZiA303wq9V3urfh5ar2sX_CAgcNoUi1jjqLGQeDpHggGnrulg-929RsUHNgoV4W3iPN7aknwr4l3e-i1H9uShX6sWVTHH9mXcVcPoUi2umX2CPVSPQn4wUTgDQtXzH_PgSke0YQQgPR9w4UqEQ1JILbL1bI1VsHwVs4UUDnHEoLZLXgL-qaRoxQo3cLZpyViMTyxNosAisuoj82Wqy_Su2JWAveHp1v6P3JaA5vUchFtL1wkIsYyn2bzBFo"/>
+        </div>
     </div>
-</section>
+
+    <div class="relative z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 bg-surface-container-lowest rounded-2xl shadow-2xl overflow-hidden border border-outline-variant/10">
+
+        <div class="hidden lg:flex flex-col justify-between p-12 bg-primary relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuASPASfnRX8vBHuP0BC9uMTYNhxm58kKianxGtqsjnCVByESv78XXTEvUySM4vkVX05-8eHp2UIqbjrChrgIA0x5A6D-gjjDfIJUF3DeGo-bXZiJz6dJKZafK503Ku0pRQFFu32ANfK9SUAI2tTflJ7Lm0y-dcmDZX1Uf_SLrptcb3w6xiTumosGgdJlQ0B7jaXpaEHu0AfqpSskfbccXgQ_lhyr_7cC_uPLee1gTw9T4gpW-SMKDLVBpzo1uXi1JAjIYi7uPFEV20'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-secondary/80"></div>
+
+            <div class="relative z-10">
+                <div class="text-3xl font-black tracking-tighter text-on-primary-container">LIDER</div>
+                <h1 class="mt-20 text-5xl font-bold leading-tight tracking-tight text-white">
+                    Архитектурная<br/>точность в каждой<br/>детали.
+                </h1>
+                <p class="mt-6 text-lg text-primary-fixed/80 max-w-md leading-relaxed">
+                    Присоединяйтесь к сообществу профессионалов и получите доступ к материалам нового поколения для ваших самых смелых проектов.
+                </p>
+            </div>
+
+            <div class="relative z-10 flex gap-6 mt-12">
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold text-white">15к+</span>
+                    <span class="text-xs uppercase tracking-widest text-primary-fixed/60 mt-1">Партнеров</span>
+                </div>
+                <div class="w-px h-12 bg-primary-fixed/20 mx-2"></div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold text-white">100%</span>
+                    <span class="text-xs uppercase tracking-widest text-primary-fixed/60 mt-1">Качество</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white">
+            <div class="mb-8 lg:hidden flex justify-center">
+                <div class="text-3xl font-black tracking-tighter text-primary">LIDER</div>
+            </div>
+
+            <div class="mb-8 text-center lg:text-left">
+                <h2 class="text-3xl font-bold text-on-surface tracking-tight mb-2">Создать аккаунт</h2>
+                <p class="text-on-surface-variant">Заполните данные для регистрации в системе</p>
+            </div>
+
+            <form method="post" action="{% url 'accounts:signup' %}" class="space-y-5 md:space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="bg-error-container text-on-error-container p-4 rounded-xl text-sm font-medium">
+                        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-1.5 group">
+                    <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 ml-1" for="{{ form.username.id_for_label }}">
+                        <span class="material-symbols-outlined text-[18px]">person</span> Логин (Имя пользователя)
+                    </label>
+                    <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}"
+                           class="w-full px-4 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.username.errors %}border-error bg-error-container/10{% endif %}"
+                           placeholder="ivanov_lider" required>
+                    {% if form.username.errors %}<div class="text-error text-xs ml-1">{{ form.username.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant ml-1" for="{{ form.first_name.id_for_label }}">Имя</label>
+                        <input type="text" name="{{ form.first_name.html_name }}" id="{{ form.first_name.id_for_label }}" value="{{ form.first_name.value|default:'' }}"
+                               class="w-full px-4 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.first_name.errors %}border-error bg-error-container/10{% endif %}" placeholder="Иван">
+                        {% if form.first_name.errors %}<div class="text-error text-xs ml-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant ml-1" for="{{ form.last_name.id_for_label }}">Фамилия</label>
+                        <input type="text" name="{{ form.last_name.html_name }}" id="{{ form.last_name.id_for_label }}" value="{{ form.last_name.value|default:'' }}"
+                               class="w-full px-4 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.last_name.errors %}border-error bg-error-container/10{% endif %}" placeholder="Иванов">
+                        {% if form.last_name.errors %}<div class="text-error text-xs ml-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="space-y-1.5 group">
+                    <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 ml-1" for="{{ form.email.id_for_label }}">
+                        <span class="material-symbols-outlined text-[18px]">mail</span> Email
+                    </label>
+                    <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}"
+                           class="w-full px-4 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.email.errors %}border-error bg-error-container/10{% endif %}"
+                           placeholder="example@lider.ru" required>
+                    {% if form.email.errors %}<div class="text-error text-xs ml-1">{{ form.email.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                    <div class="space-y-1.5 group">
+                        <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 ml-1" for="id_password1">
+                            <span class="material-symbols-outlined text-[18px]">lock</span> Пароль
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="password1" id="id_password1"
+                                   class="w-full px-4 py-3 pr-12 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.password1.errors %}border-error bg-error-container/10{% endif %}"
+                                   placeholder="••••••••" required>
+                            <button type="button" onclick="togglePassword(this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors focus:outline-none p-1 rounded-full flex items-center">
+                                <span class="material-symbols-outlined text-lg">visibility_off</span>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}<div class="text-error text-xs ml-1">{{ form.password1.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="space-y-1.5 group">
+                        <label class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-surface-variant ml-1" for="id_password2">
+                            Подтверждение
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="password2" id="id_password2"
+                                   class="w-full px-4 py-3 pr-12 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg transition-all text-on-surface outline-none {% if form.password2.errors %}border-error bg-error-container/10{% endif %}"
+                                   placeholder="••••••••" required>
+                            <button type="button" onclick="togglePassword(this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors focus:outline-none p-1 rounded-full flex items-center">
+                                <span class="material-symbols-outlined text-lg">visibility_off</span>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}<div class="text-error text-xs ml-1">{{ form.password2.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 px-1 pt-2">
+                    <div class="mt-1">
+                        <input type="checkbox" id="terms" required class="rounded text-primary focus:ring-primary w-4 h-4 bg-surface-container-high border-outline-variant cursor-pointer">
+                    </div>
+                    <label class="text-xs text-on-surface-variant leading-relaxed cursor-pointer" for="terms">
+                        Я согласен с <a class="text-primary font-semibold underline underline-offset-2" href="{% url 'pages:privacy_policy' %}">Политикой конфиденциальности</a> и <a class="text-primary font-semibold underline underline-offset-2" href="#">Публичной офертой</a> компании LIDER.
+                    </label>
+                </div>
+
+                <div class="pt-4 flex flex-col gap-4">
+                    <button type="submit" class="w-full bg-primary hover:bg-primary-fixed-dim text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex justify-center items-center gap-2">
+                        Зарегистрироваться <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                    <div class="text-center mt-2">
+                        <span class="text-on-surface-variant text-sm">Уже есть аккаунт?</span>
+                        <a href="{% url 'login' %}" class="text-primary font-bold text-sm ml-1 hover:underline underline-offset-4">Войти</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

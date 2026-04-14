@@ -1,10 +1,11 @@
 from django.contrib import admin
 
+from unfold.admin import ModelAdmin, TabularInline
 from .models import LeadScore, PageDailyMetric, ProductDailyMetric
 
 
 @admin.register(PageDailyMetric)
-class PageDailyMetricAdmin(admin.ModelAdmin):
+class PageDailyMetricAdmin(ModelAdmin):
     list_display = ("date", "path", "route_name", "hits", "unique_visitors", "unique_profiles", "avg_duration_ms")
     list_filter = ("date", "route_name")
     search_fields = ("path", "route_name")
@@ -15,7 +16,7 @@ class PageDailyMetricAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductDailyMetric)
-class ProductDailyMetricAdmin(admin.ModelAdmin):
+class ProductDailyMetricAdmin(ModelAdmin):
     list_display = (
         "date",
         "product_name",
@@ -34,7 +35,7 @@ class ProductDailyMetricAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeadScore)
-class LeadScoreAdmin(admin.ModelAdmin):
+class LeadScoreAdmin(ModelAdmin):
     list_display = ("lead", "score", "priority", "model_name", "model_version", "predicted_at")
     list_filter = ("priority", "model_name", "model_version")
     search_fields = ("lead__fullname", "lead__email", "lead__phone_number")

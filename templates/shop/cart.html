@@ -1,112 +1,57 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}Корзина{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'shop/css/cart.css' %}">
-    <link rel="stylesheet" href="{% static 'leads/css/lead_form.css' %}">
-{% endblock %}
+{% block title %}Корзина | LIDER{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <h1>Корзина</h1>
+<div class="max-w-7xl mx-auto px-6 py-8 md:py-12 pb-32 md:pb-12">
+    <!-- Хлебные крошки -->
+    {% include 'includes/breadcrumbs.html' %}
 
-        {% if cart_data.items %}
-            <div class="cart-layout">
-                <div class="cart-items">
-                    {% for line in cart_data.items %}
-                        <article class="cart-item">
-                            <div class="cart-item__image">
-                                {% with main_image=line.product.get_main_image %}
-                                    {% if main_image and main_image.image %}
-                                        <img src="{{ main_image.image.url }}" alt="{{ main_image.alt_text|default:line.product.name }}">
-                                    {% else %}
-                                        <div class="cart-item__placeholder">Нет фото</div>
-                                    {% endif %}
-                                {% endwith %}
-                            </div>
+    <div class="mb-8 md:mb-10 mt-4">
+        <h1 class="text-4xl md:text-5xl font-black tracking-tight text-on-surface mb-2">Корзина</h1>
+        <p class="text-sm md:text-base text-on-surface-variant">Проверьте выбранные товары и оформите запрос на расчёт</p>
+    </div>
 
-                            <div class="cart-item__content">
-                                <h3>
-                                    <a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a>
-                                </h3>
+    {% if cart_data.items %}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
-                                <p>{{ line.product.category.name }}</p>
-
-                                <p>
-                                    {% if line.product.price %}
-                                        Цена: {{ line.product.price }} ₽
-                                    {% else %}
-                                        Цена по запросу
-                                    {% endif %}
-                                </p>
-
-                                <form method="post" action="{% url 'shop:cart_update' line.product.id %}" class="cart-item__update-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                    <label>
-                                        Количество:
-                                        <input type="number" name="quantity" min="0" value="{{ line.quantity }}">
-                                    </label>
-                                    <button type="submit">Обновить</button>
-                                </form>
-
-                                <form method="post" action="{% url 'shop:cart_remove' line.product.id %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                    <button type="submit">Удалить</button>
-                                </form>
-
-                                <div class="cart-item__actions">
-                                    {% include "shop/includes/favorite_toggle_form.html" with product=line.product favorite_product_ids=favorite_product_ids %}
-                                </div>
-                            </div>
-
-                            <div class="cart-item__total">
-                                {% if line.line_total %}
-                                    {{ line.line_total }} ₽
-                                {% else %}
-                                    По запросу
-                                {% endif %}
-                            </div>
-                        </article>
+            <!-- Левая колонка: Список товаров и Форма заявки -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Товары -->
+                <div class="flex flex-col gap-4 md:gap-6">
+                    {% for item in cart_data.items %}
+                        {% include 'shop/includes/cart_item.html' with item=item %}
                     {% endfor %}
                 </div>
 
-                <aside class="cart-summary">
-                    <h2>Итог</h2>
-                    <p>Товаров: {{ cart_data.total_quantity }}</p>
-                    <p>Сумма: {{ cart_data.subtotal }} ₽</p>
-
-                    {% if cart_data.has_unpriced_items %}
-                        <p class="cart-summary__note">
-                            В корзине есть товары с ценой по запросу.
-                        </p>
-                    {% endif %}
-
-                    <form method="post" action="{% url 'shop:cart_clear' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                        <button type="submit">Очистить корзину</button>
-                    </form>
-
-                    <p>
-                        <a href="{% url 'catalog:category_list' %}">Продолжить выбор товаров</a>
-                    </p>
-
-                    <div class="cart-summary__lead-block">
-                        <h3>Отправить заявку по корзине</h3>
-                        {% include "leads/includes/cart_lead_form.html" with lead_form=lead_form %}
-                    </div>
-
-                </aside>
+                <!-- Форма заявки по корзине -->
+                <div id="order-form" class="mt-10 md:mt-16 bg-surface-container-low p-6 md:p-8 rounded-2xl border border-outline-variant/10">
+                    <h2 class="text-2xl md:text-3xl font-black tracking-tight mb-6 md:mb-8">Данные заказчика</h2>
+                    {% include 'leads/includes/cart_lead_form.html' with form=cart_lead_form %}
+                </div>
             </div>
-        {% else %}
-            <p>Корзина пуста.</p>
-            <p><a href="{% url 'catalog:category_list' %}">Перейти в каталог</a></p>
-        {% endif %}
-    </div>
-</section>
+
+            <!-- Правая колонка: Итого -->
+            <aside class="lg:col-span-4 sticky top-28">
+                {% include 'shop/includes/cart_summary.html' with cart_data=cart_data %}
+            </aside>
+
+        </div>
+    {% else %}
+        <!-- Пустое состояние -->
+        <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-surface-container rounded-full flex items-center justify-center mb-6 md:mb-8 text-outline-variant">
+                <span class="material-symbols-outlined text-5xl md:text-6xl">shopping_basket</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black tracking-tight mb-3 md:mb-4">Ваша корзина пуста</h2>
+            <p class="text-sm md:text-base text-on-surface-variant max-w-sm mx-auto mb-8 md:mb-10 leading-relaxed">
+                Перейдите в каталог, чтобы найти лучшие решения для вашего строительства.
+            </p>
+            <a href="{% url 'catalog:category_list' %}" class="inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl font-bold hover:bg-primary-fixed-dim transition-all active:scale-95 shadow-md">
+                Перейти в каталог
+                <span class="material-symbols-outlined">explore</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

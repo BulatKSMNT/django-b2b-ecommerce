@@ -1,7 +1,9 @@
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, render
-from apps.shop.services import get_favorite_product_ids
+from django.urls import reverse
+
 from apps.leads.services import get_scoped_lead_form
+from apps.shop.services import get_favorite_product_ids
 from apps.tracking.services import record_product_view
 
 from .models import Category, Product, ProductImage, ProductAttributeValue
@@ -18,6 +20,10 @@ def category_list(request):
     context = {
         "categories": categories,
         "search_query": search_query,
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Каталог", "url": None},
+        ],
     }
     return render(request, "catalog/category_list.html", context)
 
@@ -49,6 +55,11 @@ def product_list(request, category_slug):
         "products": products,
         "search_query": search_query,
         "favorite_product_ids": get_favorite_product_ids(request),
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Каталог", "url": reverse("catalog:category_list")},
+            {"title": category.name, "url": None},
+        ],
     }
     return render(request, "catalog/product_list.html", context)
 
@@ -94,6 +105,12 @@ def product_detail(request, category_slug, product_slug):
         "product": product,
         "related_products": related_products,
         "favorite_product_ids": get_favorite_product_ids(request),
-        "lead_form": get_scoped_lead_form(request, f"product:{product.id}"),
+        "product_lead_form": get_scoped_lead_form(request, f"product:{product.id}"),
+        "breadcrumbs": [
+            {"title": "Главная", "url": reverse("pages:home")},
+            {"title": "Каталог", "url": reverse("catalog:category_list")},
+            {"title": category.name, "url": category.get_absolute_url()},
+            {"title": product.name, "url": None},
+        ],
     }
     return render(request, "catalog/product_detail.html", context)
