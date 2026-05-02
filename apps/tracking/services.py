@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models import F, Prefetch
 from django.utils import timezone
-
+from apps.leads.models import Lead
 from .models import PageVisit, ProductView, UserEvent, Visitor
 
 TRACKING_UTM_SESSION_KEY = "tracking_utm_params"
@@ -138,7 +138,7 @@ def ensure_visitor(request) -> Visitor:
             visitor.last_user_agent = user_agent
             update_fields.append("last_user_agent")
 
-        if (now - visitor.last_seen_at).total_seconds() >= 60:
+        if (now - visitor.last_seen_at).total_seconds() >= 180:
             visitor.last_seen_at = now
             update_fields.append("last_seen_at")
 
@@ -312,7 +312,9 @@ def merge_visitor_tracking_to_profile(request, profile) -> None:
         user=user,
         profile=profile,
     )
-
+    Lead.objects.filter(visitor=visitor, profile__isnull=True).update(
+        profile=profile,
+    )
     guest_views = (
         ProductView.objects.filter(visitor=visitor, profile__isnull=True)
         .select_related("product")

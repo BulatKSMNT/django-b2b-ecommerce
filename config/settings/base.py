@@ -109,6 +109,7 @@ TRACKING_EXCLUDED_PATH_PREFIXES = [
     "/media/",
     "/favicon.ico",
     "/robots.txt",
+    "/.well-known/",
 ]
 
 # Настройки темы оформления админки (Django Unfold)

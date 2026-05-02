@@ -1,8 +1,11 @@
+import logging
 from time import perf_counter
 
 from django.conf import settings
 
 from .services import ensure_visitor, get_tracking_cookie_age, get_tracking_cookie_name, record_page_visit
+
+logger = logging.getLogger(__name__)
 
 
 class VisitorMiddleware:
@@ -38,14 +41,14 @@ class PageVisitMiddleware:
             duration_ms = int((perf_counter() - started_at) * 1000)
             try:
                 record_page_visit(request, None, duration_ms, explicit_status_code=500)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(f"Failed to record page visit (500): {e}")
             raise
 
         duration_ms = int((perf_counter() - started_at) * 1000)
         try:
             record_page_visit(request, response, duration_ms)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to record page visit: {e}")
 
         return response

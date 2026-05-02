@@ -7,7 +7,7 @@ from apps.tracking.models import UserEvent
 from apps.tracking.services import record_event
 
 from apps.catalog.models import Product
-from apps.shop.services import get_cart_data
+from apps.shop.services import get_cart_data, clear_cart # ИСПРАВЛЕНО: Импортируем clear_cart
 
 from .forms import LeadForm
 from .services import (
@@ -37,63 +37,6 @@ def _get_positive_quantity(raw_value, default=1) -> int:
     return max(1, value)
 
 
-@require_POST
-def create_product_lead_view(request, product_id):
-    product = get_object_or_404(
-        Product.objects.select_related("category"),
-        pk=product_id,
-        is_active=True,
-    )
-    form = LeadForm(request.POST)
-    next_url = _get_safe_next_url(request, product.get_absolute_url())
-
-    if not form.is_valid():
-        save_lead_form_state(request, f"product:{product.id}", form)
-        messages.error(request, "Проверьте корректность заполнения формы.")
-        return redirect(next_url)
-
-    quantity = _get_positive_quantity(request.POST.get("quantity"), default=1)
-    lead = create_product_lead(request, form, product, quantity=quantity)
-
-    record_event(
-        request,
-        UserEvent.EventType.LEAD_PRODUCT_CREATED,
-        product=product,
-        lead=lead,
-        metadata={"quantity": quantity},
-    )
-
-    messages.success(request, "Заявка по товару успешно отправлена.")
-    return redirect(next_url)
-
-
-@require_POST
-def create_cart_lead_view(request):
-    form = LeadForm(request.POST)
-    next_url = _get_safe_next_url(request, reverse("shop:cart"))
-
-    if not form.is_valid():
-        save_lead_form_state(request, "cart", form)
-        messages.error(request, "Проверьте корректность заполнения формы.")
-        return redirect(next_url)
-
-    cart_data = get_cart_data(request)
-    if not cart_data["items"]:
-        messages.error(request, "Нельзя отправить заявку из пустой корзины.")
-        return redirect(next_url)
-
-    lead = create_cart_lead_from_cart_data(request, form, cart_data)
-
-    record_event(
-        request,
-        UserEvent.EventType.LEAD_CART_CREATED,
-        lead=lead,
-        metadata={"items_count": len(cart_data["items"])},
-    )
-
-    messages.success(request, "Заявка по корзине успешно отправлена.")
-    return redirect(next_url)
-
 
 @require_POST
 def create_contact_lead_view(request):
@@ -114,4 +57,80 @@ def create_contact_lead_view(request):
     )
 
     messages.success(request, "Ваша заявка успешно отправлена.")
+    return redirect(next_url)
+
+
+@require_POST
+def create_cart_lead_view(request):
+    form = LeadForm(request.POST)
+    next_url = _get_safe_next_url(request, reverse("shop:cart"))
+
+    if not form.is_valid():
+        save_lead_form_state(request, "cart", form)
+        messages.error(request, "Проверьте корректность заполнения формы.")
+        return redirect(next_url)
+
+    cart_data = get_cart_data(request)
+    if not cart_data["items"]:
+        messages.error(request, "Нельзя отправить заявку из пустой корзины.")
+        return redirect(next_url)
+
+    # === ДОБАВЛЕНО: Проверка на неактивные товары и категории ===
+    for line in cart_data["items"]:
+        if not line["product"].is_active or not line["product"].category.is_active:
+            messages.error(request,
+                           f"Товар «{line['product'].name}» или его категория недоступны. Удалите его из корзины для оформления.")
+            return redirect(next_url)
+    # ============================================================
+
+    lead = create_cart_lead_from_cart_data(request, form, cart_data)
+
+    record_event(
+        request,
+        UserEvent.EventType.LEAD_CART_CREATED,
+        lead=lead,
+        metadata={"items_count": len(cart_data["items"])},
+    )
+
+    from apps.shop.services import clear_cart
+    clear_cart(request)
+
+    messages.success(request, "Заявка по корзине успешно отправлена.")
+    return redirect(next_url)
+
+
+@require_POST
+def create_product_lead_view(request, product_id):
+    # === ИСПРАВЛЕНО: Убрали is_active=True из get_object_or_404 ===
+    product = get_object_or_404(
+        Product.objects.select_related("category"),
+        pk=product_id,
+    )
+
+    next_url = _get_safe_next_url(request, product.get_absolute_url())
+
+    # === ДОБАВЛЕНО: Защита от создания лида на мертвый товар ===
+    if not product.is_active or not product.category.is_active:
+        messages.error(request, "Этот товар или его категория сняты с продажи.")
+        return redirect(next_url)
+    # ===========================================================
+
+    form = LeadForm(request.POST)
+    if not form.is_valid():
+        save_lead_form_state(request, f"product:{product.id}", form)
+        messages.error(request, "Проверьте корректность заполнения формы.")
+        return redirect(next_url)
+
+    quantity = _get_positive_quantity(request.POST.get("quantity"), default=1)
+    lead = create_product_lead(request, form, product, quantity=quantity)
+
+    record_event(
+        request,
+        UserEvent.EventType.LEAD_PRODUCT_CREATED,
+        product=product,
+        lead=lead,
+        metadata={"quantity": quantity},
+    )
+
+    messages.success(request, "Заявка по товару успешно отправлена.")
     return redirect(next_url)

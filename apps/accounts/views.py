@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from apps.tracking.models import UserEvent
 from apps.tracking.services import record_event
@@ -11,6 +12,17 @@ from apps.tracking.services import record_event
 from .forms import ProfileForm, UserRegistrationForm
 from .models import Profile
 from .services import get_available_profiles, make_profile_default, set_active_profile
+
+
+def _get_safe_next_url(request, fallback_url: str) -> str:
+    next_url = request.POST.get("next") or request.GET.get("next")
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return fallback_url
 
 
 def signup(request):
@@ -39,7 +51,7 @@ def signup(request):
 def dashboard(request):
     context = {
         "profile_count": request.user.profiles.filter(is_active=True).count(),
-        "breadcrumbs": [
+        "breadcrumbs":[
             {"title": "Главная", "url": reverse("pages:home")},
             {"title": "Личный кабинет", "url": None},
         ],
@@ -55,7 +67,7 @@ def profile_list(request):
         "accounts/profile_list.html",
         {
             "profiles": profiles,
-            "breadcrumbs": [
+            "breadcrumbs":[
                 {"title": "Главная", "url": reverse("pages:home")},
                 {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
                 {"title": "Профили", "url": None},
@@ -90,7 +102,7 @@ def profile_create(request):
             "form": form,
             "page_title": "Создать профиль",
             "submit_text": "Создать",
-            "breadcrumbs": [
+            "breadcrumbs":[
                 {"title": "Главная", "url": reverse("pages:home")},
                 {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
                 {"title": "Профили", "url": reverse("accounts:profile_list")},
@@ -119,7 +131,7 @@ def profile_update(request, pk):
             "profile": profile,
             "page_title": "Редактировать профиль",
             "submit_text": "Сохранить",
-            "breadcrumbs": [
+            "breadcrumbs":[
                 {"title": "Главная", "url": reverse("pages:home")},
                 {"title": "Личный кабинет", "url": reverse("accounts:dashboard")},
                 {"title": "Профили", "url": reverse("accounts:profile_list")},
@@ -135,8 +147,8 @@ def profile_switch(request, pk):
     profile = get_object_or_404(Profile, pk=pk, user=request.user, is_active=True)
     set_active_profile(request, profile)
     messages.success(request, f"Активный профиль: {profile.name}")
-
-    next_url = request.POST.get("next") or reverse("accounts:profile_list")
+    # Используем безопасный редирект
+    next_url = _get_safe_next_url(request, reverse("accounts:profile_list"))
     return redirect(next_url)
 
 
@@ -147,5 +159,5 @@ def profile_make_default(request, pk):
     make_profile_default(profile)
     messages.success(request, f"Профиль «{profile.name}» назначен основным.")
 
-    next_url = request.POST.get("next") or reverse("accounts:profile_list")
+    next_url = _get_safe_next_url(request, reverse("accounts:profile_list"))
     return redirect(next_url)

@@ -5,6 +5,18 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-6 py-8">
     {% include 'includes/breadcrumbs.html' %}
+        <!-- Если категория снята с продажи, выводим красную плашку -->
+    {% if not category.is_active %}
+    <div class="mb-8 bg-error-container text-on-error-container p-6 rounded-2xl border border-error/20 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-sm">
+        <div class="bg-error text-white p-3 rounded-full shrink-0 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">visibility_off</span>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg leading-none mb-1">Категория снята с публикации</h4>
+            <p class="text-sm opacity-90 leading-relaxed">Товары из этого раздела временно недоступны для заказа. Вы можете просматривать их в ознакомительных целях.</p>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Заголовок категории и описание -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-10 md:mb-16 items-start mt-4">
@@ -35,11 +47,25 @@
             <input name="q" value="{{ search_query|default:'' }}" class="w-full pl-12 pr-4 py-3 bg-surface-container-high border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-on-surface placeholder:text-on-surface-variant/60 transition-all outline-none" placeholder="Поиск по товарам..." type="text"/>
         </form>
     </div>
+    <!-- Компактная плашка сброса поиска -->
+    {% if search_query %}
+    <div class="mt-3 mb-3 flex items-center justify-between bg-surface-container-high rounded-xl py-2 px-4 w-full md:max-w-sm gap-4 border border-outline-variant/20 shadow-sm">
+        <div class="text-sm flex items-center gap-2 overflow-hidden">
+            <span class="material-symbols-outlined text-[18px] text-primary shrink-0">manage_search</span>
+            <span class="text-on-surface-variant whitespace-nowrap">Ищем:</span>
+            <span class="font-bold text-primary truncate" title="{{ search_query }}">«{{ search_query }}»</span>
+        </div>
+        <a href="{% url 'catalog:category_list' %}" class="flex items-center justify-center shrink-0 text-on-surface-variant hover:text-error hover:bg-error-container p-1 rounded-md transition-colors" title="Сбросить поиск">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+        </a>
+    </div>
+    {% endif %}
 
     <!-- Сетка товаров -->
     {% if products %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {% for product in products %}
+                <!-- Блок результатов поиска -->
                 {% include 'catalog/includes/product_card.html' with product=product favorite_product_ids=favorite_product_ids %}
             {% endfor %}
         </div>
@@ -58,3 +84,5 @@
     {% endif %}
 </div>
 {% endblock %}
+
+

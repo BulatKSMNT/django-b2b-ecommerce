@@ -47,7 +47,7 @@ class CartItem(models.Model):
     )
     product = models.ForeignKey(
         "catalog.Product",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="cart_items",
         verbose_name="Товар",
     )

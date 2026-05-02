@@ -14,13 +14,36 @@
     </section>
 
     <!-- Строка поиска -->
-    <form method="get" class="relative mb-10">
-        <div class="flex items-center bg-surface-container-high rounded-xl px-4 py-3.5 focus-within:ring-2 ring-primary transition-all duration-300">
-            <span class="material-symbols-outlined text-outline">search</span>
-            <input name="q" value="{{ search_query|default:'' }}" class="bg-transparent border-none focus:ring-0 w-full text-base ml-2 placeholder:text-outline outline-none" placeholder="Поиск по категориям..." type="text"/>
-            <button type="submit" class="hidden">Найти</button>
-        </div>
+<!-- Форма поиска с кнопкой -->
+    <form method="get" action="" class="relative w-full md:max-w-sm mb-8">
+        <!-- Поле ввода -->
+        <input type="text"
+               name="q"
+               value="{{ search_query }}"
+               placeholder="Поиск по каталогу..."
+               class="w-full bg-surface-container-high border border-transparent focus:border-primary focus:ring-0 rounded-xl py-3 pl-4 pr-12 text-on-surface transition-all outline-none shadow-sm placeholder:text-outline-variant/80">
+
+        <!-- Кнопка поиска (Лупа) -->
+        <button type="submit"
+                class="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest rounded-lg transition-colors focus:outline-none active:scale-95"
+                title="Найти">
+            <span class="material-symbols-outlined text-[20px]">search</span>
+        </button>
     </form>
+
+    <!-- Компактная плашка сброса поиска -->
+    {% if search_query %}
+    <div class="mt-3 mb-8 flex items-center justify-between bg-surface-container-high rounded-xl py-2 px-4 w-full md:max-w-sm gap-4 border border-outline-variant/20 shadow-sm">
+        <div class="text-sm flex items-center gap-2 overflow-hidden">
+            <span class="material-symbols-outlined text-[18px] text-primary shrink-0">manage_search</span>
+            <span class="text-on-surface-variant whitespace-nowrap">Ищем:</span>
+            <span class="font-bold text-primary truncate" title="{{ search_query }}">«{{ search_query }}»</span>
+        </div>
+        <a href="{% url 'catalog:category_list' %}" class="flex items-center justify-center shrink-0 text-on-surface-variant hover:text-error hover:bg-error-container p-1 rounded-md transition-colors" title="Сбросить поиск">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+        </a>
+    </div>
+    {% endif %}
 
     <!-- Сетка категорий -->
     {% if categories %}

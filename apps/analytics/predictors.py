@@ -23,7 +23,7 @@ FREE_EMAIL_DOMAINS = {
     "rambler.ru",
 }
 
-
+#Heuristic Model (Эвристическая модель) или Rule-based Expert System (Экспертная система на основе правил).
 def _get_email_domain(email: str) -> str:
     if "@" not in (email or ""):
         return ""

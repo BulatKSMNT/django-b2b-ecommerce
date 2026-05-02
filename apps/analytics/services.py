@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.db import transaction
@@ -6,6 +7,8 @@ from apps.leads.models import Lead
 
 from .models import LeadScore
 from .predictors import build_lead_features, score_lead_features
+
+logger = logging.getLogger(__name__)
 
 
 def _to_decimal(value) -> Decimal:
@@ -47,8 +50,8 @@ def schedule_score_lead(lead_id: int) -> None:
     def _runner():
         try:
             score_lead_by_id(lead_id)
-        except Exception:
-            # тут можно потом добавить логгер
-            pass
+        except Exception as e:
+            # ИСПРАВЛЕНО: Теперь мы увидим ошибку в логах
+            logger.error(f"Failed to score lead {lead_id}: {e}")
 
     transaction.on_commit(_runner)

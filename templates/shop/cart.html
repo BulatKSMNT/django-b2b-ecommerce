@@ -4,7 +4,6 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-6 py-8 md:py-12 pb-32 md:pb-12">
-    <!-- Хлебные крошки -->
     {% include 'includes/breadcrumbs.html' %}
 
     <div class="mb-8 md:mb-10 mt-4">
@@ -15,30 +14,25 @@
     {% if cart_data.items %}
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
-            <!-- Левая колонка: Список товаров и Форма заявки -->
             <div class="lg:col-span-8 space-y-6">
-                <!-- Товары -->
                 <div class="flex flex-col gap-4 md:gap-6">
                     {% for item in cart_data.items %}
                         {% include 'shop/includes/cart_item.html' with item=item %}
                     {% endfor %}
                 </div>
 
-                <!-- Форма заявки по корзине -->
                 <div id="order-form" class="mt-10 md:mt-16 bg-surface-container-low p-6 md:p-8 rounded-2xl border border-outline-variant/10">
                     <h2 class="text-2xl md:text-3xl font-black tracking-tight mb-6 md:mb-8">Данные заказчика</h2>
                     {% include 'leads/includes/cart_lead_form.html' with form=cart_lead_form %}
                 </div>
             </div>
 
-            <!-- Правая колонка: Итого -->
             <aside class="lg:col-span-4 sticky top-28">
                 {% include 'shop/includes/cart_summary.html' with cart_data=cart_data %}
             </aside>
 
         </div>
     {% else %}
-        <!-- Пустое состояние -->
         <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
             <div class="w-24 h-24 md:w-32 md:h-32 bg-surface-container rounded-full flex items-center justify-center mb-6 md:mb-8 text-outline-variant">
                 <span class="material-symbols-outlined text-5xl md:text-6xl">shopping_basket</span>

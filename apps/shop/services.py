@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from django.db.models import Prefetch, Sum
+from django.db.models import Prefetch, Sum, F
 
 from apps.accounts.services import ensure_user_has_default_profile
 from apps.catalog.models import Product, ProductImage
@@ -57,7 +57,7 @@ def add_product_to_cart(request, product: Product, quantity: int = 1) -> None:
             defaults={"quantity": quantity},
         )
         if not created:
-            item.quantity += quantity
+            item.quantity = F("quantity") + quantity
             item.save(update_fields=["quantity", "updated_at"])
         return
 
@@ -65,7 +65,6 @@ def add_product_to_cart(request, product: Product, quantity: int = 1) -> None:
     key = str(product.id)
     session_cart[key] = session_cart.get(key, 0) + quantity
     _save_session_cart(request, session_cart)
-
 
 def set_product_quantity(request, product: Product, quantity: int) -> None:
     quantity = int(quantity)
@@ -341,5 +340,5 @@ def add_product_to_cart_for_profile(profile, product: Product, quantity: int = 1
         defaults={"quantity": quantity},
     )
     if not created:
-        item.quantity += quantity
+        item.quantity = F("quantity") + quantity
         item.save(update_fields=["quantity", "updated_at"])

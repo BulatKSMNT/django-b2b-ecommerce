@@ -1,32 +1,43 @@
-<div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 group border border-outline-variant/10 hover:border-outline-variant/30 shadow-sm transition-all duration-300">
+<!-- Измененная первая строка: добавлено or not item.product.category.is_active -->
+<div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 group border shadow-sm transition-all duration-300 {% if not item.product.is_active or not item.product.category.is_active %}opacity-75 grayscale border-error/30{% else %}border-outline-variant/10 hover:border-outline-variant/30{% endif %}">
 
-    <!-- Изображение -->
     <a href="{{ item.product.get_absolute_url }}" class="w-full sm:w-32 h-48 sm:h-32 rounded-lg overflow-hidden bg-surface-container shrink-0 block relative">
         {% with primary_image=item.product.get_main_image %}
             {% if primary_image and primary_image.image %}
-                <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:item.product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <!-- Изменено hover поведение -->
+                <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:item.product.name }}" class="w-full h-full object-cover {% if item.product.is_active and item.product.category.is_active %}group-hover:scale-105{% endif %} transition-transform duration-500">
             {% else %}
                 <div class="w-full h-full flex items-center justify-center text-outline-variant"><span class="material-symbols-outlined">image</span></div>
             {% endif %}
         {% endwith %}
     </a>
 
-    <!-- Информация -->
     <div class="flex-grow w-full space-y-2">
         <div class="flex justify-between items-start">
             <div class="pr-4">
                 <span class="text-[10px] uppercase tracking-[0.05em] font-bold text-primary mb-1 block">{{ item.product.category.name }}</span>
-                <a href="{{ item.product.get_absolute_url }}"><h3 class="text-lg font-bold leading-tight hover:text-primary transition-colors line-clamp-2">{{ item.product.name }}</h3></a>
+
+                <!-- ИСПРАВЛЕНО: Проверяем и товар, и категорию -->
+                {% if item.product.is_active and item.product.category.is_active %}
+                    <a href="{{ item.product.get_absolute_url }}"><h3 class="text-lg font-bold leading-tight hover:text-primary transition-colors line-clamp-2">{{ item.product.name }}</h3></a>
+                {% else %}
+                    <a href="{{ item.product.get_absolute_url }}"><h3 class="text-lg font-bold leading-tight text-on-surface hover:text-primary transition-colors line-clamp-2">{{ item.product.name }}</h3></a>
+                    <div class="inline-flex items-center gap-1.5 bg-error-container text-on-error-container text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mt-2">
+                        <span class="material-symbols-outlined text-[14px]">warning</span>
+                        Недоступно для заказа
+                    </div>
+                {% endif %}
+
                 {% if item.product.description %}
                     <p class="text-xs text-on-surface-variant mt-1 line-clamp-1">{{ item.product.description }}</p>
                 {% endif %}
             </div>
 
-            <!-- Кнопка удаления -->
+            <!-- Кнопка удаления из корзины -->
             <form method="post" action="{% url 'shop:cart_remove' item.product.id %}" class="shrink-0">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                <button type="submit" class="text-on-surface-variant hover:text-error bg-surface-container hover:bg-error-container rounded-lg p-2 transition-colors" title="Удалить">
+                <button type="submit" class="p-2 transition-colors rounded-lg {% if not item.product.is_active or not item.product.category.is_active %}text-error bg-error-container hover:bg-error/20{% else %}text-on-surface-variant hover:text-error bg-surface-container hover:bg-error-container{% endif %}" title="Удалить">
                     <span class="material-symbols-outlined text-sm">delete</span>
                 </button>
             </form>
@@ -34,32 +45,36 @@
 
         <div class="flex flex-wrap items-center justify-between gap-4 mt-4 pt-2 border-t border-outline-variant/10">
 
-            <!-- Управление количеством -->
-            <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="flex items-center bg-surface-container-low rounded-lg p-1 border border-outline-variant/20">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <!-- ИСПРАВЛЕНО: Проверка категории для управления количеством -->
+            {% if item.product.is_active and item.product.category.is_active %}
+                <form method="post" action="{% url 'shop:cart_update' item.product.id %}" class="flex items-center bg-surface-container-low rounded-lg p-1 border border-outline-variant/20">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
-                <button type="button" onclick="this.nextElementSibling.stepDown(); this.form.submit();" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-primary rounded transition-colors active:scale-95">
-                    <span class="material-symbols-outlined text-sm">remove</span>
-                </button>
+                    <button type="button" onclick="this.nextElementSibling.stepDown(); this.form.submit();" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-primary rounded transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-sm">remove</span>
+                    </button>
 
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-12 text-center font-bold text-sm bg-transparent border-none focus:ring-0 p-0 text-on-surface" onchange="this.form.submit()">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-12 text-center font-bold text-sm bg-transparent border-none focus:ring-0 p-0 text-on-surface" onchange="this.form.submit()">
 
-                <button type="button" onclick="this.previousElementSibling.stepUp(); this.form.submit();" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-primary rounded transition-colors active:scale-95">
-                    <span class="material-symbols-outlined text-sm">add</span>
-                </button>
+                    <button type="button" onclick="this.previousElementSibling.stepUp(); this.form.submit();" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high text-primary rounded transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                    </button>
 
-                <span class="ml-1 text-[10px] font-bold text-on-surface-variant pr-3 uppercase">Ед.</span>
-                <!-- Запасная кнопка Обновить для fallback, скрыта визуально, но доступна -->
-                <button type="submit" class="hidden">Обновить</button>
-            </form>
+                    <span class="ml-1 text-[10px] font-bold text-on-surface-variant pr-3 uppercase">Ед.</span>
+                    <button type="submit" class="hidden">Обновить</button>
+                </form>
+            {% else %}
+                <div class="flex items-center bg-surface-container-high rounded-lg px-4 py-2 border border-outline-variant/10">
+                    <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Категория закрыта</span>
+                </div>
+            {% endif %}
 
-            <!-- Цена -->
             <div class="text-right flex flex-col items-end">
                 {% if item.product.price %}
                     <span class="text-[10px] font-bold text-on-surface-variant/60 uppercase">Цена: {{ item.product.price|floatformat:"0" }} ₽ / ед.</span>
                 {% endif %}
-                <span class="text-xl font-black text-primary tracking-tighter">
+                <span class="text-xl font-black {% if not item.product.is_active or not item.product.category.is_active %}text-on-surface-variant{% else %}text-primary{% endif %} tracking-tighter">
                     {% if item.line_total %}{{ item.line_total|floatformat:"0" }} ₽{% else %}По запросу{% endif %}
                 </span>
             </div>

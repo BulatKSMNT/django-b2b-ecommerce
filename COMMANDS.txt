@@ -1,0 +1,2 @@
+python manage.py build_daily_metrics --date 2026-04-20
+python manage.py score_leads --all

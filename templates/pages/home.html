@@ -59,6 +59,7 @@
 
         {% if categories %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Вывод существующих категорий -->
                 {% for category in categories %}
                     <a href="{{ category.get_absolute_url }}" class="group relative bg-surface-container-lowest rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-sm">
                         <div class="aspect-[4/3] md:aspect-[4/5] bg-surface-container overflow-hidden">
@@ -85,14 +86,43 @@
                         </div>
                     </a>
                 {% endfor %}
+
+                <!-- Карточка "Посмотреть весь каталог" -->
+                <a href="{% url 'catalog:category_list' %}" class="group relative rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-sm flex flex-col items-center justify-center bg-surface-container-highest hover:bg-primary text-on-surface hover:text-white aspect-[4/3] md:aspect-[4/5] border border-outline-variant/30 hover:border-transparent">
+
+                    <!-- Декоративный фон-круг (появляется при наведении) -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary-fixed-dim/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                    <div class="relative z-10 flex flex-col items-center p-6 text-center">
+                        <div class="w-16 h-16 rounded-full bg-white/50 group-hover:bg-white/20 flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 shadow-sm">
+                            <span class="material-symbols-outlined text-4xl text-primary group-hover:text-white transition-colors">arrow_forward</span>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold mb-2">Весь каталог</h3>
+                        <p class="text-sm font-medium opacity-70 group-hover:opacity-90 transition-opacity">
+                            Показать все доступные<br>категории и товары
+                        </p>
+                    </div>
+                </a>
             </div>
+
+            <!-- Дополнительная кнопка для мобилок (чтобы точно не пропустили) -->
+            <div class="mt-10 flex justify-center md:hidden">
+                <a href="{% url 'catalog:category_list' %}" class="w-full bg-surface-container-highest text-primary font-bold py-4 rounded-xl flex items-center justify-center gap-2 border border-outline-variant/30 active:scale-95 transition-transform">
+                    Перейти в каталог
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+
         {% else %}
-            <div class="p-8 bg-surface-container-lowest rounded-xl text-center">
-                <h3 class="text-xl font-bold mb-2">Категории пока не добавлены</h3>
+            <div class="p-12 bg-surface-container-lowest rounded-2xl text-center border border-outline-variant/20 shadow-sm">
+                <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">inventory_2</span>
+                <h3 class="text-xl font-bold mb-2 text-on-surface">Категории пока не добавлены</h3>
+                <p class="text-on-surface-variant">Заполните каталог через панель администратора.</p>
             </div>
         {% endif %}
     </div>
 </section>
+
 
 <!-- Consultation Form Section -->
 <section class="py-16 md:py-24 bg-surface px-6" id="consultation">

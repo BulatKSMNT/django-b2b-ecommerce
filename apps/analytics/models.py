@@ -18,7 +18,7 @@ class PageDailyMetric(models.Model):
     class Meta:
         verbose_name = "Дневная метрика страницы"
         verbose_name_plural = "Дневные метрики страниц"
-        constraints = [
+        constraints =[
             models.UniqueConstraint(
                 fields=("date", "path", "route_name"),
                 name="unique_page_daily_metric",
@@ -34,7 +34,9 @@ class ProductDailyMetric(models.Model):
     date = models.DateField("Дата", db_index=True)
     product = models.ForeignKey(
         "catalog.Product",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL, # ИСПРАВЛЕНО: Сохраняем аналитику при удалении товара
+        null=True,
+        blank=True,
         related_name="daily_metrics",
         verbose_name="Товар",
     )
@@ -61,7 +63,7 @@ class ProductDailyMetric(models.Model):
     class Meta:
         verbose_name = "Дневная метрика товара"
         verbose_name_plural = "Дневные метрики товаров"
-        constraints = [
+        constraints =[
             models.UniqueConstraint(
                 fields=("date", "product"),
                 name="unique_product_daily_metric",

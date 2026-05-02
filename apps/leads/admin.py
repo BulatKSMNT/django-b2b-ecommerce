@@ -33,29 +33,30 @@ class LeadItemInline(TabularInline):
 
 @admin.action(description="Отметить как «В работе»")
 def mark_in_progress(modeladmin, request, queryset):
-    queryset.update(
-        status=Lead.Status.IN_PROGRESS,
-        processed_by=request.user,
-        processed_at=timezone.now(),
-    )
+    # ИСПРАВЛЕНО: Используем цикл и save(), чтобы работали сигналы post_save
+    for obj in queryset:
+        obj.status = Lead.Status.IN_PROGRESS
+        obj.processed_by = request.user
+        obj.processed_at = timezone.now()
+        obj.save(update_fields=["status", "processed_by", "processed_at"])
 
 
 @admin.action(description="Отметить как «Завершена»")
 def mark_completed(modeladmin, request, queryset):
-    queryset.update(
-        status=Lead.Status.COMPLETED,
-        processed_by=request.user,
-        processed_at=timezone.now(),
-    )
+    for obj in queryset:
+        obj.status = Lead.Status.COMPLETED
+        obj.processed_by = request.user
+        obj.processed_at = timezone.now()
+        obj.save(update_fields=["status", "processed_by", "processed_at"])
 
 
 @admin.action(description="Отметить как «Отменена»")
 def mark_canceled(modeladmin, request, queryset):
-    queryset.update(
-        status=Lead.Status.CANCELED,
-        processed_by=request.user,
-        processed_at=timezone.now(),
-    )
+    for obj in queryset:
+        obj.status = Lead.Status.CANCELED
+        obj.processed_by = request.user
+        obj.processed_at = timezone.now()
+        obj.save(update_fields=["status", "processed_by", "processed_at"])
 
 
 @admin.register(Lead)
