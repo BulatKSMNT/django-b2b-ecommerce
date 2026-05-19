@@ -72,7 +72,8 @@
             <h3 class="text-2xl md:text-3xl font-black mt-2 text-gray-900 dash-text-main">{{ overview.cart_adds|default:0 }}</h3>
         </div>
         <div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm transition-colors duration-200 dash-card">
-            <p class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider dash-text-muted">Горячие (ML)</p>
+            <p class="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider dash-text-muted">Срочные
+            </p>
             <h3 class="text-2xl md:text-3xl font-black mt-2 text-red-600">{{ overview.high_priority_leads|default:0 }}</h3>
         </div>
     </div>
@@ -117,7 +118,8 @@
         <!-- Горячие заявки -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition-colors duration-200 dash-card">
             <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center transition-colors duration-200 dash-bg-muted dash-border">
-                <h4 class="text-lg font-bold text-gray-900 dash-text-main">Горячие заявки (ML Scoring)</h4>
+                <h4 class="text-lg font-bold text-gray-900 dash-text-main">Список заявок</h4>
+
             </div>
             <div class="p-4 space-y-3">
                 {% for lead in hot_leads %}
