@@ -326,20 +326,6 @@ POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5433
 ```
 
-Важно:
-
-```text
-.env
-.env.local
-.env.docker
-```
-
-не должны попадать в Git.
-
-В репозитории должны храниться только example-файлы.
-
----
-
 ## Быстрый запуск через Docker Compose
 
 Docker Compose поднимает:
@@ -659,7 +645,7 @@ python manage.py test
 Текущее состояние:
 
 ```text
-17 Django tests passed
+36 Django tests passed
 ```
 
 ### FastAPI tests
@@ -672,7 +658,7 @@ pytest
 Текущее состояние:
 
 ```text
-4 FastAPI tests passed
+7 FastAPI tests passed
 ```
 
 ### Запуск обоих наборов тестов
@@ -695,9 +681,6 @@ pytest
 python manage.py spectacular --validate --file schema.yml
 ```
 
-Если схема используется только для проверки, файл `schema.yml` не обязательно коммитить.
-
----
 
 ## Полезные Docker-команды
 
@@ -832,14 +815,13 @@ uvicorn app.main:app --reload --port 8001
 - FastAPI scoring service;
 - Django tests;
 - FastAPI tests.
+- GitHub Actions CI;
 
 Ближайшие улучшения:
 
-- GitHub Actions CI;
 - screenshots для README;
 - demo data seed command;
 - интеграция Django scoring backend с FastAPI-сервисом;
-- дополнительные unit-тесты для model validation;
 - production-like Docker setup с Gunicorn/Nginx.
 
 ---
@@ -879,7 +861,7 @@ FastAPI
 PostgreSQL
 Docker Compose
 REST API
-Unit tests
+Tests
 OpenAPI documentation
 Backend architecture
 ```
