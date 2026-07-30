@@ -21,6 +21,9 @@ venv.bak/
 pythonenv*
 .env.*
 !.env.example
+!.env.local.example
+!.env.docker.example
+!.env.example
 !.env.docker.example
 # IDE
 .vscode/
@@ -37,6 +40,7 @@ pythonenv*
 .Trashes
 ehthumbs.db
 Thumbs.db
+db.sqlite3.backup
 
 # Python
 *.py[cod]
