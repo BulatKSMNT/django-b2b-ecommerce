@@ -24,6 +24,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env.docker
+    ports:
+    - "5433:5432"
     volumes:
       - django_b2b_postgres_data:/var/lib/postgresql/data
     healthcheck:

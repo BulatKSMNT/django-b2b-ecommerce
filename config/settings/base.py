@@ -124,6 +124,7 @@ TRACKING_VISITOR_COOKIE_AGE = 60 * 60 * 24 * 365
 
 TRACKING_EXCLUDED_PATH_PREFIXES = [
     "/admin/",
+    "/api/",
     "/static/",
     "/media/",
     "/favicon.ico",

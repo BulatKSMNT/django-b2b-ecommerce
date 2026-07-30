@@ -3,9 +3,25 @@ from time import perf_counter
 
 from django.conf import settings
 
-from .services import ensure_visitor, get_tracking_cookie_age, get_tracking_cookie_name, record_page_visit
+from .services import (
+    ensure_visitor,
+    get_excluded_path_prefixes,
+    get_tracking_cookie_age,
+    get_tracking_cookie_name,
+    record_page_visit,
+)
 
 logger = logging.getLogger(__name__)
+
+
+def is_tracking_excluded_path(request) -> bool:
+    path = request.path or "/"
+
+    for prefix in get_excluded_path_prefixes():
+        if prefix and path.startswith(prefix):
+            return True
+
+    return False
 
 
 class VisitorMiddleware:
@@ -13,6 +29,9 @@ class VisitorMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if is_tracking_excluded_path(request):
+            return self.get_response(request)
+
         ensure_visitor(request)
         response = self.get_response(request)
 
@@ -25,6 +44,7 @@ class VisitorMiddleware:
                 samesite="Lax",
                 secure=not settings.DEBUG,
             )
+
         return response
 
 
@@ -33,19 +53,30 @@ class PageVisitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if is_tracking_excluded_path(request):
+            return self.get_response(request)
+
         started_at = perf_counter()
 
         try:
             response = self.get_response(request)
         except Exception:
             duration_ms = int((perf_counter() - started_at) * 1000)
+
             try:
-                record_page_visit(request, None, duration_ms, explicit_status_code=500)
+                record_page_visit(
+                    request,
+                    None,
+                    duration_ms,
+                    explicit_status_code=500,
+                )
             except Exception as e:
                 logger.error(f"Failed to record page visit (500): {e}")
+
             raise
 
         duration_ms = int((perf_counter() - started_at) * 1000)
+
         try:
             record_page_visit(request, response, duration_ms)
         except Exception as e:
