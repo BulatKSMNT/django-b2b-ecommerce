@@ -101,6 +101,9 @@ def test_negative_items_count_rejected():
     })
     assert response.status_code == 422
 
-def test_missing_required_field():
-    response = client.post("/api/v1/score", json={})
+def test_invalid_field_type_rejected():
+    response = client.post("/api/v1/score", json={
+        "source": "cart",
+        "items_count": "abc",   # строка вместо целого
+    })
     assert response.status_code == 422
