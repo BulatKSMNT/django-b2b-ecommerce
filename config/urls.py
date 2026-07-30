@@ -2,12 +2,26 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from apps.analytics.views import admin_analytics_dashboard
 
+
 urlpatterns = [
-    path("admin/analytics/dashboard/", admin.site.admin_view(admin_analytics_dashboard), name="admin_analytics_dashboard"),
+    path(
+        "admin/analytics/dashboard/",
+        admin.site.admin_view(admin_analytics_dashboard),
+        name="admin_analytics_dashboard",
+    ),
     path("admin/", admin.site.urls),
+
+    path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="api-schema"),
+        name="api-docs",
+    ),
+    path("api/v1/", include("apps.api.urls")),
 
     path("", include(("apps.pages.urls", "pages"), namespace="pages")),
     path("catalog/", include(("apps.catalog.urls", "catalog"), namespace="catalog")),

@@ -3,7 +3,8 @@ import os
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(BASE_DIR / ".env")
+ENV_FILE = os.getenv("DJANGO_ENV_FILE", ".env")
+load_dotenv(BASE_DIR / ENV_FILE)
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
@@ -18,9 +19,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "drf_spectacular",
+    "django_filters",
 
     "phonenumber_field",
-
+    
     "apps.accounts",
     "apps.pages",
     "apps.catalog",
@@ -66,12 +70,27 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite")
+
+if DB_ENGINE == "postgres":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "django_b2b"),
+            "USER": os.getenv("POSTGRES_USER", "django_b2b"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "django_b2b_password"),
+            "HOST": os.getenv("POSTGRES_HOST", "db"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -105,6 +124,7 @@ TRACKING_VISITOR_COOKIE_AGE = 60 * 60 * 24 * 365
 
 TRACKING_EXCLUDED_PATH_PREFIXES = [
     "/admin/",
+    "/api/",
     "/static/",
     "/media/",
     "/favicon.ico",
@@ -148,4 +168,22 @@ UNFOLD = {
             },
         ],
     },
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Django B2B E-commerce API",
+    "DESCRIPTION": "REST API for B2B product catalog, leads, analytics and lead scoring.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }

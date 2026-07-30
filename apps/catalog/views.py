@@ -119,7 +119,7 @@ def product_detail(request, category_slug, product_slug):
         "breadcrumbs":[
             {"title": "Главная", "url": reverse("pages:home")},
             {"title": "Каталог", "url": reverse("catalog:category_list")},
-            {"хъ": category.name, "url": category.get_absolute_url()},
+            {"title": category.name, "url": category.get_absolute_url()},
             {"title": product.name, "url": None},
         ],
     }
