@@ -82,3 +82,25 @@ def test_score_endpoint_rejects_negative_values():
     )
 
     assert response.status_code == 422
+
+def test_invalid_source_rejected():
+    response = client.post("/api/v1/score", json={
+        "source": "invalid",
+        "items_count": 0,
+        "total_quantity": 0,
+        "total_amount": 0,
+        "comment_length": 0,
+        "is_business_email": False,
+    })
+    assert response.status_code == 422
+
+def test_negative_items_count_rejected():
+    response = client.post("/api/v1/score", json={
+        "source": "cart",
+        "items_count": -1,
+    })
+    assert response.status_code == 422
+
+def test_missing_required_field():
+    response = client.post("/api/v1/score", json={})
+    assert response.status_code == 422
