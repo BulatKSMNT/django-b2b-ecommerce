@@ -10,6 +10,7 @@ from apps.analytics.api.serializers import LeadScoreSerializer
 from apps.analytics.services import score_lead_by_id
 from apps.leads.api.serializers import (
     LeadContactCreateSerializer,
+    LeadCreateResponseSerializer,
     LeadDetailSerializer,
     LeadListSerializer,
 )
@@ -87,7 +88,7 @@ class LeadViewSet(viewsets.ReadOnlyModelViewSet):
     @extend_schema(
         summary="Create contact lead",
         request=LeadContactCreateSerializer,
-        responses={201: LeadDetailSerializer},
+        responses={201: LeadCreateResponseSerializer},
     )
     @action(
         detail=False,
@@ -114,7 +115,7 @@ class LeadViewSet(viewsets.ReadOnlyModelViewSet):
             metadata={"source": "api"},
         )
 
-        response_serializer = LeadDetailSerializer(
+        response_serializer = LeadCreateResponseSerializer(
             lead,
             context=self.get_serializer_context(),
         )
@@ -164,6 +165,7 @@ class LeadViewSet(viewsets.ReadOnlyModelViewSet):
 
     @extend_schema(
         summary="Recalculate lead score",
+        request=None,
         responses={200: LeadScoreSerializer},
     )
     @action(

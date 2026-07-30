@@ -133,3 +133,23 @@ class LeadContactCreateSerializer(serializers.Serializer):
 
         attrs["_form"] = form
         return attrs
+
+class LeadCreateResponseSerializer(serializers.ModelSerializer):
+    source_label = serializers.CharField(source="get_source_display", read_only=True)
+    status_label = serializers.CharField(source="get_status_display", read_only=True)
+    message = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lead
+        fields = [
+            "id",
+            "source",
+            "source_label",
+            "status",
+            "status_label",
+            "message",
+            "created_at",
+        ]
+
+    def get_message(self, obj: Lead) -> str:
+        return "Lead created successfully."
