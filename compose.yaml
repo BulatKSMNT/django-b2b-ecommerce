@@ -15,8 +15,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      - dev-network
 
   db:
     image: postgres:17-alpine
@@ -25,20 +23,23 @@ services:
     env_file:
       - .env.docker
     ports:
-    - "5433:5432"
+      - "5433:5432"
     volumes:
       - django_b2b_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U django_b2b -d django_b2b"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
-    networks:
-      - dev-network
+
+  scoring-api:
+    build:
+      context: ./services/lead_scoring_api
+      dockerfile: Dockerfile
+    container_name: django-b2b-ecommerce-scoring-api
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
 
 volumes:
   django_b2b_postgres_data:
-
-networks:
-  dev-network:
-    external: true
