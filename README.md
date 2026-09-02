@@ -8,13 +8,12 @@
 [![Docker](https://img.shields.io/badge/Docker_Compose-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![CI](https://img.shields.io/github/actions/workflow/status/BulatKSMNT/django-b2b-ecommerce/ci.yml?branch=main&style=flat-square&logo=github&label=CI)](https://github.com/BulatKSMNT/django-b2b-ecommerce/actions)
 
-B2B E-Commerce & Analytics Platform — обезличенная публичная версия
+B2B E-Commerce & Analytics Platform — публичная реконструкция
 backend-системы, разработанной в рамках коммерческого проекта.
 
-Система автоматизирует B2B-сценарии работы с каталогом товаров,
-клиентскими заявками и внутренней аналитикой. Она включает каталог,
-корзину, избранное, обработку заявок, server-side tracking,
-аналитические витрины и rule-based скоринг лидов.
+Репозиторий создан отдельно от закрытого production-решения и воспроизводит
+его основные технические идеи: структуру B2B-каталога, обработку заявок,
+server-side tracking, аналитические агрегаты и rule-based скоринг лидов.
 
 
 ## Ключевые технические задачи
