@@ -1,46 +1,50 @@
 # B2B E-Commerce & Analytics Platform
 
-![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python)
-![Django](https://img.shields.io/badge/Django-6.x-092E20?style=for-the-badge&logo=django)
-![DRF](https://img.shields.io/badge/DRF-REST_API-red?style=for-the-badge)
-![FastAPI](https://img.shields.io/badge/FastAPI-Scoring_Service-009688?style=for-the-badge&logo=fastapi)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-316192?style=for-the-badge&logo=postgresql)
-![Docker](https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker)
-![Tests](https://img.shields.io/badge/Tests-Django_17%20%7C%20FastAPI_4-brightgreen?style=for-the-badge)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-6.0-092E20?style=flat-square&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-REST_API-A30000?style=flat-square)](https://www.django-rest-framework.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-scoring_service-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker_Compose-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![CI](https://img.shields.io/github/actions/workflow/status/BulatKSMNT/django-b2b-ecommerce/ci.yml?branch=main&style=flat-square&logo=github&label=CI)](https://github.com/BulatKSMNT/django-b2b-ecommerce/actions)
 
-![CI](https://img.shields.io/github/actions/workflow/status/BulatKSMNT/django-b2b-ecommerce/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI%20Pipeline)
-   
+Backend-платформа для B2B-заказов с каталогом, корзиной, заявками,
+server-side tracking, аналитическими витринами и rule-based скорингом лидов.
 
-## О проекте
+Проект включает основное приложение на **Django/DRF**, отдельный
+асинхронный scoring-сервис на **FastAPI**, базу данных **PostgreSQL**,
+контейнеризацию и автоматические тесты.
 
-**B2B E-Commerce & Analytics Platform** — backend-проект для B2B e-commerce сценария.
+> Портфолио-проект, разработанный для демонстрации проектирования backend-систем,
+> REST API, обработки данных, аналитических агрегатов и сервисной архитектуры.
 
-Проект объединяет:
+## Ключевые технические задачи
 
-- Django-приложение;
-- каталог товаров;
-- корзину и избранное;
-- систему заявок;
-- server-side tracking;
-- внутреннюю аналитику;
-- rule-based lead scoring;
-- Django REST API;
-- отдельный FastAPI-сервис для скоринга;
-- PostgreSQL;
-- Docker Compose;
-- автоматические тесты.
+- проектирование моделей и бизнес-логики B2B-платформы;
+- разработка REST API на Django REST Framework;
+- документирование API через OpenAPI/Swagger;
+- реализация server-side сбора пользовательских событий;
+- построение дневных аналитических витрин из сырых событий;
+- разработка rule-based системы скоринга лидов;
+- выделение scoring-логики в отдельный FastAPI-сервис;
+- оптимизация ORM-запросов через `select_related` и `prefetch_related`;
+- защита административных API с помощью permissions;
+- контейнеризация Django, PostgreSQL и FastAPI;
+- автоматическое тестирование через GitHub Actions.
 
-Проект разработан как портфолио-проект для демонстрации практических backend-навыков:
+## Навигация
 
-- Python;
-- Django;
-- Django REST Framework;
-- FastAPI;
-- REST API;
-- PostgreSQL;
-- Docker Compose;
-- unit/API tests;
-- OpenAPI/Swagger.
+- [Основные возможности](#основные-возможности)
+- [Архитектура](#архитектура)
+- [Обработка данных и аналитические витрины](#обработка-данных-и-аналитические-витрины)
+- [Технологический стек](#технологический-стек)
+- [Быстрый запуск](#быстрый-запуск-через-docker-compose)
+- [Демонстрационный сценарий](#демонстрационный-сценарий)
+- [Django REST API](#django-rest-api)
+- [FastAPI Lead Scoring Service](#fastapi-lead-scoring-service)
+- [Тестирование](#тестирование)
+- [Известные ограничения](#известные-ограничения)
+- [Планы развития](#планы-развития)
 
 ---
 
@@ -237,42 +241,178 @@ services/lead_scoring_api/
 
 ## Архитектура
 
-Основное Django-приложение:
+```mermaid
+flowchart TB
+    Client[Browser / API Client]
 
-```text
-Client / Browser / API Client
-        |
-        | HTTP
-        v
-Django Application
-        |
-        | HTML pages
-        | Django Admin
-        | DRF API
-        v
-PostgreSQL
+    subgraph DjangoApplication[Django application]
+        Views[Django Views and Templates]
+        API[Django REST Framework API]
+        Admin[Django Admin and Analytics Dashboard]
+        Tracking[Tracking Middleware]
+        Scoring[Internal Rule-based Scoring]
+        Commands[Analytics Management Commands]
+    end
+
+    DB[(PostgreSQL)]
+
+    subgraph FastAPIService[Independent FastAPI service]
+        Endpoint[POST /api/v1/score]
+        ScoringCore[Rule-based Scoring Engine]
+    end
+
+    Client --> Views
+    Client --> API
+    Client --> Admin
+
+    Views --> Tracking
+    API --> Tracking
+
+    Views --> DB
+    API --> DB
+    Admin --> DB
+    Tracking --> DB
+    Scoring --> DB
+    Commands --> DB
+
+    Client --> Endpoint
+    Endpoint --> ScoringCore
+
+    DjangoApplication -. planned HTTP integration .-> FastAPIService
 ```
 
-Отдельный FastAPI scoring service:
+Проект состоит из двух независимо запускаемых компонентов:
 
-```text
-API Client
-        |
-        | POST /api/v1/score
-        v
-FastAPI Lead Scoring Service
-        |
-        v
-Rule-based scoring response
-```
+1. **Django-приложение**
+   - реализует каталог, корзину, избранное и заявки;
+   - предоставляет DRF API;
+   - собирает пользовательские события;
+   - строит аналитические агрегаты;
+   - выполняет внутренний rule-based scoring;
+   - предоставляет административный аналитический dashboard.
 
-Текущее состояние архитектуры:
+2. **FastAPI scoring service**
+   - принимает признаки лида через REST API;
+   - валидирует запрос с помощью Pydantic;
+   - рассчитывает score и priority;
+   - возвращает структурированное объяснение результата.
 
-- Django использует внутренний rule-based scoring.
-- FastAPI-сервис работает как отдельный scoring service.
-- В дальнейшем можно добавить режим, при котором Django будет отправлять признаки лида во FastAPI-сервис по HTTP.
+На текущем этапе Django использует собственную реализацию скоринга.
+FastAPI-сервис работает независимо и демонстрирует возможность выделения
+вычислительной логики в отдельный сервис.
+
+HTTP-интеграция Django с FastAPI обозначена на схеме пунктиром и находится
+в планах развития.
 
 ---
+
+## Обработка данных и аналитические витрины
+
+В приложении реализован упрощённый ETL-процесс для внутренней аналитики.
+
+```mermaid
+flowchart LR
+    Requests[HTTP requests]
+    Actions[User actions]
+    Leads[Lead creation]
+
+    Middleware[Tracking Middleware]
+    Events[(Raw event tables)]
+    Command[build_daily_metrics]
+    Marts[(Daily metric tables)]
+    Dashboard[Django Admin Dashboard]
+
+    Requests --> Middleware
+    Actions --> Middleware
+    Leads --> Events
+    Middleware --> Events
+    Events --> Command
+    Command --> Marts
+    Marts --> Dashboard
+```
+
+### Источники данных
+
+Сырые данные поступают из следующих источников:
+
+- посещения страниц;
+- просмотры товаров;
+- добавления и удаления товаров из корзины;
+- добавления и удаления товаров из избранного;
+- создание заявок;
+- позиции и суммы заявок;
+- данные посетителя, пользователя и активного профиля.
+
+### Этапы обработки
+
+1. **Extract** — чтение сырых событий из `PageVisit`, `UserEvent`
+   и данных заявок из `LeadItem`.
+2. **Transform** — группировка по дате, странице и товару, расчёт
+   количества событий, уникальных посетителей, средних значений и связанных заявок.
+3. **Load** — сохранение результатов в таблицы `PageDailyMetric`
+   и `ProductDailyMetric`.
+
+Для пакетной записи агрегатов используется `bulk_create` с размером
+пакета `1000`.
+
+### Построение дневных витрин
+
+По умолчанию команда рассчитывает метрики за предыдущий день:
+
+```bash
+python manage.py build_daily_metrics
+```
+
+Расчёт за конкретную дату:
+
+```bash
+python manage.py build_daily_metrics --date YYYY-MM-DD
+```
+
+Запуск внутри Docker:
+
+```bash
+docker compose exec web python manage.py build_daily_metrics
+```
+
+Или для выбранной даты:
+
+```bash
+docker compose exec web python manage.py build_daily_metrics --date YYYY-MM-DD
+```
+
+Повторный запуск за ту же дату пересоздаёт соответствующие дневные агрегаты,
+поэтому команда может использоваться для повторного расчёта витрины.
+
+### Пересчёт скоринга заявок
+
+Обработать заявки, для которых score ещё не рассчитан:
+
+```bash
+python manage.py score_leads
+```
+
+Пересчитать все заявки:
+
+```bash
+python manage.py score_leads --all
+```
+
+Пересчитать одну заявку:
+
+```bash
+python manage.py score_leads --lead-id 1
+```
+
+Ограничить количество обрабатываемых заявок:
+
+```bash
+python manage.py score_leads --all --limit 100
+```
+
+> Management-команды запускаются вручную. Планировщик и оркестратор
+> процессов, например Airflow или Celery Beat, в текущей версии проекта
+> не используются.
 
 ## Переменные окружения
 
@@ -636,50 +776,61 @@ curl -X POST http://127.0.0.1:8001/api/v1/score \
 
 ## Тестирование
 
-### Django tests
+В репозитории используются два независимых набора тестов:
+
+- Django `TestCase` и DRF `APIClient` для основного приложения;
+- `pytest` и FastAPI `TestClient` для scoring-сервиса.
+
+### Django
 
 ```bash
+python manage.py check
 python manage.py test
 ```
 
-Текущее состояние:
-
-```text
-36 Django tests passed
-```
-
-### FastAPI tests
+### FastAPI
 
 ```bash
 cd services/lead_scoring_api
 pytest
 ```
 
-Текущее состояние:
+### Запуск в Docker
 
-```text
-7 FastAPI tests passed
-```
-
-### Запуск обоих наборов тестов
-
-Из корня проекта:
+Django:
 
 ```bash
-python manage.py test
-cd services/lead_scoring_api
-pytest
+docker compose exec web python manage.py check
+docker compose exec web python manage.py test
 ```
 
----
+FastAPI:
 
-## OpenAPI schema validation
+```bash
+docker compose exec scoring-api pytest
+```
 
-Сгенерировать и проверить Django OpenAPI schema:
+### Проверка OpenAPI schema
 
 ```bash
 python manage.py spectacular --validate --file schema.yml
 ```
+
+### Continuous Integration
+
+GitHub Actions автоматически запускает проверки при `push` и
+`pull_request`:
+
+1. устанавливает Python 3.12;
+2. устанавливает зависимости;
+3. запускает `python manage.py check`;
+4. запускает Django-тесты;
+5. запускает FastAPI-тесты через `pytest`.
+
+Для ускорения Django-тестов в CI используется SQLite. PostgreSQL
+используется в Docker Compose и в основном локальном сценарии запуска.
+
+---
 
 
 ## Полезные Docker-команды
@@ -825,43 +976,24 @@ uvicorn app.main:app --reload --port 8001
 - production-like Docker setup с Gunicorn/Nginx.
 
 ---
+## Планы развития
 
-## Что демонстрирует проект
+- [ ] интегрировать Django со scoring-сервисом через HTTP;
+- [ ] добавить timeout, retry и fallback для обращения к scoring API;
+- [ ] добавить demo data seed command для каталога;
+- [ ] настроить Ruff для линтинга и форматирования;
+- [ ] добавить PostgreSQL integration tests;
+- [ ] добавить планирование аналитических задач;
+- [ ] подготовить production-конфигурацию с Gunicorn;
+- [ ] добавить health check для Django-приложения;
+- [ ] добавить структурированное логирование;
+- [ ] добавить screenshots пользовательского интерфейса.
 
-Проект демонстрирует практические backend-навыки:
 
-- архитектура Django-приложения;
-- Django models/services/forms;
-- Django REST Framework;
-- permission-protected API endpoints;
-- Swagger/OpenAPI;
-- FastAPI service;
-- Pydantic request/response schemas;
-- PostgreSQL;
-- Docker Compose;
-- unit/API tests;
-- server-side analytics;
-- lead scoring business logic;
-- базовое понимание service-oriented architecture;
-- Git-based workflow.
+## Автор
 
----
+**Булат Хатыпов**
 
-## Назначение репозитория
+- GitHub: [BulatKSMNT](https://github.com/BulatKSMNT)
+- Telegram: [@khat911](https://t.me/khat911)
 
-Этот репозиторий является портфолио-проектом для демонстрации backend-разработки на Python.
-
-Основной фокус:
-
-```text
-Python
-Django
-Django REST Framework
-FastAPI
-PostgreSQL
-Docker Compose
-REST API
-Tests
-OpenAPI documentation
-Backend architecture
-```
