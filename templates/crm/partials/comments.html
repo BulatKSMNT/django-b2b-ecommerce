@@ -1,0 +1,26 @@
+<div data-detail-panel="comments" hidden>
+    <div id="detail-comments" class="space-y-4 mb-6"></div>
+
+    <form id="comment-form">
+        <label class="field-label" for="comment-body">Добавить комментарий</label>
+        <textarea
+            id="comment-body"
+            class="field"
+            rows="4"
+            maxlength="5000"
+            required
+            placeholder="Напишите внутренний комментарий"
+        ></textarea>
+
+        <div class="flex flex-wrap justify-between items-center gap-3 mt-3">
+            <span class="text-xs text-muted">
+                Внутренний комментарий. Клиент его не увидит.
+            </span>
+
+            <div class="flex items-center gap-3">
+                <span id="comment-counter" class="text-xs text-muted">0 / 5000</span>
+                <button class="btn btn-primary" type="submit">Добавить</button>
+            </div>
+        </div>
+    </form>
+</div>

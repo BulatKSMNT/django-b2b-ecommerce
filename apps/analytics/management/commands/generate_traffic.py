@@ -7,6 +7,7 @@ from django.db import transaction
 from apps.catalog.models import Product
 from apps.tracking.models import PageVisit, UserEvent, Visitor
 from apps.leads.models import Lead, LeadItem
+from apps.leads.management_service import initialize_lead
 from apps.analytics.services import score_lead
 
 
@@ -61,13 +62,15 @@ class Command(BaseCommand):
                 lead = Lead.objects.create(
                     visitor=visitor,
                     source=random.choice([Lead.Source.CART, Lead.Source.PRODUCT, Lead.Source.CONTACT]),
-                    status=random.choice([Lead.Status.NEW, Lead.Status.IN_PROGRESS, Lead.Status.COMPLETED]),
+                    status=Lead.Status.NEW,
                     fullname=f"Тестовый Клиент {i}",
                     phone_number="+79990001122",
                     email=f"client{i}@mail.ru",
                 )
                 # Меняем дату создания (обход auto_now_add)
                 Lead.objects.filter(pk=lead.pk).update(created_at=random_date)
+                lead.refresh_from_db()
+                initialize_lead(lead)
 
                 # Добавляем товары в заявку
                 if lead.source in [Lead.Source.CART, Lead.Source.PRODUCT]:

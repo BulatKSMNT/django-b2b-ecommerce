@@ -1,0 +1,64 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Команда — LIDER{% endblock %}
+{% block page_id %}team{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Команда</h1>
+        <p class="page-subtitle">Нагрузка и доступность сотрудников</p>
+    </div>
+</div>
+
+<section class="panel mb-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+            <label class="field-label" for="team-search">Поиск сотрудника</label>
+            <input
+                class="field"
+                id="team-search"
+                type="search"
+                placeholder="Имя сотрудника"
+            >
+        </div>
+        <div>
+            <label class="field-label" for="team-status">Доступность</label>
+            <select id="team-status" class="field">
+                <option value="">Все сотрудники</option>
+                <option value="available">Принимают заявки</option>
+                <option value="unavailable">Недоступны</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="panel p-0 overflow-hidden">
+    <div class="table-scroll desktop-table">
+        <table class="crm-table">
+            <thead>
+                <tr>
+                    <th>Сотрудник</th>
+                    <th>Доступность</th>
+                    <th>Открытые заявки</th>
+                    <th>Просроченные</th>
+                    <th>Действия сегодня</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="team-rows"></tbody>
+        </table>
+    </div>
+
+    <div id="team-mobile" class="mobile-list"></div>
+
+    <div id="team-empty" class="empty-state" hidden>
+        <h3>Сотрудники не найдены</h3>
+        <p>Измени параметры поиска.</p>
+    </div>
+</section>
+
+<div class="notice mt-5">
+    Сотрудники, недоступные для назначения, сохраняют текущие заявки.
+</div>
+{% endblock %}

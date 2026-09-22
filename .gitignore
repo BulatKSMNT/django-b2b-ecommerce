@@ -164,3 +164,6 @@ dmypy.json
 
 # Visual Studio Code
 .history
+
+/docs
+/ops

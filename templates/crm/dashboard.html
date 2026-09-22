@@ -1,0 +1,79 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Обзор — LIDER{% endblock %}
+{% block page_id %}dashboard{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Обзор</h1>
+        <p class="page-subtitle">Оперативная сводка и ближайшие действия</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <span id="current-date" class="text-sm text-muted"></span>
+        <button type="button" class="btn btn-secondary" data-refresh>
+            <span class="material-symbols-outlined" aria-hidden="true">
+                refresh
+            </span>
+            Обновить
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <a href="/crm/leads/" class="panel kpi-card">
+        <span class="eyebrow">Открытые заявки</span>
+        <strong id="kpi-open">—</strong>
+        <span class="text-xs text-muted">В текущей демонстрационной выборке</span>
+    </a>
+
+    <a href="/crm/leads/?reaction=pending" class="panel kpi-card">
+        <span class="eyebrow">Без первого ответа</span>
+        <strong id="kpi-pending">—</strong>
+        <span class="text-xs text-muted">Ожидают попытки связи</span>
+    </a>
+
+    <a href="/crm/leads/?sla=overdue" class="panel kpi-card">
+        <span class="eyebrow text-red-700">Просроченные</span>
+        <strong id="kpi-overdue" class="text-red-700">—</strong>
+        <span class="text-xs text-muted">Требуют внимания</span>
+    </a>
+
+    <a href="/crm/leads/" class="panel kpi-card">
+        <span class="eyebrow">Действия сегодня</span>
+        <strong id="kpi-actions">—</strong>
+        <span class="text-xs text-muted">Запланировано</span>
+    </a>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <section class="panel xl:col-span-2">
+        <div class="section-heading">
+            <h2>Требуют внимания</h2>
+            <a href="/crm/leads/" class="text-link">Все заявки</a>
+        </div>
+
+        <div class="table-scroll">
+            <table class="crm-table">
+                <thead>
+                    <tr>
+                        <th>Заявка и клиент</th>
+                        <th>Статус</th>
+                        <th>Приоритет</th>
+                        <th>Срок реакции</th>
+                    </tr>
+                </thead>
+                <tbody id="dashboard-rows"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <h2>Ближайшие действия</h2>
+        </div>
+        <div id="dashboard-actions" class="space-y-3"></div>
+    </section>
+</div>
+{% endblock %}

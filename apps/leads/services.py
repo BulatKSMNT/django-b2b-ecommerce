@@ -4,6 +4,10 @@ from apps.tracking.services import extract_utm_params
 
 from .forms import LeadForm
 from .models import Lead, LeadItem
+from .management_service import (
+    add_comment, assign_lead, change_status, claim_lead, close_lead,
+    initialize_lead, register_interaction, reopen_lead, set_next_action,
+)
 
 LEAD_FORM_STATE_SESSION_KEY = "leads_form_state"
 
@@ -86,7 +90,7 @@ def build_product_snapshot(product) -> dict:
 def create_base_lead(request, form: LeadForm, source: str) -> Lead:
     utm = extract_utm_params(request)
 
-    return Lead.objects.create(
+    lead = Lead.objects.create(
         profile=_get_request_profile(request),
         visitor=_get_request_visitor(request),
         source=source,
@@ -102,6 +106,7 @@ def create_base_lead(request, form: LeadForm, source: str) -> Lead:
         utm_term=utm.get("utm_term", "")[:255],
         utm_content=utm.get("utm_content", "")[:255],
     )
+    return initialize_lead(lead, actor=request.user if request.user.is_authenticated else None)
 
 
 def add_product_to_lead(lead: Lead, product, quantity: int = 1) -> LeadItem:

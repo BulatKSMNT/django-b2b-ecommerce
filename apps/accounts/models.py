@@ -40,3 +40,24 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class EmployeeProfile(models.Model):
+    """Employee access is independent of customer profiles and Django admin access."""
+
+    class Role(models.TextChoices):
+        MANAGER = "manager", "Менеджер"
+        SUPERVISOR = "supervisor", "Руководитель"
+        ADMINISTRATOR = "administrator", "Администратор"
+
+    user = models.OneToOneField(
+        "accounts.User", on_delete=models.CASCADE, related_name="employee_profile"
+    )
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.MANAGER)
+    is_active = models.BooleanField(default=True)
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user} ({self.get_role_display()})"

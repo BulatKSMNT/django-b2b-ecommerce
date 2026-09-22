@@ -1,0 +1,86 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Общая очередь — LIDER{% endblock %}
+{% block page_id %}queue{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <div class="flex items-center gap-3">
+            <h1>Общая очередь</h1>
+            <span id="queue-count" class="badge badge-green">0</span>
+        </div>
+        <p class="page-subtitle">
+            Возьмите заявку в работу, чтобы открыть контакты клиента.
+        </p>
+    </div>
+
+    <button class="btn btn-secondary" type="button" data-refresh>
+        <span class="material-symbols-outlined" aria-hidden="true">
+            refresh
+        </span>
+        Обновить
+    </button>
+</div>
+
+<section class="panel mb-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+            <label class="field-label" for="queue-search">Поиск</label>
+            <input
+                id="queue-search"
+                class="field"
+                type="search"
+                placeholder="Номер или предмет обращения"
+            >
+        </div>
+        <div>
+            <label class="field-label" for="queue-priority">Приоритет</label>
+            <select id="queue-priority" class="field">
+                <option value="">Все приоритеты</option>
+                <option value="high">Высокий</option>
+                <option value="medium">Средний</option>
+                <option value="low">Низкий</option>
+            </select>
+        </div>
+        <div>
+            <label class="field-label" for="queue-source">Источник</label>
+            <select id="queue-source" class="field">
+                <option value="">Все источники</option>
+                <option value="cart">Из корзины</option>
+                <option value="product">Карточка товара</option>
+                <option value="contact">Контактная форма</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="panel p-0 overflow-hidden">
+    <div class="table-scroll desktop-table">
+        <table class="crm-table">
+            <thead>
+                <tr>
+                    <th>Номер и дата</th>
+                    <th>Предмет обращения</th>
+                    <th>Источник</th>
+                    <th>Сумма</th>
+                    <th>Приоритет</th>
+                    <th>Срок реакции</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody id="queue-rows"></tbody>
+        </table>
+    </div>
+
+    <div id="queue-mobile" class="mobile-list"></div>
+
+    <div id="queue-empty" class="empty-state" hidden>
+        <span class="material-symbols-outlined text-primary text-3xl">
+            inbox
+        </span>
+        <h3 id="queue-empty-title">Все заявки распределены</h3>
+        <p id="queue-empty-text">Новые обращения появятся здесь.</p>
+    </div>
+</section>
+{% endblock %}

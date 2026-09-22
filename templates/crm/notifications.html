@@ -1,0 +1,47 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Уведомления — LIDER{% endblock %}
+{% block page_id %}notifications{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div class="flex items-center gap-3">
+        <h1>Уведомления</h1>
+        <span id="notifications-count" class="badge badge-green">0 новых</span>
+    </div>
+
+    <button id="read-all" type="button" class="btn btn-secondary">
+        <span class="material-symbols-outlined" aria-hidden="true">done_all</span>
+        Прочитать все
+    </button>
+</div>
+
+<div class="tabs mb-5">
+    <button
+        class="tab-button is-active"
+        type="button"
+        data-notification-filter="all"
+    >
+        Все
+    </button>
+    <button
+        class="tab-button"
+        type="button"
+        data-notification-filter="unread"
+    >
+        Непрочитанные
+    </button>
+</div>
+
+<section class="panel p-0 overflow-hidden">
+    <div id="notifications-list"></div>
+
+    <div id="notifications-empty" class="empty-state" hidden>
+        <span class="material-symbols-outlined text-3xl text-muted">
+            notifications_none
+        </span>
+        <h3 id="notifications-empty-title">Нет уведомлений</h3>
+        <p>Здесь появятся назначения, комментарии и напоминания.</p>
+    </div>
+</section>
+{% endblock %}

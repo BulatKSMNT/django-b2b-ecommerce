@@ -11,9 +11,11 @@ from apps.leads.models import Lead, LeadItem
 from apps.tracking.models import PageVisit, UserEvent
 
 from .models import LeadScore, PageDailyMetric, ProductDailyMetric
+from apps.accounts.access import require_supervisor
 
 
 def admin_analytics_dashboard(request):
+    require_supervisor(request.user)
     raw_days = request.GET.get("days", "7")
     allowed_days = {7, 14, 30, 90}
 

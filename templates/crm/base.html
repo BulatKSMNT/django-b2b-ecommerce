@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Рабочий кабинет — LIDER{% endblock %}</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+        rel="stylesheet"
+    >
+
+    <!-- Подключение из исходных макетов. Пока сохраняем для вёрстки. -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="{% static 'crm/js/theme.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'crm/css/crm.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body data-page="{% block page_id %}{% endblock %}">
+    {% include "crm/includes/sidebar.html" %}
+    {% include "crm/includes/header.html" %}
+
+    <main class="crm-main">
+        <div class="crm-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% include "crm/includes/dialogs.html" %}
+
+    <div
+        id="toast"
+        class="crm-toast"
+        role="status"
+        aria-live="polite"
+        hidden
+    ></div>
+
+    <!-- Демонстрационные данные заменяются API при интеграции. -->
+    <script src="{% static 'crm/js/demo-data.js' %}" defer></script>
+    <script src="{% static 'crm/js/crm.js' %}" defer></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

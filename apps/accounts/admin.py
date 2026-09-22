@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from unfold.admin import ModelAdmin, TabularInline
 from .models import Profile, User
+from .access import SupervisorDataAdminMixin, employee_role
 
 
 class ProfileInline(TabularInline):
@@ -12,15 +13,18 @@ class ProfileInline(TabularInline):
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(SupervisorDataAdminMixin, BaseUserAdmin):
     inlines = (ProfileInline,)
     list_display = ("id", "username", "email", "first_name", "last_name", "is_staff", "is_active")
     search_fields = ("username", "email", "first_name", "last_name")
     ordering = ("id",)
 
+    def _allowed(self, request):
+        return employee_role(request.user) == "administrator"
+
 
 @admin.register(Profile)
-class ProfileAdmin(ModelAdmin):
+class ProfileAdmin(SupervisorDataAdminMixin, ModelAdmin):
     list_display = ("id", "name", "user", "profile_type", "is_default", "is_active", "created_at")
     list_filter = ("profile_type", "is_default", "is_active")
     search_fields = ("name", "user__username", "user__email", "user__first_name", "user__last_name")

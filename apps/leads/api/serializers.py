@@ -1,9 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
-from apps.analytics.api.serializers import LeadScoreSerializer
+from apps.analytics.api.serializers import LeadScoreSerializer, LeadScoringStatusSerializer
 from apps.leads.forms import LeadForm
 from apps.leads.models import Lead, LeadItem
+from .sla_serializers import LeadSLASerializer, NextActionReminderSerializer
 
 
 class LeadItemSerializer(serializers.ModelSerializer):
@@ -43,6 +44,9 @@ class LeadListSerializer(serializers.ModelSerializer):
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
 
     score_summary = serializers.SerializerMethodField()
+    scoring = LeadScoringStatusSerializer(source="*", read_only=True)
+    sla = LeadSLASerializer(source="*", read_only=True, allow_null=True)
+    next_action_reminder = NextActionReminderSerializer(source="*", read_only=True)
 
     class Meta:
         model = Lead
@@ -52,6 +56,10 @@ class LeadListSerializer(serializers.ModelSerializer):
             "source_label",
             "status",
             "status_label",
+            "assignee_id",
+            "version",
+            "next_action",
+            "next_action_at",
             "fullname",
             "email",
             "phone_number",
@@ -59,6 +67,9 @@ class LeadListSerializer(serializers.ModelSerializer):
             "total_quantity",
             "total_amount",
             "score_summary",
+            "scoring",
+            "sla",
+            "next_action_reminder",
             "created_at",
             "updated_at",
         ]

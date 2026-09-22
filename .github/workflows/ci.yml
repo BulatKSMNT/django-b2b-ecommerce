@@ -10,13 +10,32 @@ jobs:
   test-django:
     name: Django Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: django_b2b
+          POSTGRES_USER: django_b2b
+          POSTGRES_PASSWORD: ci-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U django_b2b -d django_b2b"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     
     env:
       DJANGO_SECRET_KEY: ci-test-secret-key-12345
       DJANGO_DEBUG: "False"
       DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost"
       DJANGO_SETTINGS_MODULE: config.settings.dev
-      DB_ENGINE: sqlite  # Используем SQLite для скорости CI-тестов
+      DB_ENGINE: postgres
+      POSTGRES_DB: django_b2b
+      POSTGRES_USER: django_b2b
+      POSTGRES_PASSWORD: ci-test-password
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
 
     steps:
       - name: Checkout Code
@@ -37,7 +56,12 @@ jobs:
         run: python manage.py check
 
       - name: Run Django Tests
-        run: python manage.py test
+        run: python manage.py test --settings=config.settings.test_postgres --noinput
+
+      - name: Check migrations and OpenAPI
+        run: |
+          python manage.py makemigrations --check --dry-run
+          python manage.py spectacular --validate --fail-on-warn --file /tmp/openapi.yaml
 
   test-fastapi:
     name: FastAPI Tests

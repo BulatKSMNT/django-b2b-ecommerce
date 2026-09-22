@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from unfold.admin import ModelAdmin, TabularInline
 from .models import LeadScore, PageDailyMetric, ProductDailyMetric
+from apps.accounts.access import SupervisorDataAdminMixin
 
 
 @admin.register(PageDailyMetric)
@@ -35,7 +36,7 @@ class ProductDailyMetricAdmin(ModelAdmin):
 
 
 @admin.register(LeadScore)
-class LeadScoreAdmin(ModelAdmin):
+class LeadScoreAdmin(SupervisorDataAdminMixin, ModelAdmin):
     list_display = ("lead", "score", "priority", "model_name", "model_version", "predicted_at")
     list_filter = ("priority", "model_name", "model_version")
     search_fields = ("lead__fullname", "lead__email", "lead__phone_number")

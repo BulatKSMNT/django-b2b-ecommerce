@@ -1,0 +1,85 @@
+<div id="sidebar-overlay" class="sidebar-overlay" hidden></div>
+
+<aside id="crm-sidebar" class="crm-sidebar">
+    <div class="flex items-center justify-between px-3 mb-8">
+        <div>
+            <a href="/crm/" class="text-xl font-extrabold text-primary">
+                LIDER
+            </a>
+            <p class="text-xs text-muted mt-1">Рабочий кабинет</p>
+        </div>
+
+        <button
+            type="button"
+            class="icon-button md:hidden"
+            id="sidebar-close"
+            aria-label="Закрыть меню"
+        >
+            <span class="material-symbols-outlined" aria-hidden="true">
+                close
+            </span>
+        </button>
+    </div>
+
+    <nav class="flex-1 space-y-1" aria-label="Основная навигация">
+        <a href="/crm/" class="nav-link" data-nav="dashboard">
+            <span class="material-symbols-outlined" aria-hidden="true">
+                dashboard
+            </span>
+            Обзор
+        </a>
+
+        <a href="/crm/leads/" class="nav-link" data-nav="lead_list">
+            <span class="material-symbols-outlined" aria-hidden="true">
+                assignment
+            </span>
+            Заявки
+        </a>
+
+        <a href="/crm/queue/" class="nav-link" data-nav="queue">
+            <span class="material-symbols-outlined" aria-hidden="true">
+                view_list
+            </span>
+            Общая очередь
+        </a>
+
+        <a href="/crm/team/" class="nav-link" data-nav="team">
+            <span class="material-symbols-outlined" aria-hidden="true">
+                group
+            </span>
+            Команда
+        </a>
+
+        <a
+            href="/crm/notifications/"
+            class="nav-link"
+            data-nav="notifications"
+        >
+            <span class="material-symbols-outlined" aria-hidden="true">
+                notifications
+            </span>
+            Уведомления
+        </a>
+
+        <a
+            href="/crm/settings/sla/"
+            class="nav-link"
+            data-nav="sla_settings"
+        >
+            <span class="material-symbols-outlined" aria-hidden="true">
+                timer
+            </span>
+            Настройки SLA
+        </a>
+    </nav>
+
+    <div class="border-t border-line pt-5 mt-6 px-3">
+        <div class="flex items-center gap-3">
+            <div class="avatar">ДВ</div>
+            <div>
+                <p class="text-sm font-semibold">Дмитрий Волков</p>
+                <p class="text-xs text-muted mt-1">Руководитель · демо</p>
+            </div>
+        </div>
+    </div>
+</aside>

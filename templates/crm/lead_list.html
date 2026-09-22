@@ -1,0 +1,168 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Заявки — LIDER{% endblock %}
+{% block page_id %}lead_list{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div class="flex items-center gap-3">
+        <h1>Заявки</h1>
+        <span id="lead-count" class="badge badge-green">0</span>
+    </div>
+
+    <button type="button" class="btn btn-secondary" data-refresh>
+        <span class="material-symbols-outlined" aria-hidden="true">
+            refresh
+        </span>
+        Обновить
+    </button>
+</div>
+
+<div class="tabs mb-5" aria-label="Выбор списка">
+    <button type="button" class="tab-button" data-list-tab="mine">Мои</button>
+    <button type="button" class="tab-button is-active" data-list-tab="all">
+        Все
+    </button>
+    <button type="button" class="tab-button" data-list-tab="closed">
+        Закрытые
+    </button>
+</div>
+
+<div class="flex flex-wrap gap-2 mb-5">
+    <button
+        type="button"
+        class="filter-chip"
+        data-quick="overdue"
+        aria-pressed="false"
+    >
+        Просроченные
+    </button>
+    <button
+        type="button"
+        class="filter-chip"
+        data-quick="high"
+        aria-pressed="false"
+    >
+        Высокий приоритет
+    </button>
+    <button
+        type="button"
+        class="filter-chip"
+        data-quick="today"
+        aria-pressed="false"
+    >
+        Действие сегодня
+    </button>
+</div>
+
+<section class="panel mb-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        <div>
+            <label class="field-label" for="lead-search">Поиск</label>
+            <input
+                id="lead-search"
+                class="field"
+                type="search"
+                placeholder="Номер, компания или контакт"
+            >
+        </div>
+
+        <div>
+            <label class="field-label" for="lead-status">Статус</label>
+            <select id="lead-status" class="field">
+                <option value="">Все статусы</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="field-label" for="lead-priority">Приоритет</label>
+            <select id="lead-priority" class="field">
+                <option value="">Все приоритеты</option>
+                <option value="high">Высокий</option>
+                <option value="medium">Средний</option>
+                <option value="low">Низкий</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="field-label" for="lead-assignee">Ответственный</label>
+            <select id="lead-assignee" class="field">
+                <option value="">Все сотрудники</option>
+            </select>
+        </div>
+    </div>
+
+    <details class="mt-4">
+        <summary class="text-link cursor-pointer">Ещё фильтры</summary>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+            <div>
+                <label class="field-label" for="lead-source">Источник</label>
+                <select id="lead-source" class="field">
+                    <option value="">Все источники</option>
+                    <option value="cart">Из корзины</option>
+                    <option value="product">Карточка товара</option>
+                    <option value="contact">Контактная форма</option>
+                </select>
+            </div>
+            <div>
+                <label class="field-label" for="lead-date-from">С даты</label>
+                <input id="lead-date-from" type="date" class="field">
+            </div>
+            <div>
+                <label class="field-label" for="lead-date-to">По дату</label>
+                <input id="lead-date-to" type="date" class="field">
+            </div>
+        </div>
+    </details>
+
+    <button id="lead-reset" type="button" class="text-link mt-4">
+        Сбросить фильтры
+    </button>
+</section>
+
+<section class="panel p-0 overflow-hidden">
+    <div class="table-scroll desktop-table">
+        <table class="crm-table">
+            <thead>
+                <tr>
+                    <th>Заявка</th>
+                    <th>Клиент</th>
+                    <th>Статус</th>
+                    <th>Приоритет</th>
+                    <th>Сумма</th>
+                    <th>Срок реакции</th>
+                    <th>Ответственный</th>
+                </tr>
+            </thead>
+            <tbody id="lead-rows"></tbody>
+        </table>
+    </div>
+
+    <div id="lead-mobile" class="mobile-list"></div>
+
+    <div id="lead-empty" class="empty-state" hidden>
+        <h3>Ничего не найдено</h3>
+        <p>Измени параметры поиска или сбрось фильтры.</p>
+    </div>
+
+    <div class="table-footer">
+        <span id="lead-summary"></span>
+        <div class="flex items-center gap-2">
+            <label class="sr-only" for="lead-page-size">Строк на странице</label>
+            <select id="lead-page-size" class="field w-auto">
+                <option value="5">5 строк</option>
+                <option value="10">10 строк</option>
+                <option value="25">25 строк</option>
+            </select>
+            <button id="lead-prev" class="btn btn-secondary" type="button">
+                Назад
+            </button>
+            <span id="lead-page" class="text-sm"></span>
+            <button id="lead-next" class="btn btn-secondary" type="button">
+                Далее
+            </button>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -113,6 +113,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Independent of SLA; copied into the scheduled action when it is set.
+CRM_NEXT_ACTION_REMINDER_MINUTES = 30
+LEAD_SCORING_LEASE_SECONDS = 300
+
 AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_URL = "login"
@@ -186,4 +190,11 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "REST API for B2B product catalog, leads, analytics and lead scoring.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "ENUM_NAME_OVERRIDES": {
+        "LeadPriorityEnum": "apps.analytics.models.LeadScore.Priority",
+        "SLADeadlineStateEnum": "apps.leads.api.sla_serializers.SLA_STATES",
+        "NextActionReminderStateEnum": "apps.leads.api.sla_serializers.NEXT_ACTION_STATES",
+        "LeadStatusEnum": "apps.leads.models.Lead.Status",
+        "LeadClosingStatusEnum": ["completed", "canceled"],
+    },
 }

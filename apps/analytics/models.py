@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class PageDailyMetric(models.Model):
@@ -102,3 +103,25 @@ class LeadScore(models.Model):
 
     def __str__(self):
         return f"Lead #{self.lead_id}: {self.score}"
+
+
+class LeadScoringState(models.Model):
+    """Calculation metadata and a durable work request; the result remains LeadScore."""
+    class Status(models.TextChoices):
+        PENDING = "pending", "Ожидается расчёт"
+        READY = "ready", "Рассчитано"
+        ERROR = "error", "Ошибка расчёта"
+
+    lead = models.OneToOneField("leads.Lead", on_delete=models.CASCADE, related_name="scoring_state")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    requested_revision = models.PositiveIntegerField(default=1)
+    completed_revision = models.PositiveIntegerField(null=True, blank=True)
+    requested_at = models.DateTimeField(default=timezone.now)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    attempt_token = models.UUIDField(null=True, blank=True, editable=False)
+    lease_expires_at = models.DateTimeField(null=True, blank=True)
+    error_code = models.CharField(max_length=40, blank=True)
+
+    class Meta:
+        indexes = [models.Index(fields=["status", "requested_at"], name="scoring_pending_idx")]

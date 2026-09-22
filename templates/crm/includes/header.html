@@ -1,0 +1,37 @@
+<header class="crm-header">
+    <div class="flex items-center gap-3 min-w-0">
+        <button
+            type="button"
+            id="sidebar-open"
+            class="icon-button md:hidden"
+            aria-label="Открыть меню"
+            aria-controls="crm-sidebar"
+            aria-expanded="false"
+        >
+            <span class="material-symbols-outlined" aria-hidden="true">
+                menu
+            </span>
+        </button>
+
+        <span class="text-sm text-muted truncate">
+            LIDER / Рабочий кабинет
+        </span>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <span class="badge badge-neutral hidden sm:inline-flex">
+            Демонстрационный режим
+        </span>
+
+        <a
+            href="/crm/notifications/"
+            class="icon-button relative"
+            aria-label="Открыть уведомления"
+        >
+            <span class="material-symbols-outlined" aria-hidden="true">
+                notifications
+            </span>
+            <span id="header-unread" class="notification-counter">3</span>
+        </a>
+    </div>
+</header>

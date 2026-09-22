@@ -312,9 +312,11 @@ def merge_visitor_tracking_to_profile(request, profile) -> None:
         user=user,
         profile=profile,
     )
-    Lead.objects.filter(visitor=visitor, profile__isnull=True).update(
-        profile=profile,
-    )
+    # The scoring input changes with identity; save under the shared lead lock so
+    # its durable recalculation request is committed with the tracking merge.
+    for lead in Lead.objects.select_for_update().filter(visitor=visitor, profile__isnull=True).order_by("pk"):
+        lead.profile = profile
+        lead.save(update_fields=["profile"])
     guest_views = (
         ProductView.objects.filter(visitor=visitor, profile__isnull=True)
         .select_related("product")

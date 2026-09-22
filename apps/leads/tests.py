@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.leads.models import Lead
+from apps.accounts.models import EmployeeProfile
 
 
 class LeadAPITests(TestCase):
@@ -18,6 +19,7 @@ class LeadAPITests(TestCase):
             password="test-password",
             is_staff=True,
         )
+        EmployeeProfile.objects.create(user=self.staff_user, role="supervisor")
 
         self.regular_user = User.objects.create_user(
             username="user",

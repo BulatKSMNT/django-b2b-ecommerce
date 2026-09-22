@@ -1,0 +1,9 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p>Текущая версия: {{ original.version }}. При конфликте обновите страницу и проверьте изменения.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Сохранить действие">
+</form>
+{% endblock %}

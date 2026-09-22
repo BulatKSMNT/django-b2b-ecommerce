@@ -1,0 +1,201 @@
+{% extends "crm/base.html" %}
+
+{% block title %}Карточка заявки — LIDER{% endblock %}
+{% block page_id %}lead_detail{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <a href="/crm/leads/" class="text-link inline-flex items-center gap-1 mb-3">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            К списку
+        </a>
+
+        <div class="flex flex-wrap items-center gap-3">
+            <h1 id="detail-title">Заявка</h1>
+            <span id="detail-status"></span>
+        </div>
+
+        <p id="detail-meta" class="page-subtitle"></p>
+    </div>
+
+    <div class="flex flex-wrap gap-2" id="detail-actions"></div>
+</div>
+
+<div id="detail-closed" class="notice mb-5" hidden></div>
+
+<div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+    <div class="space-y-6 min-w-0">
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Клиент</h2>
+            </div>
+
+            <h3 id="detail-company" class="text-lg font-bold"></h3>
+            <p id="detail-person" class="text-sm text-muted mt-1"></p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                <div class="info-box">
+                    <span class="eyebrow">Телефон</span>
+                    <div class="flex items-center justify-between gap-2 mt-2">
+                        <span id="detail-phone" class="text-sm"></span>
+                        <button
+                            id="copy-phone"
+                            class="icon-button"
+                            type="button"
+                            aria-label="Копировать телефон"
+                        >
+                            <span class="material-symbols-outlined text-base">
+                                content_copy
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-box min-w-0">
+                    <span class="eyebrow">Email</span>
+                    <div class="flex items-center justify-between gap-2 mt-2">
+                        <span id="detail-email" class="text-sm break-all"></span>
+                        <button
+                            id="copy-email"
+                            class="icon-button shrink-0"
+                            type="button"
+                            aria-label="Копировать email"
+                        >
+                            <span class="material-symbols-outlined text-base">
+                                content_copy
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="mb-4">Запрос клиента</h2>
+            <p id="detail-request" class="info-box text-sm leading-relaxed"></p>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Состав заявки</h2>
+                <span class="text-xs text-muted">RUB / ₽</span>
+            </div>
+
+            <div class="table-scroll">
+                <table class="crm-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detail-items"></tbody>
+                </table>
+            </div>
+
+            <div id="detail-items-empty" class="empty-state" hidden>
+                В заявке нет товарных позиций.
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center gap-3 mt-5">
+                <span class="text-xs text-muted">
+                    Цены на момент обращения
+                </span>
+                <strong id="detail-total" class="text-xl text-primary"></strong>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="tabs mb-6" aria-label="Разделы карточки">
+                <button type="button" class="tab-button is-active" data-detail-tab="history">
+                    История
+                </button>
+                <button type="button" class="tab-button" data-detail-tab="comments">
+                    Комментарии
+                </button>
+                <button type="button" class="tab-button" data-detail-tab="interactions">
+                    Контакты
+                </button>
+                <button type="button" class="tab-button" data-detail-tab="behavior">
+                    Поведение
+                </button>
+            </div>
+
+            {% include "crm/partials/timeline.html" %}
+            {% include "crm/partials/comments.html" %}
+            {% include "crm/partials/interactions.html" %}
+            {% include "crm/partials/behavior.html" %}
+        </section>
+    </div>
+
+    <aside class="space-y-5">
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Приоритет</h2>
+                <span id="detail-priority"></span>
+            </div>
+
+            <div id="detail-score" class="text-3xl font-extrabold"></div>
+            <div class="progress-track mt-3">
+                <div id="detail-score-bar" class="progress-fill"></div>
+            </div>
+
+            <p id="detail-score-meta" class="text-xs text-muted mt-3"></p>
+
+            <details id="detail-score-factors" class="mt-4">
+                <summary class="text-link cursor-pointer">
+                    Факторы оценки
+                </summary>
+                <ul id="detail-factors" class="text-sm space-y-2 mt-3"></ul>
+            </details>
+        </section>
+
+        <section class="panel">
+            <h2 class="mb-4">Сроки</h2>
+
+            <p class="field-label">Первая реакция</p>
+            <div id="detail-reaction" class="text-sm"></div>
+
+            <hr class="border-line my-4">
+
+            <p class="field-label">Завершение обработки</p>
+            <p id="detail-resolution" class="text-sm"></p>
+
+            <p class="text-xs text-muted mt-4">Календарное время 24/7</p>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Следующее действие</h2>
+                <button
+                    type="button"
+                    class="text-link"
+                    data-dialog="next_action"
+                    id="next-action-button"
+                >
+                    Изменить
+                </button>
+            </div>
+            <div id="detail-next-action" class="info-box text-sm"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Ответственный</h2>
+                <button
+                    type="button"
+                    class="text-link"
+                    data-dialog="reassign"
+                    id="assignee-button"
+                >
+                    Переназначить
+                </button>
+            </div>
+            <p id="detail-assignee" class="text-sm font-semibold"></p>
+        </section>
+    </aside>
+</div>
+{% endblock %}
